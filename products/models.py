@@ -106,3 +106,126 @@ class Discount(models.Model):
     def is_valid(self):
         today = timezone.now().date()
         return self.start_date <= today <= self.end_date and self.is_active
+
+class Product(models.Model):
+    SIZE_CHOICES = [
+        ('S', 'Small (18cm - 6 portions)'),
+        ('M', 'Medium (26cm - 12 portions)'),
+        ('L', 'Large (36cm - 25 portions)'),
+    ]
+
+    AVAILABILITY_CHOICES = [
+        ('out_of_stock', 'Out of Stock'),
+        ('upcoming', 'Upcoming'),
+        ('in_stock', 'In Stock'),
+    ]
+
+    name = models.CharField(max_length=150)
+    slug = models.SlugField(max_length=150, unique=True)
+    description = models.TextField(max_length=500)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    ingredients = models.TextField(null=True, blank=True)
+    tags = models.ManyToManyField(Tag, related_name='products', blank=True)
+    is_active = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    discount_price = models.ForeignKey(Discount, on_delete=models.SET_NULL, null=True, blank=True)
+    availability = models.CharField(max_length=20, choices=AVAILABILITY_CHOICES, default='in_stock')
+    size = models.CharField(max_length=5, choices=SIZE_CHOICES, null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.name, allow_unicode=True)
+
+        # Only adjust price based on size if the category is 'cakes'
+        if self.category.name.lower() == 'cakes' and self.size:
+            if self.size == 'S':
+                self.price = Decimal('30.0')
+            elif self.size == 'M':
+                self.price = Decimal('45.0')
+            elif self.size == 'L':
+                self.price = Decimal('80.0')
+
+        # Check if a discount is applicable
+        if self.discount_price and self.discount_price.is_valid():
+            discount_amount = (self.discount_price.percentage / Decimal(100)) * self.price
+            self.price -= discount_amount
+
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.name
+
+
+class ProductImage(models.Model):
+    product = models.ForeignKey(
+        'Product',
+        on_delete=models.CASCADE,
+        related_name='images',
+        verbose_name='Product',
+        help_text='The associated product for this image.'
+    )
+    image = CloudinaryField(
+        'image', 
+        folder='product_images',
+        null=True,
+        blank=True,
+    )
+    alt_text = models.CharField(
+        max_length=300,
+        null=True,
+        blank=True,
+        verbose_name='Alt text',
+        help_text='Descriptive text for the image.'
+    )
+    default_image = models.BooleanField(
+        default=False,
+        verbose_name='Default Image',
+        help_text='Is this the default image for the product?'
+    )
+    is_active = models.BooleanField(
+        default=False,
+        verbose_name='Is Active',
+        help_text='Is this image currently active?'
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='Created at',
+        help_text='The date and time when this image was created.'
+    )
+    updated_at = models.DateTimeField(
+        auto_now=True,
+        verbose_name='Updated at',
+        help_text='The date and time when this image was last updated.'
+    )
+
+    class Meta:
+        verbose_name = 'Product Image'
+        verbose_name_plural = 'Product Images'
+        ordering = ['product']
+
+    def __str__(self):
+        return f"Image for {self.product.name}"
+
+    @property
+    def image_url(self):
+        if self.image:
+            return self.image.url
+        return 'static/images/default_image.png'
+
+    @classmethod
+    def get_active_product_images(cls):
+        return cls.objects.filter(is_active=True)
+
+    @classmethod
+    def get_not_active_product_images(cls):
+        return cls.objects.filter(is_active=False)
+
+def save(self, *args, **kwargs):
+    if self.default_image:
+        for image in self.product.images.all().exclude(id=self.id):
+            image.default_image = False
+            image.save()
+
+    super().save(*args, **kwargs)
+
