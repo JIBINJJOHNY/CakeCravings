@@ -95,3 +95,14 @@ class Tag(models.Model):
     def get_not_active_tags(cls):
         """Get not active tags"""
         return cls.objects.filter(is_active=False)
+
+
+class Discount(models.Model):
+    percentage = models.PositiveIntegerField(help_text='Discount percentage')
+    start_date = models.DateField(help_text='Start date of the discount')
+    end_date = models.DateField(help_text='End date of the discount')
+    is_active = models.BooleanField(default=True, help_text='Is the discount currently active?')
+
+    def is_valid(self):
+        today = timezone.now().date()
+        return self.start_date <= today <= self.end_date and self.is_active
