@@ -43,8 +43,15 @@ ul li {
 a {
     text-decoration: none;
     cursor: pointer;
+    color: #b07bb4;
 
 }
+
+a:hover {
+    color: rgb(243, 235, 235);
+}
+
+
 
 img {
     display: block;
@@ -62,3 +69,132 @@ button {
 }
 
 /* ------------ header ----------- */
+/* Style the navigation bar */
+#navbar {
+    background-color: rgb(38, 15, 38);
+}
+
+.container-fluid,
+.container-lg,
+.container-md,
+.container-sm,
+.container-xl {
+    width: 100%;
+    padding-right: 0px;
+    padding-left: 0px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.navbar-toggler-icon {
+    background: url('/static/images/hamburger_menu.png') center center no-repeat;
+    background-size: cover;
+    width: 30px;
+    /* Adjust the width as needed */
+    height: 30px;
+    /* Adjust the height as needed */
+    border: none;
+    /* Remove the default border */
+}
+
+/* Add styles for the notification badge */
+.notification-badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: white;
+    color: rgb(38, 15, 38);
+    border-radius: 50%;
+    padding: 0px 4px;
+    font-size: 12px;
+    z-index: 1;
+    /* Ensure the badge is above the icon */
+}
+
+/* Add relative positioning to the parent nav-link */
+.position-relative {
+    position: relative;
+}
+
+
+/* Style the logo */
+#logo img {
+    width: 100px;
+    height: auto;
+}
+
+/* Style the search form in the navigation bar */
+.navbar-form {
+    margin-right: 20px;
+}
+
+/* Add styles for the user authentication and icons */
+.navbar-nav li {
+    margin-right: 10px;
+}
+
+.nav-link {
+    color: white;
+}
+
+.home-section {
+    background: url('/static/images/homepage_background.jpg') no-repeat center center fixed;
+    background-size: cover;
+    height: 100vh;
+    color: rgb(38, 15, 38);
+    font-family: 'Lato';
+    margin-top: 0px;
+
+    /* Remove default body margin */
+}
+
+/* Style for the home section */
+.home-section {
+    margin-top: 50px;
+    /* Adjust the margin based on your navbar height */
+}
+
+/* Style for the content column */
+.content {
+    padding: 40px;
+    /* Add padding for spacing around the text */
+}
+
+/* Custom style for the Order Now button */
+.order-now-button {
+    background-color: rgb(38, 15, 38);
+    color: #fff;
+    /* Set text color to white or your preferred color */
+    /* Add any additional styles as needed */
+}
+
+@media (max-width: 768px) {
+    .home-section {
+        margin-top: 60px;
+        /* Adjust margin for smaller screens */
+    }
+
+    .content {
+        padding: 20px;
+        /* Reduce padding for smaller screens */
+    }
+}
+
+/* Adjust the positioning for small screens */
+@media (max-width: 768px) {
+    .position-relative {
+        position: static;
+        /* Reset to normal flow for small screens */
+    }
+
+    .notification-badge {
+        position: relative;
+        /* Adjust to relative positioning for small screens */
+        display: inline-block;
+        /* Ensure inline-block to be next to the icon */
+        margin-left: 0px;
+        /* Adjust margin as needed */
+        margin-top: 0px;
+        /* Adjust margin-top as needed */
+    }
+}

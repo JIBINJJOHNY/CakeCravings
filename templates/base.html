@@ -88,7 +88,7 @@
                 <!-- Move the form and user icons to the right -->
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item">
-                        <form class="form-inline" method="GET" action="{% url 'products:all_products' %}">
+                        <form class="form-inline" method="GET" action="">
                             <input class="form-control" type="text" name="q" placeholder="Search">
                             <button class="btn btn-outline-secondary" type="submit">
                                 <i class="fas fa-search"></i>
@@ -110,7 +110,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link position-relative" href="{% url 'cart:view_cart' %}" id="cart-icon">
+                        <a class="nav-link position-relative" href="" id="cart-icon">
                             <i class="fas fa-shopping-cart"></i>
                             <span id="cartCount" class="notification-badge">0</span>
                         </a>
