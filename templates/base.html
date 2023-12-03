@@ -88,7 +88,7 @@
                 <!-- Move the form and user icons to the right -->
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item">
-                        <form class="form-inline" method="GET" action="">
+                        <form class="form-inline" method="GET" action="{% url 'products:all_products' %}">
                             <input class="form-control" type="text" name="q" placeholder="Search">
                             <button class="btn btn-outline-secondary" type="submit">
                                 <i class="fas fa-search"></i>
