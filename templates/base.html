@@ -84,6 +84,11 @@
                     <li class="nav-item">
                         <a class="nav-link" href="#">Contact</a>
                     </li>
+                    {% if user.is_authenticated and user.is_superuser %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'products:product_list' %}">Product list</a>
+                    </li>
+                    {% endif %}
                 </ul>
                 <!-- Move the form and user icons to the right -->
                 <ul class="navbar-nav ml-auto">
