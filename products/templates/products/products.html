@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+{% load static %}
+{% load custom_filters %}
+
+{% block content %}
+<div class="container" style="padding-top: 60px;">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="breadcrumb" id="breadcrumb-container"></div>
+            <div class="category-and-sorting">
+                <!-- Category List -->
+                <div class="categories">
+                    <h3>Categories:</h3>
+                    <ul>
+                        <li><a href="{% url 'products:all_products' %}">All ({{ total_product_count }})</a></li>
+                        {% for category in all_categories %}
+                        <li><a href="{% url 'products:products_by_category' category_slug=category.slug %}">{{ category.name }}
+                                ({{ product_counts|get_category_count:category.name }})</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <!-- Sorting Options -->
+                <div class="sorting-options">
+                    <h3>Sort by:</h3>
+                    <ul>
+                        <li><a href="?sort=name&direction=asc">Name (A-Z)</a></li>
+                        <li><a href="?sort=name&direction=desc">Name (Z-A)</a></li>
+                        <li><a href="?sort=price&direction=asc">Price (Low to High)</a></li>
+                        <li><a href="?sort=price&direction=desc">Price (High to Low)</a></li>
+                        <li><a href="?sort=rating&direction=desc">Rating (High to Low)</a></li>
+                        <!-- Add more sorting options if needed -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column for Product Cards -->
+        <div class="col-md-9">
+            <div id="product-cards">
+                <h1>Products</h1>
+
+                <div class="row">
+                    {% for product in products %}
+                    <div class="col-md-4 mb-4 product-card" data-product-id="{{ product.id }}">
+                        <div class="card">
+                            <a href="{% url 'products:product_detail' product.id %}"
+                                onclick="redirectToProductDetail('{{ product.id }}')">
+                                <div class="overlay">
+                                    <button id="addToWishlistBtn" class="btn btn-secondary" title="Add to Wishlist"
+                                        data-product-id="{{ product.id }}"
+                                        onclick="addToWishlist(event, '{{ product.id }}')">
+                                        <i class="fas fa-heart" style="font-size: 20px; color: #840a0a;"></i>
+                                    </button>
+                                </div>
+
+                                <div class="image-container" style="height: 200px; overflow: hidden;">
+                                    <img src="{{ product.images.first.image_url }}" alt="{{ product.name }}"
+                                        style="width: 100%; height: auto;">
+                                </div>
+                            </a>
+
+                            <div class="card-body">
+                                <div class="card-body-content" style="height: 120px;">
+                                    <h3>{{ product.name }}</h3>
+                                    <div class="star">
+                                        <i class="bx bxs-star checked"></i>
+                                        <i class="bx bxs-star checked"></i>
+                                        <i class="bx bxs-star checked"></i>
+                                        <i class="bx bxs-star"></i>
+                                        <i class="bx bxs-star"></i>
+                                    </div>
+                                    {% if product.discount_price %}
+                                    <h6>
+                                        {% if product.discount_price < product.price %}
+                                        <span>€{{ product.discount_price }}</span>
+                                        <span style="text-decoration: line-through;">(€{{ product.price }})</span>
+                                        {% else %}
+                                        <span>€{{ product.price }}</span>
+                                        {% endif %}
+                                        <span>
+                                            <form method="POST" action="{% url 'add_to_cart' %}">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="product_id" value="{{ product.id }}">
+                                                <input type="hidden" name="quantity" value="1">
+                                                <button type="submit" class="btn btn-secondary" title="Add to Cart">
+                                                    <i class="fas fa-shopping-cart"
+                                                        style="font-size: 20px; color: #462b48;"></i>
+                                                </button>
+                                            </form>
+                                        </span>
+                                    </h6>
+                                    {% else %}
+                                    <h6>€{{ product.price }} <span>
+                                            <form method="POST" action="#">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="quantity" value="1">
+                                                <button type="submit" class="btn btn-secondary" title="Add to Cart">
+                                                    <i class="fas fa-shopping-cart"
+                                                        style="font-size: 20px; color: #462b48;"></i>
+                                                </button>
+                                            </form>
+
+                                        </span></h6>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <button onclick="topFunction()" id="back-to-top-btn" title="Go to top">
+                <i class="fas fa-arrow-up"></i>
+                <!-- FontAwesome arrow-up icon -->
+            </button>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'js/breadscrumb.js' %}"></script>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+    // Get the button
+    var mybutton = document.getElementById("back-to-top-btn");
+
+    // When the user scrolls down 20px from the top of the document, show the button
+    window.onscroll = function () {
+        scrollFunction();
+    };
+
+    function scrollFunction() {
+        if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+            mybutton.style.display = "block";
+        } else {
+            mybutton.style.display = "none";
+        }
+    }
+
+    // When the user clicks on the button, scroll to the top of the document
+    function topFunction() {
+        document.body.scrollTop = 0; // For Safari
+        document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE, and Opera
+    }
+</script>
+<script>
+    // Function to get the CSRF token from cookies
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = cookies[i].trim();
+                // Check if this cookie string begins with the name we want
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+</script>
+
+{% endblock %}
