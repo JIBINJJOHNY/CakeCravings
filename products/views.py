@@ -6,7 +6,14 @@ from .models import Product, Category
 from django.middleware.csrf import get_token
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET
+from .forms import ProductForm,ProductImageForm
+from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth.mixins import UserPassesTestMixin
+from django.views.generic import ListView
 
+
+def is_manager(user):
+    return user.is_authenticated and user.is_superuser
 @require_GET
 def get_csrf_token(request):
     csrf_token = get_token(request)
@@ -71,3 +78,73 @@ def all_products(request, category_slug=None):
     }
     return render(request, 'products/products.html', context)
 
+def product_detail(request, product_id):
+    """ A view to show individual product details """
+
+    product = get_object_or_404(Product, pk=product_id)
+
+    context = {
+        'product': product,
+    }
+
+    return render(request, 'products/product_detail.html', context)
+
+
+@user_passes_test(is_manager)
+def product_list(request):
+    products = Product.objects.filter(is_active=True)
+    context = {
+        'products': products,
+    }
+    return render(request, 'products/product_list.html', context)
+
+@user_passes_test(is_manager)
+def add_product(request):
+    if request.method == 'POST':
+        form = ProductForm(request.POST)
+        image_form = ProductImageForm(request.POST, request.FILES)
+
+        if form.is_valid() and image_form.is_valid():
+            product = form.save()
+            image = image_form.save(commit=False)
+            image.product = product
+            image.save()
+
+            messages.success(request, 'Successfully added product!')
+            return redirect(reverse('products:product_list'))
+        else:
+            messages.error(request, 'Failed to add product. Please ensure the form is valid.')
+    else:
+        form = ProductForm()
+        image_form = ProductImageForm()
+
+    template = 'products/product_add.html'
+    context = {'form': form, 'image_form': image_form}
+
+    return render(request, template, context)
+
+def edit_product(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    
+    if request.method == 'POST':
+        form = ProductForm(request.POST, instance=product)
+        image_form = ProductImageForm(request.POST, request.FILES, instance=product.images.first())
+
+        if form.is_valid() and image_form.is_valid():
+            form.save()
+            image_form.save()
+            messages.success(request, 'Product successfully updated!')
+            return redirect(reverse('products:product_list'))
+            
+    else:
+        form = ProductForm(instance=product)
+        image_form = ProductImageForm(instance=product.images.first())
+
+    return render(request, 'products/product_edit.html', {'product': product, 'form': form, 'image_form': image_form})
+
+@user_passes_test(is_manager)
+def delete_product(request, product_id):
+    product = get_object_or_404(Product, pk=product_id)
+    product.delete()
+    messages.success(request, 'Product deleted!')
+    return redirect(reverse('products:product_list'))

@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<script>
+    // Set the base URL for static files
+    window.staticBaseUrl = "{% get_static_prefix %}";
+</script>
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-6">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'products:all_products' %}">Products</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ product.name }}</li>
+                </ol>
+            </nav>
+            <!-- Image Gallery -->
+            <div class="container mt-4">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="image-gallery">
+                            <!-- Main Image -->
+                            <div class="main-image">
+                                <!-- Inside your template where you display the product image -->
+                                <!-- Main Image -->
+                                <div class="main-image">
+                                    {% if product.images.first.image_url %}
+                                    <img src="{{ product.images.first.image_url }}" alt="{{ product.name }}"
+                                        class="img-fluid mt-4" id="mainImage">
+                                    {% else %}
+                                    <img src="{% static 'images/default_image.png' %}" alt="{{ product.name }}"
+                                        class="img-fluid mt-4" id="mainImage">
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <!-- Thumbnails -->
+                            <div class="thumbnails" onclick="changeMainImage(event)">
+                                {% for image in product.images.all %}
+                                <img src="{{ image.image_url }}" alt="product image" class="thumbnail"
+                                    data-main-image="{{ image.image_url }}">
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col-md-6 product-detail mt-4">
+            <!-- Existing Product Details -->
+            <h1>{{ product.name }}</h1>
+            <p class="text-muted">{{ product.description }}</p>
+
+            <div class="product-price">
+                <span class="current-price text-brand" id="product-price"
+                    data-product-price="{{ product.price }}">€{{ product.price }}</span>
+                {% if product.discounted_price %}
+                <span class="save-price font-md color3 ml-3">{{ product.discount_percentage }} Off</span>
+                <span class="old-price font-md ml-3">€{{ product.discounted_price }}</span>
+                {% endif %}
+            </div>
+            {% if average_reviews.rating %}
+            <small class="text-muted"><i class="fas fa-star mr-1"></i>{{ average_reviews.rating }} / 5</small>
+            {% else %}
+            <small class="text-muted">No Rating</small>
+            {% endif %}
+            {% if product.category.name|lower == 'cakes' %}
+            <!-- Size Option for Cakes -->
+            <div class="product-size mt-3">
+                <label for="product-size" class="mr-2">Size:</label>
+                <select id="product-size" onchange="updatePrice()" class="form-select">
+                    <option value="S">Small</option>
+                    <option value="M">Medium</option>
+                    <option value="L">Large</option>
+                </select>
+                <img src="{% static 'images/small.png' %}" alt="small cake icon">
+                <img src="{% static 'images/medium.png' %}" alt="medium cake icon">
+                <img src="{% static 'images/large.png' %}" alt="large cake icon">
+            </div>
+            {% endif %}
+
+            <div class="detail-extralink mt-4">
+                <div class="detail-qty radius">
+                    <span class="quantity-label">Quantity:</span>
+                    <button class="quantity-button" onclick="decreaseQuantity()">-</button>
+                    <span id="quantity">1</span>
+                    <button class="quantity-button" onclick="increaseQuantity()">+</button>
+                </div>
+                <div class="product-extra-link2 mt-3">
+                    <!-- Update the form with a unique ID -->
+                    <form method="post" action="" id="addToCartForm" class="add-to-cart">
+                        {% csrf_token %}
+                        <input type="hidden" name="product_id" value="{{ product.id }}">
+                        <input type="hidden" name="quantity" value="1">
+                        <!-- This line is important -->
+                        <input type="hidden" name="title" value="{{ product.name }}">
+                        <input type="hidden" name="price" value="{{ product.price }}">
+                        <!-- form fields -->
+                        <button type="submit" class="btn btn-success custom-class" id="addToCartBtn"><i
+                                class="fas fa-shopping-cart"></i> Add to Cart
+                        </button>
+
+                        <a aria-label="Add To Wishlist" class="btn ml-2 wishlist-button" onclick="addToWishlist()"
+                            href="#" style="border: 1px solid black;">
+                            <i class="fas fa-heart" style="color: red;"></i>
+                        </a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="product-extra-link2 mt-3">
+        <!-- Ingredients Section -->
+        <div class="ingredients">
+            <h2>Classic Ingredients</h2>
+            <p>{{ product.ingredients }}</p>
+        </div>
+    </div>
+</div>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-4 feature">
+            <img src="{% static 'images/flour_mix_icon.png' %}" alt="flour mixing icon" class="img-fluid">
+            <div>
+                <h3>Made with Care Every Day</h3>
+                <p>Crafting each product with precision, we use only the finest ingredients to ensure a delightful
+                    treat.</p>
+            </div>
+        </div>
+
+        <div class="col-md-4 feature">
+            <img src="{% static 'images/caketruck.png' %}" alt="cake truck icon" class="img-fluid">
+            <div>
+                <h3>Swift Local Deliveries</h3>
+                <p>We offer prompt local delivery services, bringing our delicious creations to homes and businesses in
+                    proximity to our establishments across Frankfurt and Offenbach.</p>
+            </div>
+        </div>
+
+        <div class="col-md-4 feature">
+            <img src="{% static 'images/bakery.png' %}" alt="bakery icon" class="img-fluid">
+            <div>
+                <h3>Bakery Delivery</h3>
+                <p>Using only the best and freshest ingredients, our bakeries create our signature delicacies every
+                    day.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js">
+</script>
+<script src="{% static 'js/star_rating.js' %}"></script>
+<script>
+    function changeMainImage(event) {
+        var thumbnail = event.target;
+        if (thumbnail.classList.contains('thumbnail')) {
+            var mainImage = document.getElementById('mainImage');
+            var newImageSource = thumbnail.getAttribute('data-main-image');
+            mainImage.src = newImageSource;
+        }
+    }
+
+    function updatePrice() {
+        var quantityElement = document.getElementById('quantity');
+        var selectedQuantity = parseInt(quantityElement.textContent);
+        var sizeSelect = document.getElementById('product-size');
+        var priceElement = document.getElementById('product-price');
+
+        // Get the product's base price from the HTML element
+        var basePrice = parseFloat(priceElement.getAttribute('data-product-price'));
+
+        if (!isNaN(basePrice)) {
+            // If the product has a size option, get the selected size and its price
+            if (sizeSelect) {
+                console.log('Size select element found');
+                var selectedSize = sizeSelect.options[sizeSelect.selectedIndex].value;
+                var sizePrices = {
+                    'S': 30.00,
+                    'M': 45.00,
+                    'L': 80.00
+                };
+
+                // Check if the selected size has a price defined
+                if (sizePrices.hasOwnProperty(selectedSize)) {
+                    basePrice = sizePrices[selectedSize];
+                } else {
+                    console.log('Invalid size-specific price for selected size:', selectedSize);
+                }
+            }
+
+            var totalPrice = basePrice * selectedQuantity;
+            priceElement.textContent = '€' + totalPrice.toFixed(2);
+        } else {
+            console.log('Invalid product-specific price');
+        }
+    }
+</script>
+{% endblock %}

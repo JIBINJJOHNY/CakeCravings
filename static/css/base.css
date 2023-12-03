@@ -198,3 +198,328 @@ button {
         /* Adjust margin-top as needed */
     }
 }
+
+/* Products page */
+#product-cards {
+    margin-top: 20px;
+}
+
+.card {
+    background-color: #f8f7f8;
+    box-shadow: 0 0 3px #4d3056;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+}
+
+.overlay {
+    display: block;
+    opacity: 0;
+    position: absolute;
+    top: 10%;
+    margin-left: 0;
+    width: 70px;
+}
+
+.card:hover .overlay {
+    opacity: 1;
+    margin-left: 5%;
+    transition: 0.5s ease;
+}
+
+.overlay i {
+    height: 30px;
+    width: 30px;
+    font-size: 20px;
+    padding: 7px;
+    margin: -20%;
+    margin-bottom: 5%;
+    cursor: pointer;
+}
+
+.overlay .btn-secondary {
+    background: transparent !important;
+    border: none;
+    box-shadow: none;
+}
+
+h1 {
+    text-align: center;
+    font-weight: bold;
+    margin-top: 20px;
+    color: #4d3056;
+    text-shadow: 1px 1px 1px #fafafa;
+    border-bottom: 2px solid #4d3056;
+}
+
+.card-body-content {
+    height: 120px;
+}
+
+.star .checked {
+    color: yellow;
+}
+
+h3 {
+    color: hsl(286, 28%, 26%);
+    font-size: 20px;
+}
+
+h6 {
+    font-size: 20px;
+    color: #4d3056;
+    font-weight: bold;
+}
+
+h6 span button {
+    width: 50px;
+    height: 35px;
+    font-size: 15px;
+    background: transparent;
+    letter-spacing: 3px;
+    border: 2px solid #4d3056;
+    border-radius: 5px;
+    float: right;
+    font-weight: bold;
+    transition: 0.5s ease;
+    cursor: pointer;
+    color: #4d3056;
+}
+
+h6 span button:hover {
+    background-color: #4d3056;
+    color: white;
+}
+
+/* Style for price filter section */
+#price-filter {
+    margin-top: 20px;
+}
+
+.slider-container {
+    margin-top: 10px;
+}
+
+.slider-range {
+    width: 80%;
+}
+
+.filter-button {
+    margin-top: 10px;
+    background-color: #4d3056;
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.form-check-input {
+    position: absolute;
+    margin-top: 0rem;
+    margin-left: 0.05rem;
+    max-width: 45px;
+}
+
+.category-and-sorting {
+    background-color: #4d3056;
+    /* Set your desired background color */
+    padding: 15px;
+
+
+}
+
+.categories h3,
+.sorting-options h3 {
+    color: #ffffff;
+    font-weight: bold;
+}
+
+.categories ul,
+.sorting-options ul {
+    list-style: none;
+    padding: 0;
+}
+
+.categories li,
+.sorting-options li {
+    margin-bottom: 10px;
+}
+
+.categories a,
+.sorting-options a {
+    text-decoration: none;
+    color: #ffffff;
+    transition: color 0.3s ease;
+    text-align: center;
+}
+
+.categories a:hover,
+.sorting-options a:hover {
+    color: #ffffff;
+    text-align: center;
+    /* Set your desired link hover color */
+}
+
+#breadcrumb-container {
+    margin-top: 50px;
+}
+
+/* Add space between breadcrumb and category section */
+.category-and-sorting {
+    margin-top: 35px;
+}
+
+#product-cards {
+    margin-top: 50px;
+}
+
+#back-to-top-btn {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #ffffff;
+    /* White background */
+    color: #4d3056;
+    /* Black arrow color */
+    border: none;
+    border-radius: 5px;
+    padding: 10px 15px;
+    font-size: 16px;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    /* Optional: Add a subtle box shadow */
+}
+
+#back-to-top-btn:hover {
+    background-color: #e0e0e0;
+    /* Optional: Change background color on hover */
+}
+
+
+.product-quantity {
+    display: flex;
+    align-items: center;
+}
+
+.quantity-label {
+    margin-right: 10px;
+}
+
+.breadcrumb-container {
+    position: relative;
+    top: 70px;
+    /* Adjust the value as needed */
+}
+
+.quantity-button {
+    background-color: #462b48;
+    color: #fff;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+#quantity {
+    margin: 0 10px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.product-price {
+    font-size: 25px;
+    font-weight: bold;
+    color: #462b48;
+
+}
+
+.img-fluid {
+    margin-top: 50px;
+}
+
+.btn-secondary {
+    background-color: #f8f7f8;
+    border-color: #f8f7f8;
+    color: #462b48;
+}
+
+.main-image img {
+    width: 100%;
+    /* Set the desired width */
+    border: 2px solid #462b48;
+    /* Add a border with your preferred color */
+    border-radius: 10px;
+    /* Add border-radius for rounded corners */
+    margin-top: 20px;
+    /* Adjust margin as needed */
+}
+
+.image-gallery {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.main-image {
+    width: 100%;
+    text-align: center;
+}
+
+.thumbnails {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.thumbnail {
+    width: 80px;
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+.thumbnail:hover {
+    border: 2px solid #462b48;
+}
+
+.ingredients {
+    text-align: center;
+    background-color: #f8f8f8;
+    /* Add your preferred background color */
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+/* Adjust the width as needed */
+.feature img {
+    width: 30%;
+    /* Set the desired width */
+    margin-bottom: 10px;
+    align-items: center;
+}
+
+/* Hover effect */
+.feature:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 10px #ffffff;
+}
+
+/*product list page*/
+
+.action-buttons {
+    width: 120px;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+    /* You can adjust the width as needed */
+}
+
+.action-buttons form {
+    display: inline;
+    margin-right: 5px;
+    /* Adjust the spacing between buttons as needed */
+}
