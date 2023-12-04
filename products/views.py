@@ -10,6 +10,8 @@ from .forms import ProductForm,ProductImageForm
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.views.generic import ListView
+from reviews.forms import ReviewForm
+from reviews.models import Review
 
 
 def is_manager(user):
@@ -79,16 +81,27 @@ def all_products(request, category_slug=None):
     return render(request, 'products/products.html', context)
 
 def product_detail(request, product_id):
-    """ A view to show individual product details """
-
     product = get_object_or_404(Product, pk=product_id)
+    reviews = Review.objects.filter(product=product).order_by('-created_at')
+
+    if request.method == 'POST':
+        review_form = ReviewForm(request.POST)
+        if review_form.is_valid():
+            new_review = review_form.save(commit=False)
+            new_review.product = product
+            new_review.user = request.user  # Assuming you have user authentication
+            new_review.save()
+            return redirect('products:product_detail', product_id=product_id)
+    else:
+        review_form = ReviewForm()
 
     context = {
         'product': product,
+        'reviews': reviews,
+        'review_form': review_form,
     }
 
     return render(request, 'products/product_detail.html', context)
-
 
 @user_passes_test(is_manager)
 def product_list(request):
