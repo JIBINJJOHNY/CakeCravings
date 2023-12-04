@@ -64,9 +64,10 @@ class OrderItem(models.Model):
     order = models.ForeignKey('Order', on_delete=models.CASCADE, related_name='order_item')
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
-    
+    size = models.CharField(max_length=5, choices=Product.SIZE_CHOICES, null=True, blank=True)
+
     def __str__(self):
-        return str(self.id)
+        return f"{self.quantity} x {self.product.name}" + (f" ({self.size})" if self.size else "")
 
 
 

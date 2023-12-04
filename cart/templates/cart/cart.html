@@ -1,0 +1,300 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mb-2">
+    <div class="row">
+        <div class="col">
+            <hr>
+            <h2 class="logo-font mb-4">Shopping Bag</h2>
+            <hr>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            {% if cart_items %}
+            <div class="table-responsive rounded">
+                <table class="table table-sm table-borderless">
+                    <thead class="text-black">
+                        <tr>
+                            <th scope="col">Product Info</th>
+                            <th scope="col"></th>
+                            <th scope="col">Price</th>
+                            <th scope="col">Qty</th>
+                            <th scope="col">Subtotal</th>
+                            <th scope="col">Action</th>
+                        </tr>
+                    </thead>
+
+                    {% for item in cart_items %}
+                    <tr>
+                        <td class="p-3 w-25">
+                            {% if item.product.images.first %}
+                            <img class="img-fluid" src="{{ item.product.images.first.image_url }}"
+                                alt="{{ item.product.name }}">
+                            {% else %}
+                            <img src="{% static 'images/default_image.png' %}" alt="{{ product.name }}"
+                                class="img-fluid mt-4" id="mainImage">
+                            {% endif %}
+                        </td>
+
+                        <td class="py-3">
+                            <h6>{{ item.product.name }}</h6>
+                            <!-- Add more details as needed -->
+                        </td>
+                        <td class="py-3">
+                            <p class="my-0">${{ item.product.price }}</p>
+                        </td>
+                        <td class="py-3 w-25">
+                            <div class="input-group">
+                                <button class="decrement-qty btn btn-outline-secondary"
+                                    data-item_id="{{ item.product.id }}">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                                <input type="number" class="qty_input form-control" data-item_id="{{ item.product.id }}"
+                                    value="{{ item.quantity }}" min="1" max="99" disabled>
+                                <button class="increment-qty btn btn-outline-secondary"
+                                    data-item_id="{{ item.product.id }}">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </td>
+
+                        <td class="py-3">
+                            <p class="my-0">${{ item.item_total }}</p>
+                        </td>
+                        <td class="py-3">
+                            <button class="remove-item btn btn-link text-danger" id="remove_{{ item.product_id }}"
+                                data-product_size="{{ item.size }}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+
+                    <!-- Delivery Information -->
+                    <!-- Additional row for delivery information -->
+                    <tr>
+                        <td colspan="5" class="pt-3">
+                            <h6>Delivery Information</h6>
+                            <label for="delivery_option">Select Delivery Option:</label>
+                            <select name="delivery_option" id="delivery_option">
+                                <option value="pickup" {% if selected_delivery_option == 'pickup' %}selected{% endif %}>
+                                    Pickup</option>
+                                <option value="local_delivery"
+                                    {% if selected_delivery_option == 'local_delivery' %}selected{% endif %}>Local
+                                    Delivery</option>
+                                <option value="national_delivery"
+                                    {% if selected_delivery_option == 'national_delivery' %}selected{% endif %}>National
+                                    Delivery</option>
+                            </select>
+                            <!-- Display other delivery information -->
+                            <p>Delivery Cost: ${{ delivery }}</p>
+                            <p>Free Delivery Threshold: ${{ free_delivery_threshold }}</p>
+                        </td>
+                    </tr>
+                    <!-- Grand Total -->
+                    <tr>
+                        <td colspan="5" class="pt-3 text-right">
+                            <h6>Grand Total: ${{ grand_total }}</h6>
+                            <button id="checkoutButton">Checkout</button>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td colspan="6" class="pt-3 text-right">
+                            <!-- Add checkout buttons or other actions as needed -->
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            {% else %}
+            <p class="lead mb-5">Your cart is empty.</p>
+            <a href="{% url 'products:all_products' %}" class="btn btn-outline-black rounded-0 btn-lg">
+                <span class="icon">
+                    <i class="fas fa-chevron-left"></i>
+                </span>
+                <span class="text-uppercase">Keep Shopping</span>
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block postloadjs %}
+{{ block.super }}
+<!-- Back to Top Script -->
+<script type="text/javascript">
+    $('.btt-link').click(function (e) {
+        window.scrollTo(0, 0);
+    });
+</script>
+<!-- Remove Item Script -->
+<script type="text/javascript">
+    // New quantity input script content...
+    // Disable +/- buttons outside 1-99 range
+    function handleEnableDisable(itemId) {
+        var currentValue = parseInt($(`.qty_input[data-item_id="${itemId}"]`).val());
+        var minusDisabled = currentValue < 2;
+        var plusDisabled = currentValue > 98;
+        $(`.decrement-qty[data-item_id="${itemId}"]`).prop('disabled', minusDisabled);
+        $(`.increment-qty[data-item_id="${itemId}"]`).prop('disabled', plusDisabled);
+    }
+
+    // Ensure proper enabling/disabling of all inputs on page load
+    var allQtyInputs = $('.qty_input');
+    for (var i = 0; i < allQtyInputs.length; i++) {
+        var itemId = $(allQtyInputs[i]).data('item_id');
+        handleEnableDisable(itemId);
+    }
+
+    // Check enable/disable every time the input is changed
+    $('.qty_input').change(function () {
+        var itemId = $(this).data('item_id');
+        handleEnableDisable(itemId);
+    });
+
+
+    function updateSubtotal(itemId) {
+        console.log("Updating subtotal for item ID:", itemId);
+
+        // Check if the item element exists
+        var itemElement = $(`#item_${itemId}`);
+        console.log("Item element:", itemElement);
+        if (itemElement.length === 0) {
+            console.error("Item element not found for ID:", itemId);
+            return;
+        }
+
+        // Log the HTML structure for the item
+        console.log("HTML structure for item ID", itemId, ":", itemElement.html());
+
+        // Use a more specific selector to extract the price
+        var priceContainer = itemElement.find('.your-price-container-selector');
+
+        // Check if the price container element exists
+        if (priceContainer.length === 0) {
+            console.error("Price container element not found for ID:", itemId);
+            return;
+        }
+
+        // Log the price container's HTML structure
+        console.log("HTML structure for item ID", itemId, "price container:", priceContainer.html());
+
+        // Extract the price text
+        var priceText = priceContainer.find('.your-price-selector').text().trim();
+        console.log("Extracted price text:", priceText);
+
+        // Check if price text is empty
+        if (!priceText) {
+            console.error("Price text is empty. Unable to parse.");
+            return;
+        }
+
+        // Parse the price
+        var price = parseFloat(priceText.replace(/[^\d.]/g, ''));
+
+        // Check if the parsed price is a valid number
+        if (isNaN(price)) {
+            console.error("Failed to parse price. Price is not a valid number.");
+            return;
+        }
+
+        var quantity = parseInt($(`.qty_input[data-item_id="${itemId}"]`).val());
+        var subtotal = quantity * price;
+        console.log("New subtotal:", subtotal);
+        $(`#item_subtotal_${itemId}`).text(`$${subtotal.toFixed(2)}`);
+    }
+
+    // Call updateSubtotal when the page is ready
+    $(document).ready(function () {
+        var allQtyInputs = $('.qty_input');
+        for (var i = 0; i < allQtyInputs.length; i++) {
+            var itemId = $(allQtyInputs[i]).data('item_id');
+            updateSubtotal(itemId);
+        }
+    });
+
+    // Call updateSubtotal when the quantity input changes
+    $('.qty_input').change(function () {
+        var itemId = $(this).data('item_id');
+        updateSubtotal(itemId);
+    });
+    // Increment quantity
+    $('.increment-qty').click(function (e) {
+        e.preventDefault();
+        var closestInput = $(this).closest('.input-group').find('.qty_input')[0];
+        var currentValue = parseInt($(closestInput).val());
+        $(closestInput).val(currentValue + 1);
+        var itemId = $(this).data('item_id');
+        handleEnableDisable(itemId);
+        updateSubtotal(itemId);
+        updateQuantityInCart(itemId, currentValue + 1);
+    });
+
+    // Decrement quantity
+    $('.decrement-qty').click(function (e) {
+        e.preventDefault();
+        var closestInput = $(this).closest('.input-group').find('.qty_input')[0];
+        var currentValue = parseInt($(closestInput).val());
+        $(closestInput).val(currentValue - 1);
+        var itemId = $(this).data('item_id');
+        handleEnableDisable(itemId);
+        updateSubtotal(itemId);
+        updateQuantityInCart(itemId, currentValue - 1);
+    });
+
+    // Remove item from bag
+    $('.remove-item').click(function (e) {
+        e.preventDefault();
+        var productInventoryId = $(this).data('product_size');
+        removeItemFromCart(productInventoryId);
+    });
+
+    function updateQuantityInCart(itemId, newQuantity) {
+        $.ajax({
+            url: "{% url 'cart:update_quantity_in_cart' %}",
+            type: 'POST',
+            data: {
+                'product_inventory_id': itemId,
+                'new_quantity': newQuantity,
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+            success: function (data) {
+                // Update other elements as needed
+                console.log(data); // Check the response in the console
+            },
+            error: function (data) {
+                console.error("Error updating quantity in cart:", data);
+            }
+        });
+    }
+
+    function removeItemFromCart(itemId) {
+        $.ajax({
+            url: "{% url 'cart:remove_item_from_cart' %}",
+            type: 'POST',
+            data: {
+                'product_inventory_id': itemId,
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+            success: function (data) {
+                // Update other elements as needed
+                console.log("Remove Item Response:", data);
+                location.reload(); // Reload the page after removing the item
+            },
+            error: function (data) {
+                console.error("Error removing item from cart:", data);
+            }
+        });
+    }
+
+    // Handle delivery option change
+    $('#delivery_option').change(function () {
+        var selectedOption = $(this).val();
+        updateDeliveryOption(selectedOption);
+    });
+</script>
+{% endblock %}
