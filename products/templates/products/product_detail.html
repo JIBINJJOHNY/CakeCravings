@@ -151,8 +151,70 @@
         </div>
     </div>
 </div>
-
-
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <h1 class="mb-4">Customer Reviews for {{ product.name }}</h1>
+            <div class="reviews-container row">
+                {% for review in reviews %}
+                <div class="col-lg-4 col-md-4 col-sm-12 mb-4">
+                    <div class="card">
+                        <div class="review-details">
+                            <div class="user-info">
+                                <span class="font-weight-bold d-block">{{ review.user.username }}</span>
+                                <small class="text-muted mt-1">
+                                    Created on {{ review.created_at|date:'F j, Y' }}
+                                </small>
+                            </div>
+                            <div class="rating mt-1">
+                                {% for star in "12345"|make_list %}
+                                {% if forloop.counter <= review.rating %}
+                                <i class="fa fa-star u-color"></i>
+                                {% else %}
+                                <i class="fa fa-star-o u-color"></i>
+                                {% endif %}
+                                {% endfor %}
+                            </div>
+                            <div class="review-content">
+                                <p>{{ review.comment }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12">
+                    <h5>No reviews available.</h5>
+                </div>
+                {% endfor %}
+            </div>
+            <!-- Add Review form below the reviews -->
+            <div id="reviewFormContainerBelow" class="review-form-container">
+                <h3>Add Review</h3>
+                <!-- Rating input -->
+                <div class="form-group">
+                    <p>Rating:</p>
+                    <div class="star-rating" id="star-rating-below">
+                        <i class="fas fa-star" data-rating="1"></i>
+                        <i class="fas fa-star" data-rating="2"></i>
+                        <i class="fas fa-star" data-rating="3"></i>
+                        <i class="fas fa-star" data-rating="4"></i>
+                        <i class="fas fa-star" data-rating="5"></i>
+                    </div>
+                    <input type="hidden" name="rating" id="rating-below" value="0">
+                </div>
+                <!-- Comment input -->
+                <div class="form-group">
+                    <label for="comment">Your Review:</label>
+                    <textarea id="comment-below" class="form-control" rows="4"></textarea>
+                </div>
+                <!-- Submit button -->
+                <div class="form-group" style="margin-top: 20px;">
+                    <button type="button" class="btn btn-review" id="addReviewBtn">Review</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js">
 </script>
 <script src="{% static 'js/star_rating.js' %}"></script>
@@ -200,5 +262,144 @@
             console.log('Invalid product-specific price');
         }
     }
+
+    window.updatePrice = updatePrice;
+
+    function increaseQuantity() {
+        var quantityElement = document.getElementById('quantity');
+        var currentQuantity = parseInt(quantityElement.textContent);
+        quantityElement.textContent = currentQuantity + 1;
+
+        console.log('Updated quantity:', quantityElement.textContent);
+
+        window.updatePrice();
+    }
+
+    function decreaseQuantity() {
+        var quantityElement = document.getElementById('quantity');
+        var currentQuantity = parseInt(quantityElement.textContent);
+
+        if (currentQuantity > 1) {
+            quantityElement.textContent = currentQuantity - 1;
+
+            console.log('Updated quantity:', quantityElement.textContent);
+
+            window.updatePrice();
+        } else {
+            console.log('Quantity cannot be less than 1');
+        }
+    }
+    // Add this function definition before your other JavaScript code
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    function updateMiniCart() {
+        console.log('Updating mini-cart...');
+        // Your logic to update the mini-cart goes here
+    }
+
+    function addToCart() {
+
+        var productId = document.querySelector('input[name="product_id"]').value;
+        var quantity = document.getElementById('quantity').textContent;
+
+        var addToCartUrl = "";
+        fetch(addToCartUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken'),
+                },
+                body: JSON.stringify({
+                    'quantity': quantity,
+                }),
+            })
+            .then(response => response.text()) // Change this line
+            .then(data => {
+                console.log('Added to cart:', data);
+                // Update the cart display or perform other actions as needed
+                updateMiniCart();
+            })
+            .catch(error => {
+                console.error('Error adding to cart:', error);
+                alert('Error adding to cart. Please try again. Check console for details.');
+            });
+    }
+</script>
+<script>
+    function submitReview() {
+        var rating = $("#rating-below").val(); // Add this line for debugging
+        console.log("Rating:", rating); // Add this line for debugging
+        var comment = $("#comment-below").val();
+        var productId = "{{ product.id }}";
+
+        // Perform AJAX request to submit the review
+        $.ajax({
+            url: `/reviews/ajax_add_review/${productId}/`,
+            type: "POST",
+            data: {
+                rating: rating, // Make sure rating is included
+                comment: comment,
+                csrfmiddlewaretoken: "{{ csrf_token }}"
+            },
+            success: function (data) {
+                // Update the UI with the new review
+                console.log("Received data:", data);
+
+                // ... (your existing code)
+
+                // Check if the average_rating is present in the data
+                if ('average_rating' in data.context) {
+                    console.log("Average Rating:", data.context.average_rating);
+                } else {
+                    console.log("Average Rating not found in data.context");
+                }
+
+                // Clear the form inputs
+                $("#rating-below").val(0);
+                $("#comment-below").val("");
+            },
+            error: function (error) {
+                console.log("Error:", error);
+            }
+        });
+    }
+    $(document).ready(function () {
+        let selectedRating = 0;
+
+        $('.star-rating i').click(function () {
+            const rating = $(this).data('rating');
+            selectedRating = rating;
+            updateStars(selectedRating);
+        });
+
+        function updateStars(rating) {
+            $('.star-rating i').removeClass('checked');
+            $('.star-rating i').each(function () {
+                if ($(this).data('rating') <= rating) {
+                    $(this).addClass('checked');
+                }
+            });
+            $('#rating-below').val(rating); // Update the ID to match your HTML
+        }
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        $("#addReviewBtn").click(submitReview);
+    });
 </script>
 {% endblock %}
