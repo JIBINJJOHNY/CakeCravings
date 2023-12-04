@@ -62,10 +62,11 @@
                 {% endif %}
             </div>
             {% if average_rating %}
-            <small class="text-muted"><i class="fas fa-star mr-1"
-                    style="color: gold"></i>{{ average_rating|floatformat:"1" }} / 5</small>
+            <small class="text-muted" style="font-size: 16px;">
+                <i class="fas fa-star mr-1" style="color: gold;"></i>{{ average_rating|floatformat:"1" }} / 5
+            </small>
             {% else %}
-            <small class="text-muted">No Rating</small>
+            <small class="text-muted" style="font-size: 16px;">No Rating</small>
             {% endif %}
             {% if product.category.name|lower == 'cakes' %}
             <!-- Size Option for Cakes -->
@@ -155,11 +156,39 @@
         </div>
     </div>
 </div>
+<!--  Related product  -->
 
+<div class="container mt-4">
+    <h2 class="mb-3 text-center">Related Products</h2>
+    <div class="row">
+        {% for related_product in related_products %}
+        <div class="col-md-3">
+            <div class="card">
+                <img src="{% if related_product.images.first.image_url %}{{ related_product.images.first.image_url }}{% else %}{% static 'images/default_image.png' %}{% endif %}"
+                    alt="{{ related_product.name }}" class="card-img-top">
+                <div class="card-body">
+                    <h5 class="card-title">{{ related_product.name }}</h5>
+                    <p class="card-text">Price: €{{ related_product.price }}</p>
+                    {% if related_product.average_rating %}
+                    <p class="card-text">Average Rating: {{ related_product.average_rating|floatformat:"1" }} / 5</p>
+                    {% else %}
+                    <p class="card-text">No Rating</p>
+                    {% endif %}
+                    <a href="{% url 'products:product_detail' product_id=related_product.id %}"
+                        class="btn btn-primary">View
+                        Details</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!--  Review  -->
 <div class="container mt-4">
     <div class="row">
         <div class="col-md-12 text-center">
-            <h1 class="mb-4">Customer Reviews for {{ product.name }}</h1>
+            <h2 class="mb-4">Customer Reviews for {{ product.name }}</h2>
             <div class="reviews-container row">
                 {% for review in reviews %}
                 <div class="col-lg-4 col-md-4 col-sm-12 mb-4">

@@ -591,3 +591,14 @@ h6 span button:hover {
     resize: none;
     /* Disable resizing */
 }
+
+.image-container {
+    display: flex;
+}
+
+.product-image {
+    max-width: 70px;
+    /* Adjust the max-width as needed */
+    margin-right: 10px;
+    /* Adjust the margin between images as needed */
+}

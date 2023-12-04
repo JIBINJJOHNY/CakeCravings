@@ -99,12 +99,13 @@ def product_detail(request, product_id):
             return redirect('products:product_detail', product_id=product_id)
     else:
         review_form = ReviewForm()
-
+    related_products = Product.objects.filter(category=product.category).exclude(id=product.id)[:4]
     context = {
         'product': product,
+        'related_products': related_products,
         'reviews': reviews,
         'review_form': review_form,
-        'average_rating': average_rating,  # Add this to the context
+        'average_rating': average_rating,  
     }
 
     return render(request, 'products/product_detail.html', context)

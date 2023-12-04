@@ -130,6 +130,7 @@ class Product(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    related_products = models.ManyToManyField('self', blank=True)
     discount_price = models.ForeignKey(Discount, on_delete=models.SET_NULL, null=True, blank=True)
     availability = models.CharField(max_length=20, choices=AVAILABILITY_CHOICES, default='in_stock')
     size = models.CharField(max_length=5, choices=SIZE_CHOICES, null=True, blank=True)

@@ -33,7 +33,6 @@ class ProductImageInline(admin.TabularInline):
     model = ProductImage
     extra = 1  # Number of empty image forms to display
 
-@admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     list_display = ('name', 'category', 'is_active', 'availability', 'created_at', 'updated_at', 'price')
     list_filter = ('category', 'is_active', 'availability', 'created_at', 'updated_at')
@@ -45,10 +44,10 @@ class ProductAdmin(admin.ModelAdmin):
             'fields': ('name', 'slug', 'description', 'category', 'tags', 'is_active', 'availability', 'ingredients'),
         }),
         ('Pricing Information', {
-            'fields': ('price', 'discount_price'),  # Change 'discount' to 'discount_price'
+            'fields': ('price', 'discount_price'),
         }),
         ('Product Specific Information', {
-            'fields': ('size',),
+            'fields': ('size', 'related_products'),  # Add 'related_products' to the fields
             'classes': ('collapse',),
         }),
     )
@@ -59,3 +58,5 @@ class ProductAdmin(admin.ModelAdmin):
 
         # Save the product
         super().save_model(request, obj, form, change)
+
+admin.site.register(Product, ProductAdmin)
