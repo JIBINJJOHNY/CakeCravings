@@ -61,8 +61,9 @@
                 <span class="old-price font-md ml-3">€{{ product.discounted_price }}</span>
                 {% endif %}
             </div>
-            {% if average_reviews.rating %}
-            <small class="text-muted"><i class="fas fa-star mr-1"></i>{{ average_reviews.rating }} / 5</small>
+            {% if average_rating %}
+            <small class="text-muted"><i class="fas fa-star mr-1"
+                    style="color: gold"></i>{{ average_rating|floatformat:"1" }} / 5</small>
             {% else %}
             <small class="text-muted">No Rating</small>
             {% endif %}

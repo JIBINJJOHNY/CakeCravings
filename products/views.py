@@ -12,7 +12,7 @@ from django.contrib.auth.mixins import UserPassesTestMixin
 from django.views.generic import ListView
 from reviews.forms import ReviewForm
 from reviews.models import Review
-
+from django.db.models import Avg
 
 def is_manager(user):
     return user.is_authenticated and user.is_superuser
@@ -80,9 +80,14 @@ def all_products(request, category_slug=None):
     }
     return render(request, 'products/products.html', context)
 
+
+
 def product_detail(request, product_id):
     product = get_object_or_404(Product, pk=product_id)
     reviews = Review.objects.filter(product=product).order_by('-created_at')
+
+    # Calculate average rating
+    average_rating = reviews.aggregate(Avg('rating'))['rating__avg']
 
     if request.method == 'POST':
         review_form = ReviewForm(request.POST)
@@ -99,6 +104,7 @@ def product_detail(request, product_id):
         'product': product,
         'reviews': reviews,
         'review_form': review_form,
+        'average_rating': average_rating,  # Add this to the context
     }
 
     return render(request, 'products/product_detail.html', context)
