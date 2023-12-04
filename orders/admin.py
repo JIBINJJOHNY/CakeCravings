@@ -2,16 +2,53 @@
 from django.contrib import admin
 from .models import Order, OrderItem
 
-class OrderItemInline(admin.TabularInline):
-    model = OrderItem
-    extra = 1  # Number of empty forms to display for adding related OrderItem objects
-
+@admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ['order_id', 'full_name', 'email', 'created', 'status']
-    inlines = [OrderItemInline]
+    """Admin for the Order model."""
+    list_display = (
+        'user',
+        'full_name',
+        'order_key',
+        'total_paid',
+        'billing_status',
+        'status',
+    )
+    list_filter = (
+        'billing_status',
+        'status',
+    )
+    search_fields = (
+        'user__username',  # Assuming you want to search by username
+        'full_name',
+        'email',
+        'phone',
+        'address1',
+        'address2',
+        'country',
+        'county_region_state',
+        'city',
+        'zip_code',
+        'order_key',
+        'total_paid',
+    )
 
+@admin.register(OrderItem)
 class OrderItemAdmin(admin.ModelAdmin):
-    list_display = ['order', 'product', 'quantity', 'size']
+    """Admin for the OrderItem model."""
+    list_display = (
+        'order',
+        'product',
+        'quantity',
+        'size',
+    )
+    list_filter = (
+        'order',
+        'product',
+        'size',
+    )
+    search_fields = (
+        'order__order_key',  #  search by order key
+        'product__name',    #search by product name
+        'quantity',
+    )
 
-admin.site.register(Order, OrderAdmin)
-admin.site.register(OrderItem, OrderItemAdmin)
