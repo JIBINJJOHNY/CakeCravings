@@ -76,10 +76,13 @@
                     <option value="M">Medium</option>
                     <option value="L">Large</option>
                 </select>
-                <img src="{% static 'images/small.png' %}" alt="small cake icon">
-                <img src="{% static 'images/medium.png' %}" alt="medium cake icon">
-                <img src="{% static 'images/large.png' %}" alt="large cake icon">
+                <div class="image-container">
+                    <img src="{% static 'images/small.png' %}" alt="small cake icon" class="img-fluid product-image">
+                    <img src="{% static 'images/medium.png' %}" alt="medium cake icon" class="img-fluid product-image">
+                    <img src="{% static 'images/large.png' %}" alt="large cake icon" class="img-fluid product-image">
+                </div>
             </div>
+
             {% endif %}
 
             <div class="detail-extralink mt-4">
@@ -124,8 +127,8 @@
 
 <div class="container mt-4">
     <div class="row">
-        <div class="col-md-4 feature">
-            <img src="{% static 'images/flour_mix_icon.png' %}" alt="flour mixing icon" class="img-fluid">
+        <div class="col-md-4 feature text-center">
+            <img src="{% static 'images/flour_mix_icon.png' %}" alt="flour mixing icon" class="img-fluid mx-auto">
             <div>
                 <h3>Made with Care Every Day</h3>
                 <p>Crafting each product with precision, we use only the finest ingredients to ensure a delightful
@@ -133,8 +136,8 @@
             </div>
         </div>
 
-        <div class="col-md-4 feature">
-            <img src="{% static 'images/caketruck.png' %}" alt="cake truck icon" class="img-fluid">
+        <div class="col-md-4 feature text-center">
+            <img src="{% static 'images/caketruck.png' %}" alt="cake truck icon" class="img-fluid mx-auto">
             <div>
                 <h3>Swift Local Deliveries</h3>
                 <p>We offer prompt local delivery services, bringing our delicious creations to homes and businesses in
@@ -142,8 +145,8 @@
             </div>
         </div>
 
-        <div class="col-md-4 feature">
-            <img src="{% static 'images/bakery.png' %}" alt="bakery icon" class="img-fluid">
+        <div class="col-md-4 feature text-center">
+            <img src="{% static 'images/bakery.png' %}" alt="bakery icon" class="img-fluid mx-auto">
             <div>
                 <h3>Bakery Delivery</h3>
                 <p>Using only the best and freshest ingredients, our bakeries create our signature delicacies every
@@ -152,6 +155,7 @@
         </div>
     </div>
 </div>
+
 <div class="container mt-4">
     <div class="row">
         <div class="col-md-12 text-center">
@@ -170,7 +174,7 @@
                             <div class="rating mt-1">
                                 {% for star in "12345"|make_list %}
                                 {% if forloop.counter <= review.rating %}
-                                <i class="fa fa-star u-color"></i>
+                                <i class="fa fa-star u-color" style="color:gold;"></i>
                                 {% else %}
                                 <i class="fa fa-star-o u-color"></i>
                                 {% endif %}

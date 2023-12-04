@@ -68,6 +68,14 @@ button {
     display: none !important;
 }
 
+h2 {
+    font-family: "Great Vibes", cursive;
+    font-size: 60px;
+    color: #9b6e2f;
+    text-shadow: 1px 1px 1px black;
+    font-weight: bold;
+}
+
 /* ------------ header ----------- */
 /* Style the navigation bar */
 #navbar {
@@ -538,7 +546,7 @@ h6 span button:hover {
     color: gold;
 }
 
-.u-color .mr-1 {
+.u-color {
     color: gold;
 }
 
