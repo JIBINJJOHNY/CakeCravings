@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'crispy_bootstrap4',   
     'home',
     'products',
+    'reviews',
 ]
 
 MIDDLEWARE = [
