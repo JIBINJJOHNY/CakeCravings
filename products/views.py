@@ -14,6 +14,7 @@ from reviews.forms import ReviewForm
 from reviews.models import Review
 from django.db.models import Avg
 
+
 def is_manager(user):
     return user.is_authenticated and user.is_superuser
 @require_GET

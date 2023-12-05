@@ -47,12 +47,13 @@ INSTALLED_APPS = [
     'cloudinary_storage',
     'cloudinary',
     'crispy_forms',
-    'crispy_bootstrap4',   
+    'crispy_bootstrap4', 
     'home',
     'products',
     'reviews',
     'orders',
     'cart',
+    'wishlist',
 ]
 
 MIDDLEWARE = [

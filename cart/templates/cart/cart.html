@@ -28,23 +28,22 @@
                     </thead>
 
                     {% for item in cart_items %}
-                    <tr>
+                    <tr id="item_{{ item.product.id }}">
                         <td class="p-3 w-25">
                             {% if item.product.images.first %}
                             <img class="img-fluid" src="{{ item.product.images.first.image_url }}"
                                 alt="{{ item.product.name }}">
                             {% else %}
-                            <img src="{% static 'images/default_image.png' %}" alt="{{ product.name }}"
+                            <img src="{% static 'images/default_image.png' %}" alt="{{ item.product.name }}"
                                 class="img-fluid mt-4" id="mainImage">
                             {% endif %}
                         </td>
-
                         <td class="py-3">
                             <h6>{{ item.product.name }}</h6>
                             <!-- Add more details as needed -->
                         </td>
-                        <td class="py-3">
-                            <p class="my-0">${{ item.product.price }}</p>
+                        <td class="py-3 your-price-container-selector">
+                            <p class="my-0 your-price-selector">${{ item.product.price }}</p>
                         </td>
                         <td class="py-3 w-25">
                             <div class="input-group">
@@ -53,7 +52,7 @@
                                     <i class="fas fa-minus"></i>
                                 </button>
                                 <input type="number" class="qty_input form-control" data-item_id="{{ item.product.id }}"
-                                    value="{{ item.quantity }}" min="1" max="99" disabled>
+                                    value="{{ item.quantity }}" min="1" max="99">
                                 <button class="increment-qty btn btn-outline-secondary"
                                     data-item_id="{{ item.product.id }}">
                                     <i class="fas fa-plus"></i>
@@ -61,12 +60,12 @@
                             </div>
                         </td>
 
-                        <td class="py-3">
-                            <p class="my-0">${{ item.item_total }}</p>
+                        <td class="py-3 your-price-container-selector">
+                            <p class="my-0" id="item_subtotal_{{ item.product.id }}">${{ item.item_total }}</p>
                         </td>
                         <td class="py-3">
-                            <button class="remove-item btn btn-link text-danger" id="remove_{{ item.product_id }}"
-                                data-product_size="{{ item.size }}">
+                            <button class="remove-item btn btn-link text-danger" id="remove_{{ item.product.id }}"
+                                data-product_id="{{ item.size }}">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </td>
@@ -83,28 +82,27 @@
                                 <option value="pickup" {% if selected_delivery_option == 'pickup' %}selected{% endif %}>
                                     Pickup</option>
                                 <option value="local_delivery"
-                                    {% if selected_delivery_option == 'local_delivery' %}selected{% endif %}>Local
-                                    Delivery</option>
+                                    {% if selected_delivery_option == 'local_delivery' %}selected{% endif %}>
+                                    Local Delivery</option>
                                 <option value="national_delivery"
-                                    {% if selected_delivery_option == 'national_delivery' %}selected{% endif %}>National
-                                    Delivery</option>
+                                    {% if selected_delivery_option == 'national_delivery' %}selected{% endif %}>
+                                    National Delivery</option>
                             </select>
                             <!-- Display other delivery information -->
-                            <p>Delivery Cost: ${{ delivery }}</p>
-                            <p>Free Delivery Threshold: ${{ free_delivery_threshold }}</p>
+                            <p id="delivery_cost_label">Delivery Cost: €{{ delivery_cost }}</p>
+                            <p id="free_delivery_threshold">Free Delivery Threshold: €{{ free_delivery_threshold }}</p>
                         </td>
                     </tr>
                     <!-- Grand Total -->
                     <tr>
                         <td colspan="5" class="pt-3 text-right">
-                            <h6>Grand Total: ${{ grand_total }}</h6>
-                            <button id="checkoutButton">Checkout</button>
+                            <h6>Grand Total: €{{ grand_total }}</h6>
                         </td>
                     </tr>
 
                     <tr>
                         <td colspan="6" class="pt-3 text-right">
-                            <!-- Add checkout buttons or other actions as needed -->
+                            <button id="checkoutButton" onclick="checkout()">Checkout</button>
                         </td>
                     </tr>
                 </table>
@@ -125,14 +123,58 @@
 
 {% block postloadjs %}
 {{ block.super }}
-<!-- Back to Top Script -->
 <script type="text/javascript">
-    $('.btt-link').click(function (e) {
-        window.scrollTo(0, 0);
+    function checkout() {
+        var grandTotal = parseFloat('{{ grand_total }}');
+        var deliveryCost = parseFloat('{{ request.session.delivery_cost }}');
+        var selectedOption = $('#delivery_option').val();
+
+        // Check if grand total (excluding delivery cost) is more than 60 euros
+        if (grandTotal > 60) {
+            // If the grand total is more than 60 euros, set the delivery cost to 0
+            deliveryCost = 0;
+        }
+
+        // Redirect to the checkout page with the adjusted delivery cost
+        window.location.href = "{% url 'checkout' %}?delivery_option=" + selectedOption + "&delivery_cost=" +
+            deliveryCost;
+    }
+
+    // Handle delivery option change
+    $('#delivery_option').change(function () {
+        updateDeliveryOption($(this).val());
     });
-</script>
-<!-- Remove Item Script -->
-<script type="text/javascript">
+
+    function updateDeliveryOption(selectedOption) {
+        $.ajax({
+            url: "{% url 'cart:update_delivery_cost' %}",
+            type: 'POST',
+            data: {
+                'selected_delivery_option': selectedOption,
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+            success: function (data) {
+                // Update other elements or perform actions based on the response
+                console.log(data); // Check the response in the console
+
+                // Update the UI with the new delivery cost
+                $('#delivery_cost_label').text('Delivery Cost: €' + data.delivery_cost.toFixed(2));
+            },
+            error: function (data) {
+                console.error("Error updating delivery option:", data);
+            }
+        });
+    }
+
+
+    // Function to update the UI with the new delivery cost
+    function updateDeliveryCostUI(data) {
+        var deliveryCost = parseFloat(data.delivery_cost);
+
+        // Update the UI elements displaying delivery cost
+        $('#delivery_cost').text('€' + deliveryCost.toFixed(2));
+    }
+
     // New quantity input script content...
     // Disable +/- buttons outside 1-99 range
     function handleEnableDisable(itemId) {
@@ -273,11 +315,12 @@
     }
 
     function removeItemFromCart(itemId) {
+        console.log("Removing item with ID:", itemId);
         $.ajax({
             url: "{% url 'cart:remove_item_from_cart' %}",
             type: 'POST',
             data: {
-                'product_inventory_id': itemId,
+                'product_id': itemId,
                 'csrfmiddlewaretoken': '{{ csrf_token }}'
             },
             success: function (data) {

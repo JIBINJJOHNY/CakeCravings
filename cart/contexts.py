@@ -22,6 +22,22 @@ def cart_contents(request):
                 'product': product,
                 'item_total': item_total,
             })
+        else:
+            product = get_object_or_404(Product, pk=item_id)
+            if 'items_by_size' in item_data:
+                for size, quantity in item_data['items_by_size'].items():
+                    # Assuming you have a get_price_for_size method in your Product model
+                    size_price = product.get_price_for_size(size)
+                    item_total = quantity * size_price
+                    total += item_total
+                    product_count += quantity
+                    cart_items.append({
+                        'product_id': item_id,
+                        'quantity': quantity,
+                        'product': product,
+                        'size': size,
+                        'item_total': item_total,
+                    })
 
     # Set delivery cost based on the selected delivery option
     if selected_delivery_option == 'local_delivery':

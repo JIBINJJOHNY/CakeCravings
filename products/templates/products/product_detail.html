@@ -61,6 +61,7 @@
                 <span class="old-price font-md ml-3">€{{ product.discounted_price }}</span>
                 {% endif %}
             </div>
+
             {% if average_rating %}
             <small class="text-muted" style="font-size: 16px;">
                 <i class="fas fa-star mr-1" style="color: gold;"></i>{{ average_rating|floatformat:"1" }} / 5
@@ -68,50 +69,51 @@
             {% else %}
             <small class="text-muted" style="font-size: 16px;">No Rating</small>
             {% endif %}
-            {% if product.category.name|lower == 'cakes' %}
-            <!-- Size Option for Cakes -->
-            <div class="product-size mt-3">
-                <label for="product-size" class="mr-2">Size:</label>
-                <select id="product-size" onchange="updatePrice()" class="form-select">
-                    <option value="S">Small</option>
-                    <option value="M">Medium</option>
-                    <option value="L">Large</option>
-                </select>
-                <div class="image-container">
-                    <img src="{% static 'images/small.png' %}" alt="small cake icon" class="img-fluid product-image">
-                    <img src="{% static 'images/medium.png' %}" alt="medium cake icon" class="img-fluid product-image">
-                    <img src="{% static 'images/large.png' %}" alt="large cake icon" class="img-fluid product-image">
-                </div>
-            </div>
-
-            {% endif %}
 
             <div class="detail-extralink mt-4">
-                <div class="detail-qty radius">
-                    <span class="quantity-label">Quantity:</span>
-                    <button class="quantity-button" onclick="decreaseQuantity()">-</button>
-                    <span id="quantity">1</span>
-                    <button class="quantity-button" onclick="increaseQuantity()">+</button>
-                </div>
                 <div class="product-extra-link2 mt-3">
                     <!-- Update the form with a unique ID -->
                     <form method="post" action="{% url 'cart:add_to_cart' %}" id="addToCartForm" class="add-to-cart">
                         {% csrf_token %}
                         <input type="hidden" name="product_id" value="{{ product.id }}">
-                        <input type="hidden" name="quantity" value="1">
+                        <input type="hidden" name="quantity" id="quantityInput" value="1">
                         <input type="hidden" name="title" value="{{ product.name }}">
-                        <input type="hidden" name="price" value="{{ product.price }}">
+                        <input type="hidden" name="price" id="productPrice" value="{{ product.price }}">
+                        <input type="hidden" name="redirect_url" value="{{ request.path }}">
+
                         {% if product.category.name|lower == 'cakes' %}
-                        <label for="product-size" class="mr-2">Size:</label>
-                        <select id="product-size" onchange="updatePrice()" class="form-select">
-                            <option value="S">Small</option>
-                            <option value="M">Medium</option>
-                            <option value="L">Large</option>
-                        </select>
+                        <!-- Size Option for Cakes -->
+                        <div class="product-size mt-3">
+                            <label for="product-size" class="mr-2">Size:</label>
+                            <select id="product-size" onchange="updatePrice()" class="form-select">
+                                <option value="S">Small</option>
+                                <option value="M">Medium</option>
+                                <option value="L">Large</option>
+                            </select>
+                            <div class="image-container">
+                                <img src="{% static 'images/small.png' %}" alt="small cake icon"
+                                    class="img-fluid product-image">
+                                <img src="{% static 'images/medium.png' %}" alt="medium cake icon"
+                                    class="img-fluid product-image">
+                                <img src="{% static 'images/large.png' %}" alt="large cake icon"
+                                    class="img-fluid product-image">
+                            </div>
+                        </div>
+
+                        <!-- Quantity -->
+                        <div class="detail-qty radius mt-3" style="margin-bottom: 10px;">
+                            <!-- Adjust the margin-bottom value as needed -->
+                            <span class="quantity-label">Quantity:</span>
+                            <button class="quantity-button" onclick="decreaseQuantity()">-</button>
+                            <span id="quantity">1</span>
+                            <button class="quantity-button" onclick="increaseQuantity()">+</button>
+                        </div>
                         {% endif %}
+
                         <button type="submit" class="btn btn-success custom-class" id="addToCartBtn">
                             <i class="fas fa-shopping-cart"></i> Add to Cart
                         </button>
+
                         <a aria-label="Add To Wishlist" class="btn ml-2 wishlist-button" onclick="addToWishlist()"
                             href="#">
                             <i class="fas fa-heart" style="color: red;"></i>
@@ -120,7 +122,6 @@
                 </div>
             </div>
         </div>
-
         <div class="product-extra-link2 mt-3">
             <!-- Ingredients Section -->
             <div class="ingredients">
@@ -162,7 +163,6 @@
         </div>
     </div>
     <!--  Related product  -->
-
     <div class="container mt-4">
         <h2 class="mb-3 text-center">Related Products</h2>
         <div class="row">
@@ -267,124 +267,151 @@
                 mainImage.src = newImageSource;
             }
         }
+        // Function to handle enable/disable of +/- buttons outside 1-99 range
+        function handleEnableDisable(itemId, size) {
+            let currentValue;
 
+            if (size) {
+                currentValue = parseInt($(`.size_${itemId}_${size}`).val());
+            } else {
+                currentValue = parseInt($(`.id_qty_${itemId}`).val());
+            }
+
+            const minusDisabled = currentValue < 2;
+            const plusDisabled = currentValue > 98;
+
+            if (size) {
+                $(`.decrement-size_${itemId}_${size}`).prop('disabled', minusDisabled);
+                $(`.increment-size_${itemId}_${size}`).prop('disabled', plusDisabled);
+            } else {
+                $(`.decrement-qty_${itemId}`).prop('disabled', minusDisabled);
+                $(`.increment-qty_${itemId}`).prop('disabled', plusDisabled);
+            }
+        }
+
+        // Ensure proper enabling/disabling of all inputs on page load
+        const allQtyInputs = $('.qty_input');
+        for (let i = 0; i < allQtyInputs.length; i++) {
+            const itemId = $(allQtyInputs[i]).data('item_id');
+            const size = $(allQtyInputs[i]).data('size');
+            handleEnableDisable(itemId, size);
+        }
+
+        // Check enable/disable every time the input is changed
+        $('.qty_input').change(function () {
+            const itemId = $(this).data('item_id');
+            const size = $(this).data('size');
+            handleEnableDisable(itemId, size);
+        });
+
+        // Increment quantity
+        $('.increment-qty').click(function (e) {
+            e.preventDefault();
+            const itemId = $(this).data('item_id');
+            const size = $(this).data('size');
+            const closestInput = $(this).closest('.input-group').find('.qty_input')[0];
+            const allQuantityInputs = size ? $(`.input-group-${itemId} input[data-size='${size}']`) : $(
+                `.input-group-${itemId} input[name='quantity']`);
+
+            const currentValue = parseInt($(closestInput).val());
+            $(allQuantityInputs).val(currentValue + 1);
+            handleEnableDisable(itemId, size);
+        });
+
+        // Decrement quantity
+        $('.decrement-qty').click(function (e) {
+            e.preventDefault();
+            const itemId = $(this).data('item_id');
+            const size = $(this).data('size');
+            const closestInput = $(this).closest('.input-group').find('.qty_input')[0];
+            const allQuantityInputs = size ? $(`.input-group-${itemId} input[data-size='${size}']`) : $(
+                `.input-group-${itemId} input[name='quantity']`);
+
+            const currentValue = parseInt($(closestInput).val());
+            $(allQuantityInputs).val(currentValue - 1);
+            handleEnableDisable(itemId, size);
+        });
+
+        // Function to update the price based on selected size and quantity
         function updatePrice() {
-            var quantityElement = document.getElementById('quantity');
-            var selectedQuantity = parseInt(quantityElement.textContent);
-            var sizeSelect = document.getElementById('product-size');
-            var priceElement = document.getElementById('product-price');
+            console.log('Updating price...');
 
-            // Get the product's base price from the HTML element
-            var basePrice = parseFloat(priceElement.getAttribute('data-product-price'));
+            const quantity = parseInt(document.getElementById('quantity').textContent);
+            const sizeSelect = document.getElementById('product-size');
+            const priceElement = document.getElementById('productPrice');
 
-            if (!isNaN(basePrice)) {
-                // If the product has a size option, get the selected size and its price
-                if (sizeSelect) {
-                    console.log('Size select element found');
-                    var selectedSize = sizeSelect.options[sizeSelect.selectedIndex].value;
-                    var sizePrices = {
-                        'S': 30.00,
-                        'M': 45.00,
-                        'L': 80.00
-                    };
+            const sizePrices = {
+                'S': 30.00,
+                'M': 45.00,
+                'L': 80.00
+            };
 
-                    // Check if the selected size has a price defined
-                    if (sizePrices.hasOwnProperty(selectedSize)) {
-                        basePrice = sizePrices[selectedSize];
-                    } else {
-                        console.log('Invalid size-specific price for selected size:', selectedSize);
-                    }
-                }
+            const selectedSize = sizeSelect.options[sizeSelect.selectedIndex].value;
 
-                var totalPrice = basePrice * selectedQuantity;
-                priceElement.textContent = '€' + totalPrice.toFixed(2);
+            if (sizePrices.hasOwnProperty(selectedSize)) {
+                priceElement.value = (sizePrices[selectedSize] * quantity).toFixed(2);
             } else {
-                console.log('Invalid product-specific price');
+                console.error('Invalid size-specific price for selected size:', selectedSize);
             }
+
+            console.log('Price updated successfully.');
         }
 
-        window.updatePrice = updatePrice;
-
-        function increaseQuantity() {
-            var quantityElement = document.getElementById('quantity');
-            var currentQuantity = parseInt(quantityElement.textContent);
-            quantityElement.textContent = currentQuantity + 1;
-
-            // Update the hidden input field in the form
-            document.querySelector('input[name="quantity"]').value = currentQuantity + 1;
-
+        // Example for quantity change
+        document.getElementById('quantity').addEventListener('change', function () {
             updatePrice();
-        }
+        });
 
-        function decreaseQuantity() {
-            var quantityElement = document.getElementById('quantity');
-            var currentQuantity = parseInt(quantityElement.textContent);
-
-            if (currentQuantity > 1) {
-                quantityElement.textContent = currentQuantity - 1;
-
-                // Update the hidden input field in the form
-                document.querySelector('input[name="quantity"]').value = currentQuantity - 1;
-
+        const sizeSelect = document.getElementById('product-size');
+        if (sizeSelect) {
+            sizeSelect.addEventListener('change', function () {
                 updatePrice();
-            } else {
-                console.log('Quantity cannot be less than 1');
-            }
+                // Add additional logic here if needed
+            });
         }
 
-        // Add this function definition before your other JavaScript code
-        function getCookie(name) {
-            var cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                var cookies = document.cookie.split(';');
-                for (var i = 0; i < cookies.length; i++) {
-                    var cookie = cookies[i].trim();
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
-                }
-            }
-            return cookieValue;
-        }
+        // Function to handle the "Add to Cart" button click
+        $('#addToCartBtn').click(function (event) {
+            event.preventDefault(); // Prevent the default form submission
 
-        function updateMiniCart() {
-            console.log('Updating mini-cart...');
-            // Your logic to update the mini-cart goes here
-        }
+            console.log('Starting addToCart function...');
 
-        function addToCart() {
-            increaseQuantity();
-            var productId = document.querySelector('input[name="product_id"]').value;
-            var quantity = document.getElementById('quantity').textContent;
+            // Get selected size and quantity
+            const selectedSize = $('#product-size').val();
+            const selectedQuantity = parseInt($('#quantity').text());
 
-            var addToCartUrl = "{% url 'cart:add_to_cart' %}";
+            // Get the product ID (item_id)
+            const productId = $('input[name="product_id"]').val();
 
-            fetch(addToCartUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': getCookie('csrftoken'),
-                    },
-                    body: JSON.stringify({
-                        'product_id': productId,
-                        'quantity': quantity,
-                    }),
-                })
-                .then(response => response.json())
-                .then(data => {
-                    console.log('Added to cart:', data);
-                    // Update the cart display or perform other actions as needed
-                    updateMiniCart();
+            // Set the selected size, quantity, and item_id in the form
+            $('#product-size').val(selectedSize);
+            $('input[name="quantity"]').val(selectedSize !== '' ? selectedQuantity : 1);
+            $('input[name="item_id"]').val(productId);
 
-                    // Redirect to the cart page
-                    window.location.href = "{% url 'cart:view_cart' %}";
-                })
-                .catch(error => {
+            // Make an AJAX request to update the cart count
+            $.ajax({
+                type: 'POST',
+                url: '{% url "cart:add_to_cart" %}',
+                data: $('#addToCartForm').serialize(), // Serialize the entire form
+                beforeSend: function () {
+                    console.log('Before AJAX request...');
+                },
+                success: function (response) {
+                    console.log('Added to cart. Response:', response);
+                },
+                error: function (error) {
                     console.error('Error adding to cart:', error);
                     alert('Error adding to cart. Please try again. Check console for details.');
-                });
-        }
+                },
+                complete: function () {
+                    console.log('AJAX request complete.');
+                }
+            });
+
+            // Restore the selected size and quantity in the form
+            $('#product-size').val(selectedSize);
+            $('input[name="quantity"]').val(selectedQuantity);
+        });
     </script>
     <script>
         function submitReview() {
