@@ -1,74 +1,40 @@
-from django.shortcuts import render, redirect, reverse, get_object_or_404
+# views.py
+from django.views.generic.edit import FormView
+from django.urls import reverse
+from django.shortcuts import render, redirect
 from django.contrib import messages
+from django.conf import settings
+from django.http import HttpResponse
+from .forms import OrderForm, OrderItemForm
 from .models import Order, OrderItem
-from .forms import OrderForm
+from cart.contexts import cart_contents  # Assuming you use 'cart' instead of 'bag'
 
-def checkout(request):
-    if request.method == 'POST':
-        form = OrderForm(request.POST)
-        if form.is_valid():
-            order = form.save(commit=False)
-
-            # Add the delivery information to the order
-            order.selected_delivery_option = request.GET.get('delivery_option', 'pickup')
-            order.delivery_cost = request.GET.get('delivery_cost', 0)
-
-            order.save()
-
-            # Save order items
-            cart = request.session.get('cake_cravings_cart', {})
-            for item_id, item_data in cart.items():
-                try:
-                    product = Product.objects.get(id=item_id)
-                    if isinstance(item_data, int):
-                        order_item = OrderItem(
-                            order=order,
-                            product=product,
-                            quantity=item_data,
-                        )
-                        order_item.save()
-                    else:
-                        for size, quantity in item_data['items_by_size'].items():
-                            order_item = OrderItem(
-                                order=order,
-                                product=product,
-                                quantity=quantity,
-                                size=size,
-                            )
-                            order_item.save()
-                except Product.DoesNotExist:
-                    messages.error(request, "One of the products in your cart wasn't found in our database.")
-                    order.delete()
-                    return redirect(reverse('view_cart'))
-
-            # Clear the cart
-            del request.session['cake_cravings_cart']
-
-            messages.success(request, 'Order placed successfully!')
-            return redirect(reverse('checkout_success', args=[order.order_id]))
-        else:
-            messages.error(request, 'There was an error with your order. Please double-check your information.')
-    else:
-        form = OrderForm()
-
-    # Pass the delivery option and cost to the template
-    selected_delivery_option = request.GET.get('delivery_option', 'pickup')
-    delivery_cost = request.GET.get('delivery_cost', 0)
-
-    template = 'orders/checkout.html'
-    context = {
-        'form': form,
-        'selected_delivery_option': selected_delivery_option,
-        'delivery_cost': delivery_cost,
-    }
-
-    return render(request, template, context)
+import stripe
+import json
 
 
-def checkout_success(request, order_id):
-    order = get_object_or_404(Order, order_id=order_id)
-    template = 'orders/checkout_success.html'
-    context = {
-        'order': order,
-    }
-    return render(request, template, context)
+class CheckoutView(FormView):
+    template_name = 'checkout/checkout.html'
+    form_class = OrderForm
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # Retrieve the user's shopping cart items
+        cart = cart_contents(self.request)
+        context['cart_items'] = cart['cart_items']
+
+        # Get stripe public key and create a PaymentIntent
+        stripe_public_key = settings.STRIPE_PUBLIC_KEY
+        stripe_secret_key = settings.STRIPE_SECRET_KEY
+
+        if stripe_public_key:
+            context['stripe_public_key'] = stripe_public_key
+            stripe.api_key = stripe_secret_key
+            intent = stripe.PaymentIntent.create(
+                amount=int(cart['total'] * 100),
+                currency=settings.STRIPE_CURRENCY,
+            )
+            context['client_secret'] = intent.client_secret
+
+        return context

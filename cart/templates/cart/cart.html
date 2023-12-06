@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 {% load static %}
-
 {% block content %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <div class="container mb-2">
     <div class="row">
         <div class="col">
             <hr>
-            <h2 class="logo-font mb-4">Shopping Bag</h2>
+            <h2 class="logo-font mb-4">Shopping cart</h2>
             <hr>
         </div>
     </div>
@@ -28,6 +28,11 @@
                     </thead>
 
                     {% for item in cart_items %}
+                    {% if cart_items %}
+                    {{ cart_items }}
+                    {% else %}
+                    <p>Your cart is empty.</p>
+                    {% endif %}
                     <tr id="item_{{ item.product.id }}">
                         <td class="p-3 w-25">
                             {% if item.product.images.first %}
@@ -40,7 +45,12 @@
                         </td>
                         <td class="py-3">
                             <h6>{{ item.product.name }}</h6>
-                            <!-- Add more details as needed -->
+                            {% if item.size %}
+                            <p class="my-0"><strong>Size:</strong> {{ item.size|upper }}</p>
+                            {% else %}
+                            <p class="my-0"><strong>Size:</strong> N/A</p>
+                            {% endif %}
+
                         </td>
                         <td class="py-3 your-price-container-selector">
                             <p class="my-0 your-price-selector">${{ item.product.price }}</p>
@@ -70,6 +80,7 @@
                             </button>
                         </td>
                     </tr>
+
                     {% endfor %}
 
                     <!-- Delivery Information -->
@@ -122,6 +133,93 @@
 {% endblock %}
 
 {% block postloadjs %}
-{{ block.super }}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Increment quantity and update subtotal
+        $('.increment-qty').click(function (e) {
+            e.preventDefault();
+            var itemId = $(this).data('item_id');
+            var quantityInput = $(this).closest('tr').find('.qty_input');
+            var currentValue = parseInt(quantityInput.val());
 
+            // Add logic to increment quantity (example: +1)
+            var newValue = currentValue + 1;
+
+            // Update the quantity input field
+            quantityInput.val(newValue);
+
+            // Add logic to update subtotal based on the new quantity
+            updateSubtotal(itemId, newValue);
+        });
+
+        // Decrement quantity and update subtotal
+        $('.decrement-qty').click(function (e) {
+            e.preventDefault();
+            var itemId = $(this).data('item_id');
+            var quantityInput = $(this).closest('tr').find('.qty_input');
+            var currentValue = parseInt(quantityInput.val());
+
+            // Add logic to decrement quantity (example: -1)
+            var newValue = currentValue - 1;
+
+            // Update the quantity input field, ensuring it's not less than 1
+            quantityInput.val(Math.max(newValue, 1));
+
+            // Add logic to update subtotal based on the new quantity
+            updateSubtotal(itemId, Math.max(newValue, 1));
+        });
+
+        // Quantity input change event
+        $('.qty_input').on('input', function () {
+            var itemId = $(this).data('item_id');
+            var newQuantity = parseInt($(this).val());
+
+            // Update subtotal based on the new quantity
+            updateSubtotal(itemId, newQuantity);
+        });
+        // Remove item and reload on click
+        $('.remove-item').click(function (e) {
+            var csrfToken = "{{ csrf_token }}";
+            var itemId = $(this).attr('id').split('remove_')[1];
+            var size = $(this).data('product_id');
+            var url = `/cart/remove/${itemId}/`;
+            var data = {
+                'csrfmiddlewaretoken': csrfToken,
+                'product_size': size
+            };
+
+            $.post(url, data)
+                .done(function () {
+                    location.reload();
+                });
+        });
+
+        // Checkout logic
+        function checkout() {
+            console.log('Checkout button clicked');
+            // Add the rest of your checkout logic
+        }
+
+        // Function to update subtotal based on quantity
+        function updateSubtotal(itemId, newQuantity) {
+            var csrfToken = "{{ csrf_token }}";
+            var url = `/update-subtotal/${itemId}/`;
+            var data = {
+                'csrfmiddlewaretoken': csrfToken,
+                'new_quantity': newQuantity
+            };
+
+            // Make an AJAX request to the backend to update subtotal
+            $.post(url, data)
+                .done(function (response) {
+                    // Update the DOM to display the new subtotal
+                    console.log(response);
+                })
+                .fail(function (error) {
+                    console.error('Error updating subtotal:', error);
+                });
+        }
+    });
+</script>
+{{ block.super }}
 {% endblock %}

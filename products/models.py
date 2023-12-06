@@ -133,6 +133,7 @@ class Product(models.Model):
     related_products = models.ManyToManyField('self', blank=True)
     discount_price = models.ForeignKey(Discount, on_delete=models.SET_NULL, null=True, blank=True)
     availability = models.CharField(max_length=20, choices=AVAILABILITY_CHOICES, default='in_stock')
+    has_sizes = models.BooleanField(default=False)  # Set to True for products with sizes
     size = models.CharField(max_length=5, choices=SIZE_CHOICES, null=True, blank=True)
 
     def save(self, *args, **kwargs):

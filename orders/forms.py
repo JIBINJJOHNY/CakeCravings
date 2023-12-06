@@ -2,6 +2,10 @@
 from django import forms
 from .models import Order, OrderItem
 
+# forms.py
+from django import forms
+from .models import Order, OrderItem
+
 class OrderForm(forms.ModelForm):
     class Meta:
         model = Order
@@ -27,12 +31,26 @@ class OrderForm(forms.ModelForm):
             'address2': forms.TextInput(attrs={'class': 'form-control'}),
             'city': forms.TextInput(attrs={'class': 'form-control'}),
             'county_region_state': forms.TextInput(attrs={'class': 'form-control'}),
-            'country': forms.TextInput(attrs={'class': 'form-control'}),
+            'country': forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),  # Make it read-only
             'zip_code': forms.TextInput(attrs={'class': 'form-control'}),
             'total_paid': forms.TextInput(attrs={'class': 'form-control'}),
             'billing_status': forms.CheckboxInput(),
             'status': forms.Select(attrs={'class': 'form-control'}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super(OrderForm, self).__init__(*args, **kwargs)
+        # Disable the 'country' field for users not in Germany
+        if self.instance and self.instance.country != 'Germany':
+            self.fields['country'].widget.attrs['readonly'] = True
+
+    def clean_country(self):
+        # Ensure that only Germany is allowed as the country
+        country = self.cleaned_data.get('country')
+        if country != 'Germany':
+            raise forms.ValidationError('Delivery is only available for users in Germany.')
+        return country
+
 
 class OrderItemForm(forms.ModelForm):
     class Meta:

@@ -26,8 +26,8 @@ def cart_contents(request):
             product = get_object_or_404(Product, pk=item_id)
             if 'items_by_size' in item_data:
                 for size, quantity in item_data['items_by_size'].items():
-                    # Assuming you have a get_price_for_size method in your Product model
-                    size_price = product.get_price_for_size(size)
+                   # Assuming the size prices are stored as a dictionary in the product model
+                    size_price = product.size_prices.get(size, product.price)
                     item_total = quantity * size_price
                     total += item_total
                     product_count += quantity
