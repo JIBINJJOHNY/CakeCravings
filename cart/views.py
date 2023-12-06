@@ -11,130 +11,63 @@ from django.conf import settings
 from decimal import Decimal
 from django.http import Http404
 
+
 def view_cart(request):
-    cart = request.session.get('cake_cravings_cart', {})
-    cart_items = []
+    """ A view that renders the cart contents page """
 
-    for product_id, item_data in cart.items():
-        product = get_object_or_404(Product, pk=product_id)
+    return render(request, 'cart/cart.html')
 
-        if isinstance(item_data, int):
-            # Case where item_data is an integer (quantity) without size
-            cart_items.append({
-                'product': product,
-                'size': None,
-                'quantity': item_data,
-                'total_price': product.price * item_data  # Adjust this based on your pricing logic
-            })
-        elif 'items_by_size' in item_data:
-            # Case where item_data is a dictionary containing sizes and quantities
-            for size, quantity in item_data['items_by_size'].items():
-                cart_items.append({
-                    'product': product,
-                    'size': size,
-                    'quantity': quantity,
-                    'total_price': product.price * quantity  # Adjust this based on your pricing logic
-                })
-
-    context = {'cart_items': cart_items}
-    return render(request, 'cart/cart.html', context)
-
-@require_POST
 def add_to_cart(request):
-    """ Add a quantity of the specified product to the cart """
+    """ Add a quantity of the specified product to the shopping cart """
 
-    item_id = request.POST.get('item_id')
-    product = get_object_or_404(Product, pk=item_id)
-    quantity = int(request.POST.get('quantity'))
-    redirect_url = request.POST.get('redirect_url')
-    size = request.POST.get('product_size')
-
-    cart = request.session.get('cake_cravings_cart', {})
-    if size:
-        if item_id in cart:
-            if 'items_by_size' in cart[item_id] and size in cart[item_id]['items_by_size']:
-                cart[item_id]['items_by_size'][size] += quantity
-                messages.success(request, f'Updated size {size.upper()} {product.name} quantity to {cart[item_id]["items_by_size"][size]}')
-            else:
-                if 'items_by_size' not in cart[item_id]:
-                    cart[item_id]['items_by_size'] = {}
-                cart[item_id]['items_by_size'][size] = quantity
-                messages.success(request, f'Added size {size.upper()} {product.name} to your cart')
-        else:
-            cart[item_id] = {'items_by_size': {size: quantity}}
-            messages.success(request, f'Added size {size.upper()} {product.name} to your cart')
-    else:
-        if item_id in cart:
-            cart[item_id] += quantity
-            messages.success(request, f'Updated {product.name} quantity to {cart[item_id]}')
-        else:
-            cart[item_id] = quantity
-            messages.success(request, f'Added {product.name} to your cart')
-
-    request.session['cake_cravings_cart'] = cart
-    return redirect('cart:view_cart')
-
-@require_POST
-@login_required
-def update_quantity_in_cart(request):
     if request.method == 'POST':
         product_id = request.POST.get('product_id')
-        new_quantity = int(request.POST.get('new_quantity'))
+        redirect_url = request.POST.get('redirect_url')
+        size = request.POST.get('product_size')
+        quantity = int(request.POST.get('quantity'))
 
-        try:
-            # Retrieve the product
-            product = get_object_or_404(Product, id=product_id)
+        product_obj = get_object_or_404(Product, pk=product_id)
+        cart = request.session.get('cart', {})
 
-            # Assuming you have a session-based cart
-            cart = request.session.get('cake_cravings_cart', {})
-
-            # If the product is in the cart, update its quantity
-            if str(product_id) in cart:
-                cart[str(product_id)] = new_quantity
-                request.session['cake_cravings_cart'] = cart
-
-                # You can also update the total price or perform other calculations here
-
-                # Return success message or any additional data
-                return JsonResponse({'success': True, 'message': 'Quantity updated successfully'})
-
+        if size:
+            if product_id in cart:
+                if 'items_by_size' in cart[product_id]:
+                    if size in cart[product_id]['items_by_size']:
+                        cart[product_id]['items_by_size'][size] += quantity
+                        messages.success(request, f'Updated size {size.upper()} {product_obj.name} quantity to {cart[product_id]["items_by_size"][size]}')
+                    else:
+                        cart[product_id]['items_by_size'][size] = quantity
+                        messages.success(request, f'Added size {size.upper()} {product_obj.name} to your cart')
+                else:
+                    cart[product_id]['items_by_size'] = {size: quantity}
+                    messages.success(request, f'Added size {size.upper()} {product_obj.name} to your cart')
             else:
-                # Handle the case where the product is not in the cart
-                return JsonResponse({'success': False, 'error': 'Product not found in cart'})
+                cart[product_id] = {'items_by_size': {size: quantity}}
+                messages.success(request, f'Added size {size.upper()} {product_obj.name} to your cart')
+        else:
+            if product_id in cart:
+                # Check if it's a simple quantity or a dictionary
+                if isinstance(cart[product_id], int):
+                    cart[product_id] += quantity
+                    messages.success(request, f'Updated {product_obj.name} quantity to {cart[product_id]}')
+                else:
+                    messages.error(request, f'Unexpected cart structure for {product_obj.name}')
+            else:
+                cart[product_id] = quantity
+                messages.success(request, f'Added {product_obj.name} to your cart')
 
-        except Http404 as e:
-            # Handle the case where the product does not exist
-            return JsonResponse({'success': False, 'error': str(e)})
+        # Calculate the total count of items in the cart
+        total_cart_count = sum(item_count if isinstance(item_count, int) else sum(item_count.get('items_by_size', {}).values()) for item_count in cart.values())
 
-        except Exception as e:
-            # Handle other exceptions (e.g., database errors) here
-            return JsonResponse({'success': False, 'error': str(e)})
+        # Store the total cart count in the session
+        request.session['total_cart_count'] = total_cart_count
+        request.session['cart'] = cart
 
-    else:
-        return JsonResponse({'error': 'Invalid request method'})
+        # Return the total cart count as part of the JSON response
+        return JsonResponse({'success': True, 'total_cart_count': total_cart_count})
 
-@require_POST
-@login_required
-def remove_item_from_cart(request):
-    product_id = request.POST.get('product_id')
+    return JsonResponse({'success': False})
 
-    cart = request.session.get('cake_cravings_cart', {})
-    
-    if product_id in cart:
-        del cart[product_id]
-        request.session['cake_cravings_cart'] = cart
-        context = cart_contents(request)
-        serialized_cart_items = serialize('json', context['cart_items'])
-        
-        return JsonResponse({
-            'success': True,
-            'message_alert': "Item removed from the cart.",
-            'total': context['total'],
-            'product_count': context['product_count'],
-            'cart_items': serialized_cart_items,
-        })
-    else:
-        return JsonResponse({'success': False, 'error': 'Product not found in cart'})
 
 def update_delivery_option(request):
     """

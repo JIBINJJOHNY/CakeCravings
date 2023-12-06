@@ -1,10 +1,10 @@
 from django.urls import path
-from .views import WishlistView, AddRemove_Wishlist, Empty_WishlistView
+from .views import WishlistPage, add_to_wishlist, remove_wishlist
 
 app_name = 'wishlist'
 
 urlpatterns = [
-    path('', WishlistView.as_view(), name='wishlist'),
-    path('wishlist/add-remove/', AddRemove_Wishlist.as_view(), name='add_remove_wishlist'),
-    path('wishlist/empty/', Empty_WishlistView.as_view(), name='empty_wishlist'),
+    path('', WishlistPage, name='wishlist'),
+    path('add-to-wishlist/', add_to_wishlist, name='add-to-wishlist'),
+    path('remove-from-wishlist/', remove_wishlist, name='remove-from-wishlist'),
 ]

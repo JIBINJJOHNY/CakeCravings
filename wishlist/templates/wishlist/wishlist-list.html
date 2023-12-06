@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% comment %} Extra Title {% endcomment %}
+{% block extra_title %}Wishlist{% endblock %}
+
+{% block content %}
+<!-- core/async/wishlist-list.html -->
+
+{% if wishlist %}
+<ul>
+    {% for product in wishlist %}
+    <li>
+        <span>{{ product.name }}</span>
+        <button style="border: none;" data-wishlist-product="{{ product.id }}"
+            class="text-body delete-wishlist-product">
+            <i class="fi-rs-trash"></i>
+        </button>
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>Your wishlist is empty.</p>
+{% endif %}
+<script>
+    $(document).on("click", ".delete-wishlist-product", function () {
+        let this_val = $(this);
+        let product_id = $(this).attr("data-wishlist-product");
+
+        $.ajax({
+            url: "/remove-from-wishlist/",
+            data: {
+                product_id: product_id
+            },
+            dataType: "json",
+            beforeSend: function () {
+                console.log("Removing from wishlist...");
+            },
+            success: function (res) {
+                $("#wishlist-list").html(res.data);
+            }
+        });
+    });
+</script>
+
+
+{% endblock %}

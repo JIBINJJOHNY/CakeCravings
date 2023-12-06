@@ -1,103 +1,60 @@
 from django.views import View
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
-from django.core.paginator import Paginator
-from .models import CombinedWishlist
-from inventory.models import Product
+from .models import Wishlist
+from products.models import Product
+from django.core import serializers
+from django.template.loader import render_to_string
 
-class WishlistView(View):
-    """Custom view for the wishlist display page."""
-    def get(self, request, *args, **kwargs):
-        """Handle GET requests."""
-        if request.user.is_authenticated:
-            user_wishlist = CombinedWishlist.objects.get(user=request.user)
-            # Retrieve products in the wishlist
-            paginator = Paginator(user_wishlist.products.all(), 21)
-            page = request.GET.get('page')
-            products_page = paginator.get_page(page)
+
+def WishlistPage(request):
+    try:
+        wishlist = Wishlist.objects.filter(user=request.user) 
+    except:
+        wishlist = None
+    context = {
+        "w": wishlist
+    }
+    return render(request, 'core/wishlist.html', context)
+def add_to_wishlist(request):
+    product_id = request.GET.get('product_id')
+    
+    try:
+        product = Product.objects.get(id=product_id)
+        wishlist, created = Wishlist.objects.get_or_create(user=request.user)
+        
+        if not wishlist.products.filter(id=product_id).exists():
+            wishlist.products.add(product)
+            context = {'bool': True}
+        else:
+            context = {'bool': False}
+            
+    except Product.DoesNotExist:
+        context = {'bool': False}
+    print(request.session['cart'])
+    return JsonResponse(context)
+
+
+def remove_wishlist(request):
+    product_id = request.GET.get('product_id')
+    
+    try:
+        wishlist = Wishlist.objects.get(user=request.user)
+        product = Product.objects.get(id=product_id)
+        
+        if wishlist.products.filter(id=product_id).exists():
+            wishlist.products.remove(product)
             context = {
-                'products': products_page,
+                'bool': True,
+                'wishlist': wishlist.products.all()
             }
-            return render(
-                request,
-                'wishlist/custom_wishlist_display.html',
-                context
-            )
         else:
-            return render(
-                request,
-                'account/login.html'
-            )
+            context = {'bool': False}
 
-class AddRemove_Wishlist(View):
-    """Custom view for adding/removing products to/from wishlist using AJAX."""
-    def post(self, request, *args, **kwargs):
-        if request.user.is_authenticated:
-            if request.is_ajax():
-                product_id = request.POST.get('product_id')
-                product = get_object_or_404(Product, id=product_id)
-                user_wishlist = CombinedWishlist.objects.get(user=request.user)
-                message_alert = ''
-                product_in_wishlist = False
-                if user_wishlist.add_to_wishlist(product):
-                    product_in_wishlist = True
-                    message_alert = (
-                        f'{product.title} added to wishlist.'
-                    )
-                else:
-                    user_wishlist.remove_from_wishlist(product)
-                    product_in_wishlist = False
-                    message_alert = (
-                        f'{product.title} removed from wishlist.'
-                    )
-                return JsonResponse(
-                    {
-                        'success': True,
-                        'product_in_wishlist': product_in_wishlist,
-                        'message_alert': message_alert,
-                    }
-                )
-            else:
-                return JsonResponse(
-                    {
-                        'success': False,
-                        'message_alert': 'Invalid request.',
-                    }
-                )
-        else:
-            message_alert = 'You must be logged in to modify your wishlist.'
-            return JsonResponse(
-                {
-                    'success': False,
-                    'message_alert': message_alert,
-                }
-            )
+    except (Wishlist.DoesNotExist, Product.DoesNotExist):
+        context = {'bool': False}
 
-class Empty_WishlistView(View):
-    """Custom view for emptying the wishlist using AJAX."""
-    def post(self, request, *args, **kwargs):
-        if request.user.is_authenticated:
-            if request.is_ajax():
-                user_wishlist = CombinedWishlist.objects.get(user=request.user)
-                user_wishlist.remove_all_from_wishlist()
-                return JsonResponse(
-                    {
-                        'success': True,
-                        'message_alert': 'Wishlist is now empty.',
-                    }
-                )
-            else:
-                return JsonResponse(
-                    {
-                        'success': False,
-                        'message_alert': 'Something went wrong.',
-                    }
-                )
-        else:
-            message_alert = 'You must be logged in to empty your wishlist.'
-            return JsonResponse(
-                {
-                    'success': False,
-                    'message_alert': message_alert,
-                }
-            )
+    qs_json = serializers.serialize('json', context['wishlist'])
+    template = render_to_string('core/async/wishlist-list.html', context)
+    
+    return JsonResponse({'data': template, 'wishlist': qs_json})

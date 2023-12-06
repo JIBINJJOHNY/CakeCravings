@@ -1,10 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 {% block content %}
-<script>
-    // Set the base URL for static files
-    window.staticBaseUrl = "{% get_static_prefix %}";
-</script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <div class="container mt-4">
     <div class="row">
         <div class="col-md-6">
@@ -45,7 +42,6 @@
                     </div>
                 </div>
             </div>
-
         </div>
 
         <div class="col-md-6 product-detail mt-4">
@@ -53,13 +49,21 @@
             <h1>{{ product.name }}</h1>
             <p class="text-muted">{{ product.description }}</p>
 
-            <div class="product-price">
-                <span class="current-price text-brand" id="product-price"
-                    data-product-price="{{ product.price }}">€{{ product.price }}</span>
-                {% if product.discounted_price %}
-                <span class="save-price font-md color3 ml-3">{{ product.discount_percentage }} Off</span>
-                <span class="old-price font-md ml-3">€{{ product.discounted_price }}</span>
+            <!-- Display Size, Availability, and Price -->
+            <div class="product-details">
+                {% if product.size %}
+                <p><strong>Size:</strong> {{ product.get_size_display }}</p>
                 {% endif %}
+                <p><strong>Availability:</strong> {{ product.get_availability_display }}</p>
+                <div class="product-price">
+                    <span class="current-price text-brand" id="product-price" data-product-price="{{ product.price }}">
+                        €{{ product.price }}
+                    </span>
+                    {% if product.discounted_price %}
+                    <span class="save-price font-md color3 ml-3">{{ product.discount_percentage }} Off</span>
+                    <span class="old-price font-md ml-3">€{{ product.discounted_price }}</span>
+                    {% endif %}
+                </div>
             </div>
 
             {% if average_rating %}
@@ -69,58 +73,37 @@
             {% else %}
             <small class="text-muted" style="font-size: 16px;">No Rating</small>
             {% endif %}
+            <!-- Size Option for Cakes -->
+            {% if product.category.name|lower == 'cakes' %}
+            <div class="product-size mt-3">
+                <form method="post" id="addToCartForm" data-action="{% url 'cart:add_to_cart' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="product_id" value="{{ product.id }}">
+                    <input type="hidden" name="redirect_url" value="{{ request.path }}">
+                    <label for="product-size" class="mr-2">Size:</label>
+                    <select id="product-size_{{ product.id }}" name="product_size" class="form-select">
+                        <option value="S">Small</option>
+                        <option value="M" selected>Medium</option>
+                        <option value="L">Large</option>
+                    </select>
 
-            <div class="detail-extralink mt-4">
-                <div class="product-extra-link2 mt-3">
-                    <!-- Update the form with a unique ID -->
-                    <form method="post" action="{% url 'cart:add_to_cart' %}" id="addToCartForm" class="add-to-cart">
-                        {% csrf_token %}
-                        <input type="hidden" name="product_id" value="{{ product.id }}">
-                        <input type="hidden" name="quantity" id="quantityInput" value="1">
-                        <input type="hidden" name="title" value="{{ product.name }}">
-                        <input type="hidden" name="price" id="productPrice" value="{{ product.price }}">
-                        <input type="hidden" name="redirect_url" value="{{ request.path }}">
-
-                        {% if product.category.name|lower == 'cakes' %}
-                        <!-- Size Option for Cakes -->
-                        <div class="product-size mt-3">
-                            <label for="product-size" class="mr-2">Size:</label>
-                            <select id="product-size" onchange="updatePrice()" class="form-select">
-                                <option value="S">Small</option>
-                                <option value="M">Medium</option>
-                                <option value="L">Large</option>
-                            </select>
-                            <div class="image-container">
-                                <img src="{% static 'images/small.png' %}" alt="small cake icon"
-                                    class="img-fluid product-image">
-                                <img src="{% static 'images/medium.png' %}" alt="medium cake icon"
-                                    class="img-fluid product-image">
-                                <img src="{% static 'images/large.png' %}" alt="large cake icon"
-                                    class="img-fluid product-image">
-                            </div>
-                        </div>
-
-                        <!-- Quantity -->
-                        <div class="detail-qty radius mt-3" style="margin-bottom: 10px;">
-                            <!-- Adjust the margin-bottom value as needed -->
-                            <span class="quantity-label">Quantity:</span>
-                            <button class="quantity-button" onclick="decreaseQuantity()">-</button>
-                            <span id="quantity">1</span>
-                            <button class="quantity-button" onclick="increaseQuantity()">+</button>
-                        </div>
-                        {% endif %}
-
-                        <button type="submit" class="btn btn-success custom-class" id="addToCartBtn">
-                            <i class="fas fa-shopping-cart"></i> Add to Cart
-                        </button>
-
-                        <a aria-label="Add To Wishlist" class="btn ml-2 wishlist-button" onclick="addToWishlist()"
-                            href="#">
-                            <i class="fas fa-heart" style="color: red;"></i>
-                        </a>
-                    </form>
-                </div>
+                    <!-- Quantity -->
+                    <div class="detail-qty radius mt-3" style="margin-bottom: 10px;">
+                        <span class="quantity-label">Quantity:</span>
+                        <button class="quantity-button" onclick="decreaseQuantity('{{ product.id }}')">-</button>
+                        <input type="number" name="quantity" id="quantity_{{ product.id }}" value="1" min="1"
+                            readonly />
+                        <button class="quantity-button" onclick="increaseQuantity('{{ product.id }}')">+</button>
+                    </div>
+                    <button type="submit" class="btn btn-success custom-class" id="addToCartBtn">
+                        <i class="fas fa-shopping-cart"></i> Add to Cart
+                    </button>
+                    <!-- Wishlist Button -->
+                    <a aria-label="Add To Wishlist" class="btn ml-2 wishlist-button" onclick="addToWishlist()" href="#">
+                        <i class="fas fa-heart" style="color: red;"></i>
+                </form>
             </div>
+            {% endif %}
         </div>
         <div class="product-extra-link2 mt-3">
             <!-- Ingredients Section -->
@@ -255,7 +238,6 @@
             </div>
         </div>
     </div>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js">
     </script>
     <script src="{% static 'js/star_rating.js' %}"></script>
     <script>
@@ -369,49 +351,6 @@
                 // Add additional logic here if needed
             });
         }
-
-        // Function to handle the "Add to Cart" button click
-        $('#addToCartBtn').click(function (event) {
-            event.preventDefault(); // Prevent the default form submission
-
-            console.log('Starting addToCart function...');
-
-            // Get selected size and quantity
-            const selectedSize = $('#product-size').val();
-            const selectedQuantity = parseInt($('#quantity').text());
-
-            // Get the product ID (item_id)
-            const productId = $('input[name="product_id"]').val();
-
-            // Set the selected size, quantity, and item_id in the form
-            $('#product-size').val(selectedSize);
-            $('input[name="quantity"]').val(selectedSize !== '' ? selectedQuantity : 1);
-            $('input[name="item_id"]').val(productId);
-
-            // Make an AJAX request to update the cart count
-            $.ajax({
-                type: 'POST',
-                url: '{% url "cart:add_to_cart" %}',
-                data: $('#addToCartForm').serialize(), // Serialize the entire form
-                beforeSend: function () {
-                    console.log('Before AJAX request...');
-                },
-                success: function (response) {
-                    console.log('Added to cart. Response:', response);
-                },
-                error: function (error) {
-                    console.error('Error adding to cart:', error);
-                    alert('Error adding to cart. Please try again. Check console for details.');
-                },
-                complete: function () {
-                    console.log('AJAX request complete.');
-                }
-            });
-
-            // Restore the selected size and quantity in the form
-            $('#product-size').val(selectedSize);
-            $('input[name="quantity"]').val(selectedQuantity);
-        });
     </script>
     <script>
         function submitReview() {
@@ -432,9 +371,6 @@
                 success: function (data) {
                     // Update the UI with the new review
                     console.log("Received data:", data);
-
-                    // ... (your existing code)
-
                     // Check if the average_rating is present in the data
                     if ('average_rating' in data.context) {
                         console.log("Average Rating:", data.context.average_rating);
@@ -477,4 +413,26 @@
             $("#addReviewBtn").click(submitReview);
         });
     </script>
+    <script>
+        $(document).ready(function () {
+            $('#addToCartForm').submit(function (e) {
+                e.preventDefault();
+
+                // Perform an AJAX POST request to add to the cart
+                $.ajax({
+                    type: 'POST',
+                    url: $(this).data('action'),
+                    data: $(this).serialize(),
+                    dataType: 'json',
+                    success: function (response) {
+                        if (response.success) {
+                            // Update the cart count in the navbar
+                            $('#cartCount').text(response.total_cart_count);
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+
     {% endblock %}
