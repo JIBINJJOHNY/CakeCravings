@@ -70,9 +70,22 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'home' %}">Home</a>
                     </li>
-                    <!-- dropdown -->
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'products:all_products' %}">Our Menu</a>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown"
+                            aria-expanded="false" aria-label="category dropdown" data-target="#categoryDropdown">
+                            Our Menu
+                        </a>
+                        <div class="dropdown-menu" id="categoryDropdown">
+                            <a class="dropdown-item" href="{% url 'products:all_products' %}">All Products</a>
+                            <a class="dropdown-item"
+                                href="{% url 'products:products_by_category' category_slug='cakes' %}">Cakes</a>
+                            <a class="dropdown-item"
+                                href="{% url 'products:products_by_category' category_slug='cupcakes' %}">Cupcakes</a>
+                            <a class="dropdown-item"
+                                href="{% url 'products:products_by_category' category_slug='cookies' %}">Cookies</a>
+                            <a class="dropdown-item"
+                                href="{% url 'products:products_by_category' category_slug='seasonals' %}">Seasonals</a>
+                        </div>
                     </li>
 
                     <li class="nav-item">
@@ -90,7 +103,7 @@
                     </li>
                     {% endif %}
                 </ul>
-                <!-- Move the form and user icons to the right -->
+
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item">
                         <form class="form-inline" method="GET" action="{% url 'products:all_products' %}">
@@ -102,12 +115,24 @@
                     </li>
                     <li class="nav-item">
                         {% if user.is_authenticated %}
-                        <a class="nav-link" href="#">
-                            <i class="fa-regular fa-circle-user"></i>
-                        </a>
-                        {% else %}
-                        <a class="nav-link" href="{% url 'account_login' %}">Login</a>
-                        {% endif %}
+                    <li class="nav-item dropdown">
+                        <div class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown"
+                                aria-expanded="false" aria-label="profile dropdown">
+                                <i class="fa-regular fa-circle-user"></i>
+                            </a>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" href="#">Profile</a>
+                                <a class="dropdown-item" href="#">Orders</a>
+                                <a class="dropdown-item" href="#">Change Password</a>
+                                <a class="dropdown-item" href="{% url 'account_logout' %}">Logout</a>
+                            </div>
+                        </div>
+                    </li>
+                    </a>
+                    {% else %}
+                    <a class="nav-link" href="{% url 'account_login' %}">Login</a>
+                    {% endif %}
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'wishlist:view_wishlist' %}" id="wishlistModalBtn">
@@ -246,8 +271,8 @@
     <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
         integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous">
     </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"
-        integrity="sha384-Q6IjKJiBxCqagcKf+NJs9nZ4x3dA/Ci3wFZ3GnZEe7ifSAl7Tw6c8ziN+XTefUtW" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"
+        integrity="sha384-E7V5gzz7bqqBEsQDbKoU1PciF8Bv5TBSFw6+pgnVp7abHaiDJ7FCf1cgFwIFBc5p" crossorigin="anonymous">
     </script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
         integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous">

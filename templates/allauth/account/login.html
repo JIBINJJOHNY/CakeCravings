@@ -1,34 +1,65 @@
-{% extends "account/base_entrance.html" %}
+{% extends "base.html" %}
 {% load i18n %}
-{% load allauth account socialaccount %}
-{% block head_title %}
-    {% trans "Sign In" %}
-{% endblock head_title %}
+{% load static %}
+{% load crispy_forms_tags %}
+
 {% block content %}
-    {% element h1 %}
-        {% trans "Sign In" %}
-    {% endelement %}
-    <p>
-        {% blocktrans %}If you have not created an account yet, then please
-    <a href="{{ signup_url }}">sign up</a> first.{% endblocktrans %}
-    </p>
-    {% url 'account_login' as login_url %}
-    {% element form form=form method="post" action=login_url tags="entrance,login" %}
-        {% slot body %}
-            {% csrf_token %}
-            {% element fields form=form unlabeled=True %}
-            {% endelement %}
-            {% if redirect_field_value %}
-                <input type="hidden"
-                       name="{{ redirect_field_name }}"
-                       value="{{ redirect_field_value }}" />
-            {% endif %}
-        {% endslot %}
-        {% slot actions %}
-            {% element button type="submit" tags="prominent,login" %}
-                {% trans "Sign In" %}
-            {% endelement %}
-        {% endslot %}
-    {% endelement %}
-    {% include "socialaccount/snippets/login.html" with page_layout="entrance" %}
-{% endblock content %}
+<div class="container">
+    <div class="row align-items-center">
+        <!-- Left Side (Image, Logo, and Text) -->
+        <div class="col-md-6 left-side">
+            <img src="{% static 'images/login_page.png' %}" alt="Logo" class="img-fluid">
+        </div>
+
+        <!-- Right Side (Sign-In Card) -->
+        <div class="col-md-6 right-side">
+            <div class="card text-center" style="width: 30rem;">
+                <div class="card-body">
+                    <h2 class="card-title">Sign In</h2>
+                    <form class="login" method="POST" action="{% url 'account_login' %}">
+                        {% csrf_token %}
+                        {{ form|crispy }}
+                        {% if redirect_field_value %}
+                        <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+                        {% endif %}
+                        <button class="btn btn-success btn-signup" type="submit">{% trans "Sign In" %}</button>
+                        <!-- Add the Forgot Password link here -->
+                        <p>If you have not created an account yet, then <a class="link" href="{{ signup_url }}">sign
+                                up</a> first.</p>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .container {
+        height: 100vh;
+        display: flex;
+    }
+
+    .row {
+        justify-content: center;
+    }
+
+    /* Style the left and right sides */
+    .left-side {
+        /* Adjust the background color as needed */
+        width: 50%;
+    }
+
+    .right-side {
+        width: 50%;
+        padding: 0 15px;
+        /* Adjust padding as needed */
+    }
+
+    /* Clear floats to prevent container collapse */
+    .clearfix::after {
+        content: "";
+        clear: both;
+        display: table;
+    }
+</style>
+{% endblock %}
