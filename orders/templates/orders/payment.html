@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block extra_css %}
+<!-- Your existing CSS styles -->
+<style>
+    /* Add your additional styles here */
+</style>
+{% endblock %}
+
+{% comment %} Extra Title {% endcomment %}
+{% block extra_title %}Payment{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row no-gutter">
+        <div class="col-md-12 form">
+            <div class="login d-flex align-items-center">
+                <div class="container">
+                    <div class="row">
+                        <div id="payment-form-container" class="col-12 col-lg-6 mx-auto payment__form">
+                            <h1 class="payment__form--title">Billing address</h1>
+                            {% if not primary_address and not my_profile%}
+                            <p class="alert alert-danger">To make purchases faster, consider setting up primary address
+                                and your full name in your profile.</p>
+                            {% elif not my_profile and primary_address %}
+                            <p class="alert alert-danger">To make purchases faster, consider adding your full name to
+                                your profile</p>
+                            {% elif not primary_address and my_profile %}
+                            <p class="alert alert-danger">To make purchases faster, consider setting up a primary
+                                address in your profile.</p>
+                            {% endif %}
+                            <form id="payment-form" method="post" class="payment__form">
+                                {% csrf_token %}
+                                {{ form|crispy }}
+                                <hr class="my-4">
+                                <h4 class="mb-3">Payment</h4>
+                                <label for="card-element">Credit or debit card</label>
+                                <div id="card-element" class="form-control form-control-payment">
+                                    <!-- Payment elements will appear here -->
+                                </div>
+                                <hr class="my-4">
+                                <button id="submit" class="btn btn-primary w-100 fw-bold"
+                                    data-secret="{{ client_secret }}" data-sum="{{ total_sum }}">
+                                    Pay ${{ total_sum }}
+                                </button>
+                            </form>
+                            <!-- Error messages in this element -->
+                            <div id="card-errors" class="alert-danger" role="alert"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block postloadjs_extra %}
+<script>
+    let CSRF_TOKEN = '{{ csrf_token }}';
+    let stripe_public_key = '{{ stripe_public_key }}';
+</script>
+<script src="https://js.stripe.com/v3/"></script>
+<script src="{% static 'js/stripe_elements.js' %}" data-rel-js></script>
+{% endblock %}

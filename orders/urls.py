@@ -1,13 +1,20 @@
 from django.urls import path
-from .views import OrdersView, OrderDetailsView, UpdateOrderStatusAJAXView, AddOrderAJAXView, UserOrdersView, UserOrderDetailsView
+from .views import (
+    AddOrder,
+    UserOrders,
+    UserOrderDetails,
+    BasketView,
+    order_placed,
+    StripeWebhookView,
+)
 
-app_name = 'orders'
-
+app_name = 'orders'  
 urlpatterns = [
-    path('', OrdersView.as_view(), name='orders'),
-    path('order_details/<int:order_id>/', OrderDetailsView.as_view(), name='order_details'),
-    path('update_order_status/', UpdateOrderStatusAJAXView.as_view(), name='update_order_status_ajax'),
-    path('add_order_ajax/', AddOrderAJAXView.as_view(), name='add_order_ajax'),
-    path('user_orders/', UserOrdersView.as_view(), name='user_orders'),
-    path('user_order_details/<str:order_number>/', UserOrderDetailsView.as_view(), name='user_order_details'),
+    path('add_order/', AddOrder.as_view(), name='add_order'),
+    path('user_orders/', UserOrders.as_view(), name='user_orders'),
+    path('user_order_details/<str:order_number>/', UserOrderDetails.as_view(), name='user_order_details'),
+    path('basket/', BasketView, name='basket'),
+    path('order_placed/', order_placed, name='order_placed'),
+    path('stripe_webhook/', StripeWebhookView.as_view(), name='stripe_webhook'),
+
 ]

@@ -1,4 +1,4 @@
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, reverse, get_object_or_404
 from django.views.decorators.http import require_POST
 from django.contrib import messages
@@ -11,9 +11,10 @@ from django.conf import settings
 from decimal import Decimal
 
 def view_cart(request):
-    cart = request.session.get('cart', {})
-    print("Cart Contents:", cart)  # Add this line for debugging
-    return render(request, 'cart/cart.html')
+    cart_items = request.session.get('cart', {})
+    print("Cart Contents:", cart_items) 
+    context = {'cart_items': cart_items}
+    return render(request, 'cart/cart.html', context)
 
 def add_to_cart(request):
     """ Add a quantity of the specified product to the shopping cart """

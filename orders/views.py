@@ -9,62 +9,9 @@ from reviews.models import Review
 from .models import Order, OrderItem
 from cart.contexts import cart_contents
 from .forms import OrderForm, OrderItemForm
-
-class OrdersView(View):
-    """View for orders page."""
-    
-    def get(self, request):
-        """Get method for orders page."""
-        if request.user.is_authenticated:
-            # Check if user is an admin
-            if request.user.profile.role.id == 1:
-                return render(request, 'profiles/access_denied.html')
-            else:
-                p = Paginator(Order.objects.all(), 25)
-                page = request.GET.get('page')
-                orders = p.get_page(page)
-                context = {'orders': orders}
-                
-                # ... (remaining code)
-
-class OrderDetailsView(View):
-    """View for order full page."""
-    
-    def get(self, request, *args, **kwargs):
-        """Get method for order details page."""
-        if request.user.is_authenticated:
-            if request.user.profile.role.id == 1:
-                return render(request, 'profiles/access_denied.html')
-            else:
-                order_id = kwargs['order_id']
-                order = get_object_or_404(Order, id=order_id)
-                order_items = OrderItem.objects.filter(order=order)
-                context = {'order': order, 'order_items': order_items}
-                return render(request, 'orders/order_details.html', context)
-        else:
-            return render(request, 'account/login.html')
-
-class UpdateOrderStatusAJAXView(View):
-    """View for updating order status with access only for admin and logistic manager."""
-    
-    def post(self, request, *args, **kwargs):
-        if request.user.is_authenticated:
-            user_role = request.user.profile.role.id
-            if user_role == 3 or user_role == 4:
-                if request.is_ajax():
-                    order_id = request.POST.get('order_id')
-                    order = get_object_or_404(Order, id=order_id)
-                    order.status = request.POST.get('order_status')
-                    order.save()
-                    return JsonResponse({'success': True, 'order_status': order.status})
-                else:
-                    return JsonResponse({'success': False})
-            else:
-                return render(request, 'profiles/access_denied.html')
-        else:
-            return render(request, 'account/login.html')
-
-class AddOrderAJAXView(View):
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
+class AddOrder(View):
     """View for adding order AJAX."""
     
     def post(self, request, *args, **kwargs):
@@ -132,18 +79,16 @@ def payment_confirmation(data):
     Order.objects.filter(order_key=data).update(billing_status=True)
 
     # Get order details
-    order = Order.objects.get(order_key=data)
-    order_id = order.id
-    order_obj = Order.objects.get(id=order_id)
-    customer = order_obj.user
+    order = get_object_or_404(Order, order_key=data)
+    customer = order.user
 
     # Email content
     subject = 'Cake Cravings - Payment Confirmation'
-    order_total_paid = order_obj.total_paid
-    order_num = str(order_obj.order_number)
+    order_total_paid = order.total_paid
+    order_num = str(order.order_number)
 
     # Construct link to order details
-    link = 'https://cake-cravings-website.com/orders/' + str(customer.username) + '/my_orders/' + order_num + '/'
+    link = reverse('orders:order-details', args=[str(order.id)])
 
     # Email configuration
     subject, from_email, to = 'Cake Cravings - Payment Confirmation', 'your-email@yourdomain.com', str(customer.email)
@@ -160,7 +105,7 @@ def payment_confirmation(data):
     msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
     msg.attach_alternative(html_content, "text/html")
     msg.send(fail_silently=False)
-class UserOrdersView(View):
+class UserOrders(View):
     """View for user orders page."""
     
     def get(self, request, *args, **kwargs):
@@ -173,7 +118,7 @@ class UserOrdersView(View):
         else:
             return render(request, 'account/login.html')
 
-class UserOrderDetailsView(View):
+class UserOrderDetails(View):
     """View for user order details page."""
     
     def get(self, request, *args, **kwargs):
@@ -190,3 +135,107 @@ class UserOrderDetailsView(View):
                 return render(request, 'profiles/access_denied.html')
         else:
             return render(request, 'account/login.html')
+
+
+@login_required
+def BasketView(request):
+    """View for payment page."""
+    my_profile = get_object_or_404(Profile, user=request.user)
+    cart = cart_contents(request)
+
+    total_final = cart['total']  # Assuming 'total' is the key in your cart context
+    total_sum = str(total_final)
+    total = total_sum.replace('.', '')
+    total = int(total)
+
+    stripe_public_key = settings.STRIPE_PUBLIC_KEY
+    stripe.api_key = settings.STRIPE_SECRET_KEY
+
+    intent = stripe.PaymentIntent.create(
+        amount=total,
+        currency='usd',
+        metadata={'userid': request.user.id}
+    )
+
+    # Check if the user has addresses
+    if request.user.addresses.count() == 0:
+        pass
+    else:
+        # Check if there is a primary address
+        if request.user.addresses.filter(is_primary=True).exists():
+            primary_address = Address.objects.get(user=request.user, is_primary=True)
+            context = {
+                'my_profile': my_profile,
+                'primary_address': primary_address,
+                'total_sum': total_sum,
+                'client_secret': intent.client_secret,
+                'stripe_public_key': stripe_public_key,
+            }
+            return render(request, 'payment/payment.html', context)
+
+    context = {
+        'my_profile': my_profile,
+        'total_sum': total_sum,
+        'client_secret': intent.client_secret,
+        'stripe_public_key': stripe_public_key,
+    }
+    return render(request, 'payment/payment.html', context)
+
+
+def order_placed(request):
+    """View for order placed page."""
+    cart = cart_contents(request)
+    bag_items = cart['cart_items']
+
+    for item in bag_items:
+        sold_product_inventory = item['product'].inventory  # Assuming you have a 'Product' model with an 'inventory' field
+        sold_quantity = item['quantity']
+
+        # Update inventory
+        sold_product_inventory.units_sold += sold_quantity
+        sold_product_inventory.units -= sold_quantity
+        sold_product_inventory.save()
+
+    # Clear the bag
+    request.session['cake_cravings_cart'] = {}
+
+    return render(request, 'payment/order_placed.html')
+
+@csrf_exempt
+def stripe_webhook(request):
+    payload = request.body
+    event = None
+    try:
+        event = stripe.Event.construct_from(
+            json.loads(payload), stripe.api_key
+        )
+    except ValueError as e:
+        return HttpResponse(status=400)
+
+    # Handle the event
+    if event.type == 'payment_intent.succeeded':
+        payment_confirmation(event.data.object.client_secret)
+    else:
+        print('Unhandled event type {}'.format(event.type))
+
+    return HttpResponse(status=200)
+
+class StripeWebhookView(View):
+    @staticmethod
+    @csrf_exempt
+    def post(request, *args, **kwargs):
+        payload = request.body
+        event = None
+        try:
+            event = stripe.Event.construct_from(
+                json.loads(payload), stripe.api_key
+            )
+        except ValueError as e:
+            return JsonResponse({'error': 'Invalid payload'}, status=400)
+
+        # Handle the event as needed
+        if event.type == 'payment_intent.succeeded':
+            payment_confirmation(event.data.object.client_secret)
+            # You can add more event handling logic here for other event types
+
+        return JsonResponse({'message': 'Webhook received successfully'}, status=200)

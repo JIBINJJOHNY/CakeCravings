@@ -1,47 +1,44 @@
+<!-- wishlist/wishlist_display.html -->
+
 {% extends "base.html" %}
 {% load static %}
 
-{% comment %} Extra Title {% endcomment %}
-{% block extra_title %}Wishlist{% endblock %}
-
 {% block content %}
-<!-- core/async/wishlist-list.html -->
+<div class="container mt-5">
+    {% if wishlist_products %}
+    <h1>Your Wishlist</h1>
+    <div class="row">
+        {% for product in wishlist_products %}
+        <div class="col-md-4 mb-4">
+            <a href="{% url 'products:product_detail' product.id %}" class="card-link wishlist-link">
+                <div class="card">
+                    {% if product.images.all %}
+                    <img src="{{ product.images.first.image.url }}" alt="{{ product.name }}" class="card-img-top"
+                        style="max-height: 150px; object-fit: contain;">
+                    {% else %}
+                    <!-- Display a default image if no product image is available -->
+                    <img src="{% static 'images/default_image.png' %}" alt="{{ product.name }}" class="card-img-top"
+                        style="max-height: 150px; object-fit: contain;">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title" style="font-size: 1.5rem;">{{ product.name }}</h5>
+                        <p class="card-text" style="font-size: 1.2rem;">{{ product.price }}</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p>Your wishlist is empty.</p>
+    {% endif %}
+</div>
 
-{% if wishlist %}
-<ul>
-    {% for product in wishlist %}
-    <li>
-        <span>{{ product.name }}</span>
-        <button style="border: none;" data-wishlist-product="{{ product.id }}"
-            class="text-body delete-wishlist-product">
-            <i class="fi-rs-trash"></i>
-        </button>
-    </li>
-    {% endfor %}
-</ul>
-{% else %}
-<p>Your wishlist is empty.</p>
-{% endif %}
-<script>
-    $(document).on("click", ".delete-wishlist-product", function () {
-        let this_val = $(this);
-        let product_id = $(this).attr("data-wishlist-product");
-
-        $.ajax({
-            url: "/remove-from-wishlist/",
-            data: {
-                product_id: product_id
-            },
-            dataType: "json",
-            beforeSend: function () {
-                console.log("Removing from wishlist...");
-            },
-            success: function (res) {
-                $("#wishlist-list").html(res.data);
-            }
-        });
-    });
-</script>
-
+<style>
+    /* Add this style to change the link color */
+    .wishlist-link {
+        color: #4d3056;
+    }
+</style>
 
 {% endblock %}

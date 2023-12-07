@@ -45,13 +45,6 @@
                         <div class="card">
                             <a href="{% url 'products:product_detail' product.id %}"
                                 onclick="redirectToProductDetail('{{ product.id }}')">
-                                <div class="overlay">
-                                    <button style="border: none; background: none;" class="add-to-wishlist"
-                                        data-product-item="{{ p.id }}">
-                                        <i class="fi-rs-heart" style="fill: rgb(255, 0, 0);"></i>
-                                    </button>
-                                </div>
-
                                 <div class="image-container" style="height: 200px; overflow: hidden;">
                                     <img src="{{ product.images.first.image_url }}" alt="{{ product.name }}"
                                         style="width: 100%; height: auto;">
@@ -61,13 +54,7 @@
                             <div class="card-body">
                                 <div class="card-body-content" style="height: 120px;">
                                     <h3>{{ product.name }}</h3>
-                                    <div class="star">
-                                        <i class="bx bxs-star checked"></i>
-                                        <i class="bx bxs-star checked"></i>
-                                        <i class="bx bxs-star checked"></i>
-                                        <i class="bx bxs-star"></i>
-                                        <i class="bx bxs-star"></i>
-                                    </div>
+
                                     {% if product.discount_price %}
                                     <h6>
                                         {% if product.discount_price < product.price %}
@@ -76,30 +63,15 @@
                                         {% else %}
                                         <span>€{{ product.price }}</span>
                                         {% endif %}
-                                        <span>
-                                            <form method="POST" action="{% url 'add_to_cart' %}">
-                                                {% csrf_token %}
-                                                <input type="hidden" name="product_id" value="{{ product.id }}">
-                                                <input type="hidden" name="quantity" value="1">
-                                                <button type="submit" class="btn btn-secondary" title="Add to Cart">
-                                                    <i class="fas fa-shopping-cart"
-                                                        style="font-size: 20px; color: #462b48;"></i>
-                                                </button>
-                                            </form>
-                                        </span>
                                     </h6>
                                     {% else %}
-                                    <h6>€{{ product.price }} <span>
-                                            <form method="POST" action="#">
-                                                {% csrf_token %}
-                                                <input type="hidden" name="quantity" value="1">
-                                                <button type="submit" class="btn btn-secondary" title="Add to Cart">
-                                                    <i class="fas fa-shopping-cart"
-                                                        style="font-size: 20px; color: #462b48;"></i>
-                                                </button>
-                                            </form>
-
-                                        </span></h6>
+                                    <h6>€{{ product.price }}</h6>
+                                    <span>
+                                        <button class="btn btn-secondary addToWishlistBtn" title="Add to Wishlist"
+                                            data-product-id="{{ product.id }}">
+                                            <i class="fas fa-heart" style="font-size: 20px; color: #840a0a;"></i>
+                                        </button>
+                                    </span></h6>
                                     {% endif %}
                                 </div>
                             </div>
@@ -159,30 +131,29 @@
         return cookieValue;
     }
 </script>
-<script>
-    $(document).on('click', ".add-to-wishlist", function () {
-        var product_id = $(this).attr('data-product-item');
-        var this_val = $(this);
 
+<script>
+    // Add click event to all elements with the "addToWishlistBtn" class
+    $('.addToWishlistBtn').click(function () {
+        var productId = $(this).attr('data-product-id');
+        console.log('Add to Wishlist clicked for product ID:', productId);
+
+        // Perform the AJAX request to add the product to the wishlist
         $.ajax({
-            url: "/add-to-wishlist/",
-            data: {
-                product_id: product_id
+            type: "GET",
+            url: `/wishlist/pluswishlist/?prod_id=${productId}`,
+            success: function (data) {
+                console.log('AJAX Success:', data);
+                // Handle success, e.g., show a notification or update UI
             },
-            dataType: 'json',
-            beforeSend: function () {
-                this_val.html("✓");
-            },
-            success: function (response) {
-                if (response.bool === true) {
-                    console.log("Added to wishlist...");
-                } else {
-                    console.log("Already in wishlist...");
-                }
+            error: function (error) {
+                console.log('AJAX Error:', error);
+                // Handle error, e.g., show an error message
             }
         });
     });
 </script>
+<!-- ... -->
 
 
 {% endblock %}

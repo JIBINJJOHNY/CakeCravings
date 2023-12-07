@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% comment %} Extra Title {% endcomment %}
+{% block extra_title %}Order Placed{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card p-4">
+                <h1 class="mb-4">Order Placed Successfully</h1>
+                <p>Your order has been placed successfully. An email confirmation has been sent to you.</p>
+
+                <!-- You can add more details about the order here if needed -->
+
+                <div class="mt-4">
+                    <a href="{% url 'my_orders' user=request.user %}" class="btn btn-primary">
+                        <i class="fas fa-shopping-cart"></i> View My Orders
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

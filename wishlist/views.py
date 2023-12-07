@@ -5,56 +5,53 @@ from .models import Wishlist
 from products.models import Product
 from django.core import serializers
 from django.template.loader import render_to_string
+from django.http import HttpResponse
 
+def view_wishlist(request):
+    user = request.user
+    if user.is_authenticated:
+        wishlist, created = Wishlist.objects.get_or_create(user=user)
+        wishlist_products = wishlist.products.all()
+    else:
+        wishlist_products = []
 
-def WishlistPage(request):
-    try:
-        wishlist = Wishlist.objects.filter(user=request.user) 
-    except:
-        wishlist = None
     context = {
-        "w": wishlist
+        'wishlist_products': wishlist_products,
     }
-    return render(request, 'core/wishlist.html', context)
-def add_to_wishlist(request):
-    product_id = request.GET.get('product_id')
-    
-    try:
-        product = Product.objects.get(id=product_id)
-        wishlist, created = Wishlist.objects.get_or_create(user=request.user)
-        
-        if not wishlist.products.filter(id=product_id).exists():
-            wishlist.products.add(product)
-            context = {'bool': True}
-        else:
-            context = {'bool': False}
-            
-    except Product.DoesNotExist:
-        context = {'bool': False}
-    print(request.session['cart'])
-    return JsonResponse(context)
 
+    return render(request, 'wishlist/wishlist.html', context)
 
-def remove_wishlist(request):
-    product_id = request.GET.get('product_id')
-    
-    try:
-        wishlist = Wishlist.objects.get(user=request.user)
-        product = Product.objects.get(id=product_id)
-        
-        if wishlist.products.filter(id=product_id).exists():
-            wishlist.products.remove(product)
-            context = {
-                'bool': True,
-                'wishlist': wishlist.products.all()
-            }
-        else:
-            context = {'bool': False}
+def plus_wishlist(request):
+    if request.method == 'GET':
+        print('Plus Wishlist view called')
+        prod_id = request.GET['prod_id']
+        product = Product.objects.get(id=prod_id)
+        user = request.user
 
-    except (Wishlist.DoesNotExist, Product.DoesNotExist):
-        context = {'bool': False}
+        # Use products instead of product
+        wishlist, created = Wishlist.objects.get_or_create(user=user)
+        wishlist.add_to_wishlist(product)
 
-    qs_json = serializers.serialize('json', context['wishlist'])
-    template = render_to_string('core/async/wishlist-list.html', context)
-    
-    return JsonResponse({'data': template, 'wishlist': qs_json})
+        data = {
+            'message': 'Wishlist Added Successfully',
+        }
+        return JsonResponse(data)
+
+def minus_wishlist(request):
+    if request.method == 'GET':
+        print('Minus Wishlist view called')
+        prod_id = request.GET['prod_id']
+        product = Product.objects.get(id=prod_id)
+        user = request.user
+
+        # Retrieve the user's wishlist
+        wishlist, created = Wishlist.objects.get_or_create(user=user)
+
+        # Remove the product from the wishlist
+        removed = wishlist.remove_from_wishlist(product)
+
+        data = {
+            'message': 'Wishlist Remove Successfully',
+            'removed': removed,  # Add this to indicate whether the removal was successful
+        }
+        return JsonResponse(data)

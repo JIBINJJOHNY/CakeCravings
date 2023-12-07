@@ -27,60 +27,53 @@
                         </tr>
                     </thead>
 
-                    {% for item in cart_items %}
-                    {% if cart_items %}
-                    {{ cart_items }}
-                    {% else %}
-                    <p>Your cart is empty.</p>
-                    {% endif %}
-                    <tr id="item_{{ item.product.id }}">
+                    {% for product_id, item in cart_items.items %}
+                    {% with product=item.product %}
+                    <tr id="item_{{ product_id }}" data-product_id="{{ product_id }}"
+                        data-product_size="{{ item.size }}">
                         <td class="p-3 w-25">
-                            {% if item.product.images.first %}
-                            <img class="img-fluid" src="{{ item.product.images.first.image_url }}"
-                                alt="{{ item.product.name }}">
+                            {% if product.images.first %}
+                            <img class="img-fluid" src="{{ product.images.first.image_url }}" alt="{{ product.name }}">
                             {% else %}
-                            <img src="{% static 'images/default_image.png' %}" alt="{{ item.product.name }}"
+                            <img src="{% static 'images/default_image.png' %}" alt="{{ product.name }}"
                                 class="img-fluid mt-4" id="mainImage">
                             {% endif %}
                         </td>
                         <td class="py-3">
-                            <h6>{{ item.product.name }}</h6>
+                            <h6>{{ product.name }}</h6>
                             {% if item.size %}
                             <p class="my-0"><strong>Size:</strong> {{ item.size|upper }}</p>
                             {% else %}
                             <p class="my-0"><strong>Size:</strong> N/A</p>
                             {% endif %}
-
                         </td>
                         <td class="py-3 your-price-container-selector">
-                            <p class="my-0 your-price-selector">${{ item.product.price }}</p>
+                            <p class="my-0 your-price-selector">${{ product.price }}</p>
                         </td>
                         <td class="py-3 w-25">
                             <div class="input-group">
-                                <button class="decrement-qty btn btn-outline-secondary"
-                                    data-item_id="{{ item.product.id }}">
+                                <button class="decrement-qty btn btn-outline-secondary" data-item_id="{{ product_id }}">
                                     <i class="fas fa-minus"></i>
                                 </button>
-                                <input type="number" class="qty_input form-control" data-item_id="{{ item.product.id }}"
+                                <input type="number" class="qty_input form-control" data-item_id="{{ product_id }}"
                                     value="{{ item.quantity }}" min="1" max="99">
-                                <button class="increment-qty btn btn-outline-secondary"
-                                    data-item_id="{{ item.product.id }}">
+                                <button class="increment-qty btn btn-outline-secondary" data-item_id="{{ product_id }}">
                                     <i class="fas fa-plus"></i>
                                 </button>
                             </div>
                         </td>
-
                         <td class="py-3 your-price-container-selector">
-                            <p class="my-0" id="item_subtotal_{{ item.product.id }}">${{ item.item_total }}</p>
+                            <p class="my-0" id="item_subtotal_{{ product_id }}">${{ item.item_total }}</p>
                         </td>
                         <td class="py-3">
-                            <button class="remove-item btn btn-link text-danger" id="remove_{{ item.product.id }}"
-                                data-product_id="{{ item.size }}">
+                            <button class="remove-item btn btn-link text-danger" id="remove_{{ product_id }}"
+                                data-product_id="{{ product_id }}" data-product_size="{{ item.size }}">
                                 <i class="fas fa-trash"></i>
                             </button>
+
                         </td>
                     </tr>
-
+                    {% endwith %}
                     {% endfor %}
 
                     <!-- Delivery Information -->
@@ -177,28 +170,38 @@
             // Update subtotal based on the new quantity
             updateSubtotal(itemId, newQuantity);
         });
-        // Remove item and reload on click
+
+        // Modify the click event handler for the 'remove-item' button
         $('.remove-item').click(function (e) {
+            e.preventDefault();
+
             var csrfToken = "{{ csrf_token }}";
-            var itemId = $(this).attr('id').split('remove_')[1];
-            var size = $(this).data('product_id');
-            var url = `/cart/remove/${itemId}/`;
-            var data = {
-                'csrfmiddlewaretoken': csrfToken,
-                'product_size': size
-            };
+            var productId = $(this).closest('tr').data('product_id');
+            var size = $(this).closest('tr').data('product_size');
 
-            $.post(url, data)
-                .done(function () {
-                    location.reload();
-                });
+            // Debugging: Log the values to the console
+            console.log("Product ID:", productId);
+            console.log("Size:", size);
+
+            // Check if productId and size are defined before making the AJAX request
+            if (productId !== undefined && size !== undefined) {
+                var url = `/cart/remove/${productId}/`;
+                var data = {
+                    'csrfmiddlewaretoken': csrfToken,
+                    'product_size': size
+                };
+
+                $.post(url, data)
+                    .done(function () {
+                        location.reload();
+                    })
+                    .fail(function (error) {
+                        console.error('Error removing item:', error);
+                    });
+            } else {
+                console.error("Product ID or Size is undefined");
+            }
         });
-
-        // Checkout logic
-        function checkout() {
-            console.log('Checkout button clicked');
-            // Add the rest of your checkout logic
-        }
 
         // Function to update subtotal based on quantity
         function updateSubtotal(itemId, newQuantity) {
@@ -221,5 +224,4 @@
         }
     });
 </script>
-{{ block.super }}
 {% endblock %}

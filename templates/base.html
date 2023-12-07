@@ -74,7 +74,7 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'products:all_products' %}">Our Menu</a>
                     </li>
-                    <!-- dropdown -->
+
                     <li class="nav-item">
                         <a class="nav-link" href="#">Gallery</a>
                     </li>
@@ -110,10 +110,11 @@
                         {% endif %}
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#wishlistModal">
+                        <a class="nav-link" href="{% url 'wishlist:view_wishlist' %}" id="wishlistModalBtn">
                             <i class="fas fa-heart"></i>
                         </a>
                     </li>
+
                     <li class="nav-item">
                         <a class="nav-link position-relative" href="{% url 'cart:view_cart' %}" id="cart-icon">
                             <i class="fas fa-shopping-cart"></i>

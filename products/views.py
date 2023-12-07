@@ -13,6 +13,8 @@ from django.views.generic import ListView
 from reviews.forms import ReviewForm
 from reviews.models import Review
 from django.db.models import Avg
+from wishlist.models import Wishlist
+
 
 
 def is_manager(user):
@@ -86,6 +88,12 @@ def all_products(request, category_slug=None):
 def product_detail(request, product_id):
     product = get_object_or_404(Product, pk=product_id)
     reviews = Review.objects.filter(product=product).order_by('-created_at')
+    
+    wishlist = None
+    if request.user.is_authenticated:
+        user_wishlist = Wishlist.objects.filter(user=request.user).first()
+        if user_wishlist:
+            wishlist = user_wishlist.products.filter(id=product.id).exists()
 
     # Calculate average rating
     average_rating = reviews.aggregate(Avg('rating'))['rating__avg']
@@ -100,16 +108,19 @@ def product_detail(request, product_id):
             return redirect('products:product_detail', product_id=product_id)
     else:
         review_form = ReviewForm()
+
     related_products = Product.objects.filter(category=product.category).exclude(id=product.id)[:4]
     context = {
         'product': product,
         'related_products': related_products,
         'reviews': reviews,
         'review_form': review_form,
-        'average_rating': average_rating,  
+        'average_rating': average_rating,
+        'wishlist': wishlist,
     }
 
     return render(request, 'products/product_detail.html', context)
+
 
 @user_passes_test(is_manager)
 def product_list(request):
