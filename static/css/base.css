@@ -60,7 +60,7 @@ img {
 }
 
 button {
-    background-color: #462b48;
+    background-color: #000000;
     color: #ffffff;
 }
 
@@ -71,7 +71,7 @@ button {
 h2 {
     font-family: "Great Vibes", cursive;
     font-size: 60px;
-    color: #9b6e2f;
+    color: #e39a32;
     text-shadow: 1px 1px 1px black;
     font-weight: bold;
 }
@@ -79,7 +79,7 @@ h2 {
 /* ------------ header ----------- */
 /* Style the navigation bar */
 #navbar {
-    background-color: rgb(38, 15, 38);
+    background-color: black;
 }
 
 .container-fluid,
@@ -111,7 +111,7 @@ h2 {
     top: 0;
     right: 0;
     background-color: white;
-    color: rgb(38, 15, 38);
+    color: black;
     border-radius: 50%;
     padding: 0px 4px;
     font-size: 12px;
@@ -146,15 +146,33 @@ h2 {
 }
 
 .home-section {
-    background: url('/static/images/homepage_background.jpg') no-repeat center center fixed;
+    background: url('/static/images/home_page.png') no-repeat center center fixed;
     background-size: cover;
     height: 100vh;
-    color: rgb(38, 15, 38);
+    color: white;
     font-family: 'Lato';
     margin-top: 0px;
+    position: relative;
 
-    /* Remove default body margin */
+    /* Add an overlay */
+    &:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        /* Adjust the transparency (0.5 is 50%) */
+    }
 }
+
+
+/* Set text color for better visibility */
+.home-section .content {
+    color: #fff;
+}
+
 
 /* Style for the home section */
 .home-section {
@@ -164,16 +182,105 @@ h2 {
 
 /* Style for the content column */
 .content {
-    padding: 40px;
+    padding: 60px;
     /* Add padding for spacing around the text */
 }
 
 /* Custom style for the Order Now button */
 .order-now-button {
-    background-color: rgb(38, 15, 38);
+    background-color: #e39a32;
     color: #fff;
     /* Set text color to white or your preferred color */
     /* Add any additional styles as needed */
+}
+
+/* About section*/
+.about {
+    background: url('/static/images/aboutpage.png') center center;
+    background-size: cover;
+    position: relative;
+    padding: 80px 0;
+    color: white;
+}
+
+.about:before {
+    content: "";
+    background: rgba(41, 40, 42, 0.8);
+    position: absolute;
+    bottom: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+}
+
+.about .about-img {
+    position: relative;
+    transition: 0.5s;
+}
+
+.about .about-img img {
+    max-width: 100%;
+    border: 4px solid rgba(255, 255, 255, 0.2);
+    position: relative;
+}
+
+.about .about-img::before {
+    position: absolute;
+    left: 20px;
+    top: 20px;
+    width: 60px;
+    height: 60px;
+    z-index: 1;
+    content: "";
+    border-left: 5px solid #e39a32;
+    border-top: 5px solid #e39a32;
+    transition: 0.5s;
+}
+
+.about .about-img::after {
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+    width: 60px;
+    height: 60px;
+    z-index: 2;
+    content: "";
+    border-right: 5px solid #e39a32;
+    border-bottom: 5px solid #e39a32;
+    transition: 0.5s;
+}
+
+.about .about-img:hover {
+    transform: scale(1.03);
+}
+
+.about .about-img:hover::before {
+    left: 10px;
+    top: 10px;
+}
+
+.about .about-img:hover::after {
+    right: 10px;
+    bottom: 10px;
+}
+
+.about .content {
+    position: relative;
+}
+
+.about .content h3 {
+    font-weight: 600;
+    font-size: 26px;
+}
+
+.about .content p:last-child {
+    margin-bottom: 0;
+}
+
+@media (min-width: 1024px) {
+    .about {
+        background-attachment: fixed;
+    }
 }
 
 @media (max-width: 768px) {
@@ -255,9 +362,9 @@ h1 {
     text-align: center;
     font-weight: bold;
     margin-top: 20px;
-    color: #4d3056;
+    color: black;
     text-shadow: 1px 1px 1px #fafafa;
-    border-bottom: 2px solid #4d3056;
+    border-bottom: 2px solid black;
 }
 
 .card-body-content {
@@ -269,7 +376,7 @@ h1 {
 }
 
 h3 {
-    color: hsl(286, 28%, 26%);
+    color: gold;
     font-size: 20px;
 }
 
