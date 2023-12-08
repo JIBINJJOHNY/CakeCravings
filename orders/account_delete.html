@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Welcome <span class="text-uppercase">{{ request.user }}</span></h1>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col-md-3 mb-4">
+            <div class="d-grid">
+                <a href="{% url 'profiles:profile' %}" class="btn btn-lg btn-block">Profile</a>
+            </div>
+            <div class="d-grid mt-2">
+                <a href="{% url 'profiles:address' %}" class="btn btn-lg btn-block">Address</a>
+            </div>
+            <div class="d-grid mt-2">
+                <a href="{% url 'profiles:account_settings' %}" class="btn btn-lg btn-block">Account
+                    Settings</a>
+            </div>
+            <div class="d-grid mt-2">
+                <a href="{% url 'account_delete' %}" class="btn btn-custom btn-lg btn-block">Account
+                    Delete</a>
+            </div>
+        </div>
+        <div class=" delete_container">
+            <div class="confirmation-box">
+                <h1>Confirm Account Deletion</h1>
+                <p>Are you sure you want to delete your account?</p>
+                <form method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Delete Account</button>
+                </form>
+            </div>
+        </div>
+
+        <style>
+            /* Style for the container */
+            .delete_container {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+            }
+
+            /* Style for the confirmation box */
+            .confirmation-box {
+                border: 1px solid #ccc;
+                padding: 20px;
+                text-align: center;
+                max-width: 300px;
+                background: #e8acac;
+            }
+
+            .btn-custom {
+                background-color: #4d3056;
+                color: #ffffff;
+                /* Set text color to contrast with the background */
+            }
+        </style>
+        {% endblock %}

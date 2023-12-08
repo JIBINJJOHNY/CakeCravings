@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-
+from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.views import View
 from .forms import ProfileForm
@@ -59,6 +59,28 @@ class addressUpdate(View):
         else:
             messages.warning(request,"Invalid Input Data")
 
-        return redirect("profiles:address")
+        return redirect("address")
 
-    
+@login_required  
+def account_settings(request):
+   
+    user = request.user
+    context = {
+        'user': user
+    }
+    return render(request, 'profiles/account_settings.html', context)
+
+@login_required
+def account_delete(request):
+    # Check if the request method is POST
+    if request.method == 'POST':
+        user = request.user
+        # Delete the user's account
+        user.delete()
+        # Log the user out
+        logout(request)
+        # Redirect to a page after successful account deletion
+        return redirect('home')
+    else:
+        # Render a confirmation page for account deletion
+        return render(request, 'profiles/account_delete.html')
