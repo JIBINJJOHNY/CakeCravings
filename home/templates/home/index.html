@@ -40,6 +40,9 @@
                 </p>
                 <p>
                     Explore our diverse range of categories, including Cakes, Cupcakes, Cookies, and Seasonal Specials.
+                    Whether you're planning a birthday celebration, wedding, or any special event, we also specialize in
+                    catering for parties.
+                    Indulge in our delicious treats to make your moments even sweeter.
                 </p>
                 <p>
                     Whether you prefer the convenience of home delivery or the personal touch of local pickup, Cake
@@ -55,6 +58,114 @@
         </div>
     </div>
 </section>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<section id="gallery" class="gallery" style="background-color: #222;">
+    <div class="container" data-aos="fade-up">
+        <div class="section-title">
+            <h2>Gallery</h2>
+            <p style="color: wheat;">Memorable moments from parties held in our bakery</p>
+        </div>
+    </div>
 
+    <div class="container-fluid" data-aos="fade-up" data-aos-delay="100">
+
+        <div class="row g-3">
+            <div class="col-lg-3 col-md-4">
+                <div class="gallery-item">
+                    <a href="{% static 'images/gallery_image1.webp' %}" class="gallery-lightbox"
+                        data-gall="gallery-item">
+                        <img src="{% static 'images/gallery_image1.webp' %}" alt="" class="img-fluid">
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-4">
+                <div class="gallery-item">
+                    <a href="{% static 'images/gallery_image2.webp' %}" class="gallery-lightbox"
+                        data-gall="gallery-item">
+                        <img src="{% static 'images/gallery_image2.webp' %}" alt="" class="img-fluid">
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-4">
+                <div class="gallery-item">
+                    <a href="{% static 'images/gallery_image.webp3' %}" class="gallery-lightbox"
+                        data-gall="gallery-item">
+                        <img src="{% static 'images/gallery_image3.webp' %}" alt="" class="img-fluid">
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-4">
+                <div class="gallery-item">
+                    <a href="{% static 'images/gallery_image.webp4' %}" class="gallery-lightbox"
+                        data-gall="gallery-item">
+                        <img src="{% static 'images/gallery_image4.webp' %}" alt="" class="img-fluid">
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-4">
+                <div class="gallery-item">
+                    <a href="{% static 'images/gallery_image.webp5' %}" class="gallery-lightbox"
+                        data-gall="gallery-item">
+                        <img src="{% static 'images/gallery_image5.webp' %}" alt="" class="img-fluid">
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-4">
+                <div class="gallery-item">
+                    <a href="{% static 'images/gallery_image.webp6' %}" class="gallery-lightbox"
+                        data-gall="gallery-item">
+                        <img src="{% static 'images/gallery_image6.webp' %}" alt="" class="img-fluid">
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-4">
+                <div class="gallery-item">
+                    <a href="{% static 'images/gallery_image7.webp' %}" class="gallery-lightbox"
+                        data-gall="gallery-item">
+                        <img src="{% static 'images/gallery_image7.webp' %}" alt="" class="img-fluid">
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-4">
+                <div class="gallery-item">
+                    <a href="{% static 'images/gallery_image8.webp' %}" class="gallery-lightbox"
+                        data-gall="gallery-item">
+                        <img src="{% static 'images/gallery_image8.webp' %}" alt="" class="img-fluid">
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- End Gallery Section -->
+<!-- Gallery Modal Container -->
+<div class="modal fade" id="galleryModal" tabindex="-1" role="dialog" aria-labelledby="galleryModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <img id="modalImage" src="" alt="" class="img-fluid">
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // Handle click event on gallery items
+        $('.gallery-item a').click(function (e) {
+            e.preventDefault();
+
+            // Get the image source from the clicked gallery item
+            var imageSrc = $(this).attr('href');
+
+            // Set the modal image source
+            $('#modalImage').attr('src', imageSrc);
+
+            // Show the modal
+            $('#galleryModal').modal('show');
+        });
+    });
+</script>
 {% endblock %}
