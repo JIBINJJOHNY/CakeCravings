@@ -11,14 +11,14 @@
             <p class="lead">Welcome to the world of exquisite cakes that tantalize your taste buds and elevate your
                 celebrations. At Cake Bliss, we craft delicious, handcrafted cakes that are perfect for every occasion.
             </p>
-            <!-- Order Now button with custom class -->
+            <!-- Order Now button  -->
             <a href="{% url 'products:all_products' %}" class="btn btn-lg order-now-button">Order Now</a>
         </div>
         <div class="col-md-6 img" data-aos="zoom-out-left">
-            <!-- Image or other content goes here -->
         </div>
     </div>
 </div>
+<!--About section -->
 <section id="about" class="about">
     <div class="container" data-aos="fade-up">
         <div class="row">
@@ -58,6 +58,7 @@
         </div>
     </div>
 </section>
+<!--Gallery section-->
 <section id="gallery" class="gallery" style="background-color: #222;">
     <div class="container" data-aos="fade-up">
         <div class="section-title">
@@ -136,7 +137,7 @@
         </div>
     </div>
 </section>
-<!-- End Gallery Section -->
+
 <!-- Gallery Modal Container -->
 <div class="modal fade" id="galleryModal" tabindex="-1" role="dialog" aria-labelledby="galleryModalLabel"
     aria-hidden="true">
@@ -148,7 +149,36 @@
         </div>
     </div>
 </div>
-
+<!-- Contact us Section -->
+<section id="contact" style="background-color: #222; margin-top: -50px;">
+    <div class="container">
+        <h2 class="text-center mt-4">Contact Us</h2>
+        <div class="row">
+            <div class="col-md-6">
+                <h3>Bakery Location</h3>
+                <p style="color: white;">
+                    Sprendlinger Landstraße 222<br>
+                    Frankfurt<br>
+                    Germany
+                </p>
+                <h3>Contact Information</h3>
+                <p style="color: white;">
+                    <strong>Phone:</strong> (+49) 1523 456 7890<br>
+                    <strong>Email:</strong>info@cakecravings.com
+                </p>
+            </div>
+            <div class="col-md-6">
+                <h3>Location</h3>
+                <div class="embed-responsive embed-responsive-16by9">
+                    <iframe class="embed-responsive-item"
+                        src="https://www.google.com/maps/embed?pb=!1m23!1m12!1m3!1d81877.74852377868!2d8.59972636914837!3d50.111003034756415!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m8!3e6!4m0!4m5!1s0x47bd096f477096c5%3A0x422435029b0c600!2sFrankfurt!3m2!1d50.110922099999996!2d8.6821267!5e0!3m2!1sen!2sde!4v1702074246907!5m2!1sen!2sde"
+                        width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
