@@ -34,24 +34,14 @@ class Profile(models.Model):
         verbose_name='Birthday',
         help_text='Format: not required'
     )
-    avatar = models.ImageField(
-        upload_to='avatars/',
-        blank=True,
-        null=True,
-    )
-    subscription = models.BooleanField(
-        default=False,
-        verbose_name='Subscription',
-        help_text='Format: not required'
-    )
-
-    default_phone_number = models.CharField(max_length=20, null=True, blank=True)
-    default_country = CountryField(blank_label='Country *', null=True, blank=True)
-    default_postcode = models.CharField(max_length=20, null=True, blank=True)
-    default_town_or_city = models.CharField(max_length=40, null=True, blank=True)
-    default_street_address1 = models.CharField(max_length=80, null=True, blank=True)
-    default_street_address2 = models.CharField(max_length=80, null=True, blank=True)
-    default_county = models.CharField(max_length=80, null=True, blank=True)
+   
+    phone_number = models.CharField(max_length=20, null=True, blank=True)
+    country = CountryField(blank_label='Country *', null=True, blank=True)
+    postcode = models.CharField(max_length=20, null=True, blank=True)
+    town_or_city = models.CharField(max_length=40, null=True, blank=True)
+    street_address1 = models.CharField(max_length=80, null=True, blank=True)
+    street_address2 = models.CharField(max_length=80, null=True, blank=True)
+    county = models.CharField(max_length=80, null=True, blank=True)
     
     created_at = models.DateTimeField(
         auto_now_add=True,
@@ -68,12 +58,6 @@ class Profile(models.Model):
         if self.first_name:
             return self.first_name
         return self.user.username
-
-    @property
-    def avatar_url(self):
-        if self.avatar:
-            return self.avatar.url
-        return '/static/images/default_avatar.svg'
 
     @property
     def age(self):
