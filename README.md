@@ -128,3 +128,38 @@ Admins will soon have a comprehensive view of the platform's performance. We're 
 #### Expanded Categories and Products:
 
 Get ready for an even wider array of choices! We're expanding our categories and product offerings to cater to every sweet craving imaginable. From new flavors to unique confections, Cake Cravings will continue to be your go-to destination for a diverse and delightful selection of treats.
+
+## Technologies used
+- ### Languages:
+    + [Python 3.9.13](https://www.python.org/downloads/release/python-3913/): the main language utilized to create the website's server side.
+    + [JS](https://www.javascript.com/): the main language utilized to create the website's interactive elements.
+    + [HTML](https://developer.mozilla.org/en-US/docs/Web/HTML): the markup language that was utilized to make the webpage.
+    + [CSS](https://developer.mozilla.org/en-US/docs/Web/css): the language of styling that was applied to the website.
+
+- ### Frameworks and libraries:
+    + [Django](https://www.djangoproject.com/): This entire logic was created using a Python framework.
+    + [jQuery](https://jquery.com/): was employed to send AJAX requests and manage click events.
+
+- ### Databases:
+
+    + [SQLite](https://www.sqlite.org/): served as a database for development.
+    + [PostgreSQL](https://www.postgresql.org/): the database that contained all of the data.
+    
+
+- ### Other tools:
+
+    + [Git](https://git-scm.com/): the version control system used to manage the code.
+    + [Pip3](https://pypi.org/project/pip/): the dependencies were installed using the package manager.
+    + [Gunicorn](https://gunicorn.org/): the webserver used to run the website.
+    + [Spycopg2](https://www.python.org/dev/peps/pep-0249/): the database driver that established the database connection.
+    + [Django-allauth](https://django-allauth.readthedocs.io/en/latest/): the authentication library used to create the user accounts.
+    + [Render](https://render.com/): the cloud computing system that houses the website.
+    + [ElephantSQL](https://www.elephantsql.com/): the cloud database used to store all the data.
+    + [GitHub](https://github.com/): used to store the source code for the website.
+    + [VSCode](https://code.visualstudio.com/): the IDE used to develop the website.
+    + [Chrome DevTools](https://developer.chrome.com/docs/devtools/open/): was used to debug the website.
+    + [Font Awesome](https://fontawesome.com/): was used in the creation of the website's icons.
+    + [W3C Validator](https://validator.w3.org/): was used to validate HTML5 code for the website.
+    + [W3C CSS validator](https://jigsaw.w3.org/css-validator/): was used to validate CSS code for the website.
+    + [JShint](https://jshint.com/): was used to validate JS code for the website.
+    + [PEP8](https://pep8.org/): was used to validate Python code for the website.
