@@ -3,7 +3,7 @@
 ### Cake Cravings E-commerce website
 Indulge in the Sweet World of Cake Cravings – Your Ultimate Dessert Destination! 🎂
 
-**Deployed website: [Link to website]()**
+**Deployed website: [Link to website](https://cakecravingss-93e2bca9bc4c.herokuapp.com/)**
 
 ![Main image](documentation/readmepage_main.png)
 
