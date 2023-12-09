@@ -798,3 +798,14 @@ select option[value=""] {
     margin: 0;
     height: 100%;
 }
+
+/* Footer */
+#mc_embed_signup {
+    clear: left;
+    font: 14px Helvetica, Arial, sans-serif;
+    width: 350px;
+}
+
+#mc_embed_signup .button {
+    background-color: #4b4646;
+}
