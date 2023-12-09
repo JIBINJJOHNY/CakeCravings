@@ -1,4 +1,3 @@
-
 from django.db import models
 from django.contrib.auth.models import User
 from products.models import Product
@@ -48,3 +47,4 @@ class Review(models.Model):
     class Meta:
         """Meta class."""
         ordering = ['-created_at']
+        unique_together = ('user', 'product')

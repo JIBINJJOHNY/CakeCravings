@@ -37,7 +37,7 @@
         <!-- Right Column for Product Cards -->
         <div class="col-md-9">
             <div id="product-cards">
-                <h1>Products</h1>
+                <h1 class="products_heading">Products</h1>
 
                 <div class="row">
                     {% for product in products %}
@@ -54,7 +54,14 @@
                             <div class="card-body">
                                 <div class="card-body-content" style="height: 120px;">
                                     <h3>{{ product.name }}</h3>
-
+                                    {% if average_rating %}
+                                    <small class="text-muted" style="font-size: 16px;">
+                                        <i class="fas fa-star mr-1"
+                                            style="color: gold;"></i>{{ average_rating|floatformat:"1" }} / 5
+                                    </small>
+                                    {% else %}
+                                    <small class="text-muted" style="font-size: 16px;">No Rating</small>
+                                    {% endif %}
                                     {% if product.discount_price %}
                                     <h6>
                                         {% if product.discount_price < product.price %}
@@ -80,13 +87,33 @@
                     {% endfor %}
                 </div>
             </div>
-            <button onclick="topFunction()" id="back-to-top-btn" title="Go to top">
-                <i class="fas fa-arrow-up"></i>
-                <!-- FontAwesome arrow-up icon -->
-            </button>
+            <!-- Pagination -->
+            <div class="pagination">
+                <span class="step-links">
+                    {% if products.has_previous %}
+                    <a href="?page=1">&laquo; first</a>
+                    <a href="?page={{ products.previous_page_number }}">previous</a>
+                    {% endif %}
+
+                    <span class="current">
+                        Page {{ products.number }} of {{ products.paginator.num_pages }}.
+                    </span>
+
+                    {% if products.has_next %}
+                    <a href="?page={{ products.next_page_number }}">next</a>
+                    <a href="?page={{ products.paginator.num_pages }}">last &raquo;</a>
+                    {% endif %}
+                </span>
+            </div>
         </div>
+        <button onclick="topFunction()" id="back-to-top-btn" title="Go to top">
+            <i class="fas fa-arrow-up"></i>
+            <!-- FontAwesome arrow-up icon -->
+        </button>
     </div>
 </div>
+</div>
+
 
 <script src="{% static 'js/breadscrumb.js' %}"></script>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>

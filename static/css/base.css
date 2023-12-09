@@ -43,7 +43,7 @@ ul li {
 a {
     text-decoration: none;
     cursor: pointer;
-    color: #b07bb4;
+    color: #b4867b;
 
 }
 
@@ -72,7 +72,7 @@ h2 {
     font-family: "Great Vibes", cursive;
     font-size: 60px;
     color: #e39a32;
-    text-shadow: 1px 1px 1px black;
+    text-shadow: 1px 1px 1px rgb(83, 83, 83);
     font-weight: bold;
 }
 
@@ -277,42 +277,6 @@ h2 {
     margin-bottom: 0;
 }
 
-@media (min-width: 1024px) {
-    .about {
-        background-attachment: fixed;
-    }
-}
-
-@media (max-width: 768px) {
-    .home-section {
-        margin-top: 60px;
-        /* Adjust margin for smaller screens */
-    }
-
-    .content {
-        padding: 20px;
-        /* Reduce padding for smaller screens */
-    }
-}
-
-/* Adjust the positioning for small screens */
-@media (max-width: 768px) {
-    .position-relative {
-        position: static;
-        /* Reset to normal flow for small screens */
-    }
-
-    .notification-badge {
-        position: relative;
-        /* Adjust to relative positioning for small screens */
-        display: inline-block;
-        /* Ensure inline-block to be next to the icon */
-        margin-left: 0px;
-        /* Adjust margin as needed */
-        margin-top: 0px;
-        /* Adjust margin-top as needed */
-    }
-}
 
 .gallery .gallery-item {
     overflow: hidden;
@@ -336,13 +300,17 @@ h2 {
 }
 
 /* Products page */
+.products_heading {
+    margin-bottom: 50px;
+}
+
 #product-cards {
     margin-top: 20px;
 }
 
 .card {
     background-color: #f8f7f8;
-    box-shadow: 0 0 3px #4d3056;
+    box-shadow: 0 0 3px #000000;
     border-radius: 5px;
     cursor: pointer;
     width: 100%;
@@ -383,7 +351,7 @@ h1 {
     text-align: center;
     font-weight: bold;
     margin-top: 20px;
-    color: black;
+    color: rgb(0, 0, 0);
     text-shadow: 1px 1px 1px #fafafa;
     border-bottom: 2px solid black;
 }
@@ -397,13 +365,13 @@ h1 {
 }
 
 h3 {
-    color: gold;
+    color: rgb(45, 3, 3);
     font-size: 20px;
 }
 
 h6 {
     font-size: 20px;
-    color: #4d3056;
+    color: #000000;
     font-weight: bold;
 }
 
@@ -413,17 +381,17 @@ h6 span button {
     font-size: 15px;
     background: transparent;
     letter-spacing: 3px;
-    border: 2px solid #4d3056;
+    border: 2px solid #000000;
     border-radius: 5px;
     float: right;
     font-weight: bold;
     transition: 0.5s ease;
     cursor: pointer;
-    color: #4d3056;
+    color: #000000;
 }
 
 h6 span button:hover {
-    background-color: #4d3056;
+    background-color: #000000;
     color: white;
 }
 
@@ -442,7 +410,7 @@ h6 span button:hover {
 
 .filter-button {
     margin-top: 10px;
-    background-color: #4d3056;
+    background-color: #000000;
     color: white;
     border: none;
     padding: 10px;
@@ -458,7 +426,7 @@ h6 span button:hover {
 }
 
 .category-and-sorting {
-    background-color: #4d3056;
+    background-color: #000000;
     /* Set your desired background color */
     padding: 15px;
 
@@ -517,7 +485,7 @@ h6 span button:hover {
     right: 20px;
     background-color: #ffffff;
     /* White background */
-    color: #4d3056;
+    color: #000000;
     /* Black arrow color */
     border: none;
     border-radius: 5px;
@@ -550,7 +518,7 @@ h6 span button:hover {
 }
 
 .quantity-button {
-    background-color: #462b48;
+    background-color: #000000;
     color: #fff;
     border: none;
     padding: 8px 12px;
@@ -578,13 +546,13 @@ h6 span button:hover {
 .btn-secondary {
     background-color: #f8f7f8;
     border-color: #f8f7f8;
-    color: #462b48;
+    color: #000000;
 }
 
 .main-image img {
     width: 100%;
     /* Set the desired width */
-    border: 2px solid #462b48;
+    border: 2px solid #000000;
     /* Add a border with your preferred color */
     border-radius: 10px;
     /* Add border-radius for rounded corners */
@@ -618,7 +586,7 @@ h6 span button:hover {
 }
 
 .thumbnail:hover {
-    border: 2px solid #462b48;
+    border: 2px solid #000000;
 }
 
 .ingredients {
@@ -679,7 +647,7 @@ h6 span button:hover {
 }
 
 .review-form-container {
-    border: 2px solid #4d3056;
+    border: 2px solid #000000;
     /* Set border width and color */
     padding: 20px;
     /* Add padding to the container */
@@ -808,4 +776,41 @@ select option[value=""] {
 
 #mc_embed_signup .button {
     background-color: #4b4646;
+}
+
+@media (min-width: 1024px) {
+    .about {
+        background-attachment: fixed;
+    }
+}
+
+@media (max-width: 768px) {
+    .home-section {
+        margin-top: 60px;
+        /* Adjust margin for smaller screens */
+    }
+
+    .content {
+        padding: 20px;
+        /* Reduce padding for smaller screens */
+    }
+}
+
+/* Adjust the positioning for small screens */
+@media (max-width: 768px) {
+    .position-relative {
+        position: static;
+        /* Reset to normal flow for small screens */
+    }
+
+    .notification-badge {
+        position: relative;
+        /* Adjust to relative positioning for small screens */
+        display: inline-block;
+        /* Ensure inline-block to be next to the icon */
+        margin-left: 0px;
+        /* Adjust margin as needed */
+        margin-top: 0px;
+        /* Adjust margin-top as needed */
+    }
 }
