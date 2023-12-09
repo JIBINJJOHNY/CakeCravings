@@ -406,3 +406,23 @@ SIZE_CHOICES = [
 | created_at       | created_at   | DateTimeField        | auto_now_add=True, verbose_name='Created at'                                                                |
 | updated_at       | updated_at   | DateTimeField        | auto_now=True, verbose_name='Updated at'                                                                    |
 
+---
+## Testing
+
+Please refer to the [TESTING.md](TESTING.md) file for all test-related documentation.
+
+---
+
+
+## Deployment and Payment setup
+
+
+The app and associated resources were deployed as follows:
+
+- **Application Deployment**: The site was deployed to [Heroku](https://www.heroku.com). 
+
+- **Database Deployment**: The database is hosted on Heroku using PostgreSQL. Heroku provides a managed PostgreSQL database for this application.
+
+Please refer to the [DEPLOYMENT.md](DEPLOYMENT.md) file for all deployment and payment-related documentation.
+
+---
