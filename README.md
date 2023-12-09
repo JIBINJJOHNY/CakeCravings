@@ -217,3 +217,192 @@ Consistency is the heartbeat of our design. From the website to newsletters and 
 #### Imagery
 - Images were downloaded from the websites listed in the **Credits section**. [Content and Images](#content-and-images)
 - At Cake Cravings, we've elevated our user experience with a distinctive approach to icons sourced from the [font awesome](https://fontawesome.com/) library. Icons play a pivotal role in guiding users through multifunctional aspects of our website. Embracing innovation, we've carefully selected and customized these icons to provide a unique and visually engaging experience. 
+
+
+## Information Architecture
+
+### Database
+
+* During the earliest stages of the project, the database was created using SQLite.
+* The database was then migrated to PostgreSQL.
+
+### Entity-Relationship Diagram
+
+![ERD](documentation/erd.png)
+
+### Data Modeling
+
+#### Category Model
+
+| Name          | Database Key  | Field Type    | Validation                                                 |
+| ------------- | ------------- | ------------- | ---------------------------------------------------------- |
+| name          | name          | CharField     | max_length=100, unique=True, blank=False, null=False, verbose_name='Category name' |
+| slug          | slug          | SlugField     | max_length=150, unique=True, blank=False, null=False, verbose_name='Category Slug' |
+| is_active     | is_active     | BooleanField  | default=False, verbose_name='Is active'                    |
+| image         | image         | CloudinaryField | folder='category', null=True, blank=True                    |
+| created_at    | created_at    | DateTimeField | auto_now_add=True, verbose_name='Created at'               |
+| updated_at    | updated_at    | DateTimeField | auto_now=True, verbose_name='Updated at'                   |
+
+
+#### Tag Model
+
+| Name          | Database Key  | Field Type       | Validation                                                                   |
+| ------------- | ------------- | ----------------- | ------------------------------------------------------------------------------ |
+| name          | name          | CharField        | max_length=100, unique=True, blank=False, null=False, verbose_name='Tag Name', help_text='The name of the tag.' |
+| slug          | slug          | SlugField        | max_length=150, unique=True, blank=False, null=False, verbose_name='Tag Slug', help_text='Slugified version of the tag name.' |
+| is_active     | is_active     | BooleanField     | default=False, verbose_name='Is Active', help_text='Is this tag currently active and displayed on the website?' |
+| created_at    | created_at    | DateTimeField    | auto_now_add=True, verbose_name='Created at', help_text='Date and time when this tag was created.' |
+| updated_at    | updated_at    | DateTimeField    | auto_now=True, verbose_name='Updated at', help_text='Date and time when this tag was last updated.' |
+
+#### Discount Model
+
+| Name          | Database Key  | Field Type            | Validation                                                                   |
+| ------------- | ------------- | ---------------------- | ------------------------------------------------------------------------------ |
+| percentage    | percentage    | PositiveIntegerField | help_text='Discount percentage'                                               |
+| start_date     | start_date     | DateField             | help_text='Start date of the discount'                                        |
+| end_date       | end_date       | DateField             | help_text='End date of the discount'                                          |
+| is_active      | is_active      | BooleanField          | default=True, help_text='Is the discount currently active?'                    |
+
+
+#### Product Model
+
+```python
+SIZE_CHOICES = [
+        ('S', 'Small (18cm - 6 portions)'),
+        ('M', 'Medium (26cm - 12 portions)'),
+        ('L', 'Large (36cm - 25 portions)'),
+    ]
+
+    AVAILABILITY_CHOICES = [
+        ('out_of_stock', 'Out of Stock'),
+        ('upcoming', 'Upcoming'),
+        ('in_stock', 'In Stock'),
+    ]
+```
+
+| Name              | Database Key    | Field Type            | Validation                                                               |
+| ----------------- | --------------- | ---------------------- | ------------------------------------------------------------------------ |
+| name              | name            | CharField             | max_length=150                                                           |
+| slug              | slug            | SlugField             | max_length=150, unique=True                                              |
+| description       | description     | TextField             | max_length=500                                                           |
+| category          | category        | ForeignKey(Category)  | on_delete=models.CASCADE                                                 |
+| ingredients       | ingredients     | TextField             | null=True, blank=True                                                    |
+| tags              | tags            | ManyToManyField(Tag) | related_name='products', blank=True                                      |
+| is_active         | is_active       | BooleanField          | default=False                                                           |
+| created_at        | created_at      | DateTimeField         | auto_now_add=True                                                        |
+| updated_at        | updated_at      | DateTimeField         | auto_now=True                                                           |
+| price             | price           | DecimalField          | max_digits=10, decimal_places=2, null=True, blank=True                   |
+| related_products  | related_products | ManyToManyField('self') | blank=True                                                            |
+| discount_price    | discount_price  | ForeignKey(Discount) | on_delete=models.SET_NULL, null=True, blank=True                         |
+| availability      | availability    | CharField             | max_length=20, choices=AVAILABILITY_CHOICES, default='in_stock'         |
+| has_sizes         | has_sizes       | BooleanField          | default=False                                                           |
+| size              | size            | CharField             | max_length=5, choices=SIZE_CHOICES, null=True, blank=True                |
+
+
+#### Product Image Model
+
+| Name              | Database Key    | Field Type                 | Validation                                                              |
+| ----------------- | --------------- | -------------------------- | ----------------------------------------------------------------------- |
+| product           | product         | ForeignKey(Product)       | on_delete=models.CASCADE, related_name='images', verbose_name='Product', help_text='The associated product for this image.' |
+| image             | image           | CloudinaryField            | folder='product_images', null=True, blank=True                          |
+| alt_text          | alt_text        | CharField                  | max_length=300, null=True, blank=True, verbose_name='Alt text', help_text='Descriptive text for the image.' |
+| default_image     | default_image   | BooleanField               | default=False, verbose_name='Default Image', help_text='Is this the default image for the product?' |
+| is_active         | is_active       | BooleanField               | default=False, verbose_name='Is Active', help_text='Is this image currently active?' |
+| created_at        | created_at      | DateTimeField              | auto_now_add=True, verbose_name='Created at', help_text='The date and time when this image was created.' |
+| updated_at        | updated_at      | DateTimeField              | auto_now=True, verbose_name='Updated at', help_text='The date and time when this image was last updated.' |
+
+
+#### Order Model
+
+```python
+
+   PENDING = 'Pending'
+    PROCESSING = 'Processing'
+    SHIPPED = 'Shipped'
+    DELIVERED = 'Delivered'
+    READY_FOR_PICKUP = 'Ready For Pickup'
+
+    STATUS_CHOICES = (
+        (PENDING, 'Pending'),
+        (PROCESSING, 'Processing'),
+        (SHIPPED, 'Shipped'),
+        (DELIVERED, 'Delivered'),
+        (READY_FOR_PICKUP, 'Ready For Pickup'),
+    )
+```
+
+| Name                 | Database Key           | Field Type                 | Validation                                                                                                                                   |
+| -------------------- | ---------------------- | -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| user                 | user                   | ForeignKey(User)           | on_delete=models.CASCADE, related_name='order_user'                                                                                           |
+| full_name            | full_name              | CharField                  | max_length=50                                                                                                                                 |
+| email                | email                  | CharField                  | max_length=50                                                                                                                                 |
+| phone                | phone                  | CharField                  | max_length=100, blank=True                                                                                                                   |
+| address1             | address1               | CharField                  | max_length=250                                                                                                                               |
+| address2             | address2               | CharField                  | max_length=250, blank=True                                                                                                                   |
+| city                 | city                   | CharField                  | max_length=100                                                                                                                               |
+| county_region_state  | county_region_state    | CharField                  | max_length=100                                                                                                                               |
+| country              | country                | CharField                  | max_length=100                                                                                                                               |
+| zip_code             | zip_code               | CharField                  | max_length=20                                                                                                                                |
+| created              | created                | DateTimeField              | auto_now_add=True                                                                                                                           |
+| updated              | updated                | DateTimeField              | auto_now=True                                                                                                                               |
+| total_paid           | total_paid             | DecimalField               | max_digits=5, decimal_places=2                                                                                                             |
+| order_id             | order_id               | ShortUUIDField             | unique=True, max_length=20, prefix='cc', alphabet='abcdefgh12345'                                                                          |
+| order_key            | order_key              | CharField                  | max_length=200, blank=True, null=True                                                                                                       |
+| billing_status       | billing_status         | BooleanField               | default=False                                                                                                                               |
+| status               | status                 | CharField                  | max_length=20, choices=STATUS_CHOICES, default=PENDING                                                                                      |
+
+#### OrderItem Model
+
+| Name           | Database Key | Field Type               | Validation                                                                   |
+| -------------- | ------------ | ------------------------ | ------------------------------------------------------------------------------ |
+| order          | order        | ForeignKey(Order)        | on_delete=models.CASCADE, related_name='order_item'                           |
+| product        | product      | ForeignKey(Product)      | on_delete=models.CASCADE                                                     |
+| quantity       | quantity     | PositiveIntegerField     | default=1                                                                    |
+| size           | size         | CharField                | max_length=5, choices=Product.SIZE_CHOICES, null=True, blank=True              |
+
+#### Review Model
+
+```python
+    STAR_CHOICES = (
+        ('1', '1'),
+        ('2', '2'),
+        ('3', '3'),
+        ('4', '4'),
+        ('5', '5'),
+    )
+```
+
+| Name         | Database Key | Field Type            | Validation                                                                                     |
+| ------------ | ------------ | --------------------- | ---------------------------------------------------------------------------------------------- |
+| user         | user         | ForeignKey(User)      | on_delete=models.CASCADE, related_name='reviews'                                              |
+| product      | product      | ForeignKey(Product)   | on_delete=models.CASCADE, related_name='reviews'                                              |
+| order        | order        | ForeignKey(Order)     | on_delete=models.CASCADE, related_name='reviews', null=True, blank=True                         |
+| rating       | rating       | IntegerField          | choices=STAR_CHOICES, default=1                                                               |
+| comment      | comment      | TextField             | max_length=1000, blank=True, null=True                                                        |
+| created_at   | created_at   | DateTimeField         | auto_now_add=True                                                                             |
+#### Wishlist Model
+
+| Name        | Database Key | Field Type                    | Validation                                                              |
+| ----------- | ------------ | ----------------------------- | ----------------------------------------------------------------------- |
+| user        | user         | OneToOneField(User)           | on_delete=models.CASCADE, related_name='wishlist'                       |
+| products    | products     | ManyToManyField(Product)      | blank=True, related_name='wishlists'                                    |
+| created_at  | created_at   | DateTimeField                 | auto_now_add=True, editable=False                                       |
+
+#### Profile Model
+
+| Name             | Database Key | Field Type           | Validation                                                                                                  |
+| ---------------- | ------------ | -------------------- | ----------------------------------------------------------------------------------------------------------- |
+| user             | user         | OneToOneField(User)  | on_delete=models.CASCADE, related_name='profile', verbose_name='User', help_text='Format: required, unique=True' |
+| first_name       | first_name   | CharField            | max_length=50, blank=True, null=True, verbose_name='First name', help_text='Format: not required, max_length=50' |
+| last_name        | last_name    | CharField            | max_length=50, blank=True, null=True, verbose_name='Last name', help_text='Format: not required, max_length=50'   |
+| birthday         | birthday     | DateField            | blank=True, null=True, verbose_name='Birthday', help_text='Format: not required'                            |
+| phone_number     | phone_number | CharField            | max_length=20, null=True, blank=True                                                                         |
+| country          | country      | CountryField         | blank_label='Country *', null=True, blank=True                                                               |
+| postcode         | postcode     | CharField            | max_length=20, null=True, blank=True                                                                         |
+| town_or_city     | town_or_city | CharField            | max_length=40, null=True, blank=True                                                                         |
+| street_address1  | street_address1 | CharField          | max_length=80, null=True, blank=True                                                                         |
+| street_address2  | street_address2 | CharField          | max_length=80, null=True, blank=True                                                                         |
+| county           | county       | CharField            | max_length=80, null=True, blank=True                                                                         |
+| created_at       | created_at   | DateTimeField        | auto_now_add=True, verbose_name='Created at'                                                                |
+| updated_at       | updated_at   | DateTimeField        | auto_now=True, verbose_name='Updated at'                                                                    |
+
