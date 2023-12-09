@@ -68,4 +68,34 @@ Scalability and Reusability
 Our business goals prioritize scalability, making Cake Cravings adaptable to future growth and evolving requirements.
 
 
+## Target Audience
+
+This platform is tailored for individuals who appreciate the convenience of online shopping, specifically for indulging in delectable baked goods and delightful treats. The target audience includes:
+
+#### Cake Enthusiasts:
+
+Individuals with a sweet tooth, seeking a diverse range of cakes and cupcakes,cookies and seasonals for various occasions.
+#### Busy Professionals:
+
+Those with hectic schedules looking for a hassle-free way to order delicious treats online.
+#### Celebration Planners:
+
+Event organizers or individuals planning celebrations, who want to conveniently order customized cakes and desserts.
+#### Gift Shoppers:
+
+People searching for the perfect sweet gift, personalized for birthdays, anniversaries, or special moments.
+#### Online Shoppers:
+
+Anyone who enjoys the ease of online shopping and desires a seamless experience when purchasing bakery items.
+Features Tailored for You
+#### Discount Seekers:
+
+Cake Cravings offers competitive pricing and occasional discounts to make your sweet indulgence even more delightful.
+#### No-Fuss Notification System:
+
+Stay informed about new arrivals, promotions, and product availability with our user-friendly notification system.
+#### Easy Navigation:
+
+The website is designed to be user-friendly, ensuring a smooth and straightforward experience for users of all levels of tech-savviness.
+Whether you're a cake connoisseur, a busy professional, an event planner, or someone simply craving a delightful treat, Cake Cravings is here to cater to your sweet desires with a click of a button!
 
