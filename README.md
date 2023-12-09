@@ -99,3 +99,8 @@ Stay informed about new arrivals, promotions, and product availability with our 
 The website is designed to be user-friendly, ensuring a smooth and straightforward experience for users of all levels of tech-savviness.
 Whether you're a cake connoisseur, a busy professional, an event planner, or someone simply craving a delightful treat, Cake Cravings is here to cater to your sweet desires with a click of a button!
 
+
+## Web Marketing
+Embark on a delightful journey through the enticing universe of Cake Cravings! Elevate your sweet tooth experience by connecting with us through our carefully curated newsletters, where we share exclusive updates, tempting offers, and mouthwatering insights. Dive deeper into the confectionery magic on our vibrant Facebook page, where the community comes together to celebrate the art of baking, exchange delightful recipes, and revel in the joy of all things sweet. For a visual feast and behind-the-scenes sneak peeks, follow us on Instagram, where every post is a visual ode to the exquisite world of Cake Cravings. Join our thriving online community and indulge in the sweetness that transcends the ordinary – because at Cake Cravings, every interaction is a celebration of flavor, creativity, and the pure joy of savoring life's sweet moments!
+![Cake Cravings Facebook Page](documentation/facebook.png)
+![Cake Cravings instagram Page](documentation/instagram.png)
