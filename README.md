@@ -426,3 +426,32 @@ The app and associated resources were deployed as follows:
 Please refer to the [DEPLOYMENT.md](DEPLOYMENT.md) file for all deployment and payment-related documentation.
 
 ---
+
+## Credits
+
+## Credits
+
+- [GitHub](https://github.com/) for providing the design concept for the project.
+- [Django](https://www.djangoproject.com/) for the framework.
+- [Font awesome](https://fontawesome.com/) for the icons' free access.
+- [Heroku](https://www.heroku.com) for hosting of website
+- [jQuery](https://jquery.com/) for providing a range of tools to enhance the visual appeal of standard HTML code.
+- [Postgresql](https://www.postgresql.org/)for providing a database.
+- [birme](https://www.birme.net/): for providing free service to center and crop images.
+- [googlefonts](https://fonts.google.com/) for providing free fonts.
+- [Responsive Viewer](https://chrome.google.com/webstore/detail/responsive-viewer/inmopeiepgfljkpkidclfgbgbmfcennb/related?hl=en) for offering a free platform for testing the responsiveness of websites
+- [GoFullPage](https://gofullpage.com/)  for allowing to create free full web page screenshots;
+- [Favicon Generator](https://realfavicongenerator.net/) for providing a free platform to generate favicons.
+- [Nilesh Technology](https://www.youtube.com/@nileshtechnology) wishlist and profile app functions idea.
+- [Stripe](https://stripe.com/): for providing a free payment gateway.
+- [Coolors](https://coolors.co/): for providing a free platform to generate your own palette.
+- [fontawesome](https://fontawesome.com/): for providing free icons.
+- [googlefonts](https://fonts.google.com/): for providing free fonts.
+- [Sitemap Generator](https://www.xml-sitemaps.com/): for providing a free platform to generate sitemaps.
+- [Elon Musk](https://twitter.com/elonmusk?ref_src=twsrc%5Egoogle%7Ctwcamp%5Eserp%7Ctwgr%5Eauthor): for providing a template for the twitter mock-up page;
+- [Figma](https://www.figma.com/): for creating logo,default_image,facebook and instagram webmarketing immages  and wireframes.
+[mdbootstrap](https://mdbootstrap.com/snippets/standard/mdbootstrap/2885091?view=side) for bootstrap footer design idea.
+
+
+
+
