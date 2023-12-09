@@ -452,6 +452,25 @@ Please refer to the [DEPLOYMENT.md](DEPLOYMENT.md) file for all deployment and p
 - [Figma](https://www.figma.com/): for creating logo,default_image,facebook and instagram webmarketing immages  and wireframes.
 [mdbootstrap](https://mdbootstrap.com/snippets/standard/mdbootstrap/2885091?view=side) for bootstrap footer design idea.
 
+### Content and Images
+- [Hero image](https://unsplash.com/)
+- [About section](https://www.kitchenherald.com/how-indian-pastry-sector-gears-up-for-christmas/) 
+- [Gallery_image1 ](https://www.dreamboxme.com/blog) 
+- [Gallery_image2 ](https://hiboony.com/why-nylon-material-is-preferred-for-popular-foil-balloons/) 
+- [Gallery_image3 ](https://www.pexels.com/) 
+- [Gallery_image4 ](https://www.shutterstock.com/image-photo/cupcakes-pink-blue-garland-party-cake-173880419) 
+- [Gallery_image5 ](https://www.pinterest.com/pin/260364422177522642/) 
+- [Gallery_image6 ](https://www.pexels.com/) 
+- [Gallery_image7 ](https://www.freepik.com/photos/pastry-shop) 
+- [Gallery_image8 ](https://www.freepik.com/free-photos-vectors/food-catering-cake/16) 
+- [Gallery_image6 ](https://www.pexels.com/) 
+
+## Acknowledgments
+
+- [Nilesh Technology](https://github.com/TravelTimN) was a great support for development of this project .
+- [Iuliia Konovalova](https://github.com/IuliiaKonovalova) my mentor has been a great supporter, guiding me through the development of the project and helping me to learn a lot of new things by challenging me to do something new.
+- [Code Institute](https://codeinstitute.net/de/)  tutors and Slack community members for their support and help.
+
 
 
 
