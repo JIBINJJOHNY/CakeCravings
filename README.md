@@ -1,39 +1,37 @@
-![CI logo](https://codeinstitute.s3.amazonaws.com/fullstack/ci_logo_small.png)
 
-Welcome,
 
-This is the Code Institute student template for Codeanywhere. If you are using Gitpod then you need [this template](https://github.com/Code-Institute-Org/gitpod-full-template) instead.  We have preinstalled all of the tools you need to get started. It's perfectly ok to use this template as the basis for your project submissions.
+### Cake Cravings E-commerce website
+Indulge in the Sweet World of Cake Cravings – Your Ultimate Dessert Destination! 🎂
 
-You can safely delete this README.md file, or change it for your own project. Please do read it at least once, though! It contains some important information about Codeanywhere and the extensions we use. Some of this information has been updated since the video content was created. The last update to this file was: **August 30th, 2023**
+**Deployed website: [Link to website](https://wowder.onrender.com)**
 
-## Codeanywhere Reminders
+![Main image](documentation/readme_header.png)
 
-To run a frontend (HTML, CSS, Javascript only) application in Codeanywhere, in the terminal, type:
+**Card number for payment testing: 4242424242424242**
+## About
+Cake Cravings is not just a website; it's a celebration of flavors and sweetness. Dive into a world of delicious cakes and treats curated just for you.
 
-`python3 -m http.server`
+Key Features
+User-Friendly Experience: Navigate our platform effortlessly for a delightful shopping journey.
 
-A button should appear to click: _Open Preview_ or _Open Browser_.
+Secure Login System: Your security is our priority. Enjoy a safe and protected login system.
 
-To run a frontend (HTML, CSS, Javascript only) application in Codeanywhere with no-cache, you can use this alias for `python3 -m http.server`.
+Product Management for Admins: Admins have the power to curate and manage our delightful collection of products, ensuring a fresh and diverse offering for our customers.
 
-`http_server`
+Effortless Checkout: Experience a smooth and stress-free checkout process for a swift and satisfying shopping experience.
 
-To run a backend Python file, type `python3 app.py`, if your Python file is named `app.py` of course.
+Secure Payment System: Trust our secure payment system for worry-free transactions.
 
-A button should appear to click: _Open Preview_ or _Open Browser_.
+Exclusive Discounts: Unlock special discounts with our coupon system, our way of appreciating our loyal customers.
 
-In Codeanywhere you have superuser security privileges by default. Therefore you do not need to use the `sudo` (superuser do) command in the bash terminal in any of the lessons.
+Notification System: Never miss out! Receive notifications when your favorite products are back in stock by submitting a request.
 
-To log into the Heroku toolbelt CLI:
+Admin Superpowers
+Product Curation: As an admin, take charge of the product catalog. Add, update, or remove products to keep our offerings as delightful as ever.
 
-1. Log in to your Heroku account and go to _Account Settings_ in the menu under your avatar.
-2. Scroll down to the _API Key_ and click _Reveal_
-3. Copy the key
-4. In Codeanywhere, from the terminal, run `heroku_config`
-5. Paste in your API key when asked
+Why Cake Cravings?
+Cake Cravings is not just a website; it's an experience crafted with love and passion. Whether you're a dessert enthusiast or someone with a sweet tooth, Cake Cravings welcomes you to a world of sugary delights.
 
-You can now use the `heroku` CLI program - try running `heroku apps` to confirm it works. This API key is unique and private to you so do not share it. If you accidentally make it public then you can create a new one with _Regenerate API Key_.
+Embark on this delightful journey with Cake Cravings – where every slice tells a story!
 
----
 
-Happy coding!
