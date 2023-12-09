@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_extensions',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
@@ -187,3 +188,8 @@ FREE_DELIVERY_THRESHOLD = 60
 STRIPE_CURRENCY = 'eur'
 STRIPE_PUBLIC_KEY = os.environ.get('STRIPE_PUBLIC_KEY')
 STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY')
+
+GRAPH_MODELS = {
+    'all_applications':True,
+    'group_models':True,
+}

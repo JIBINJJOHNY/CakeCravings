@@ -153,6 +153,7 @@ Get ready for an even wider array of choices! We're expanding our categories and
     + [Gunicorn](https://gunicorn.org/): the webserver used to run the website.
     + [Spycopg2](https://www.python.org/dev/peps/pep-0249/): the database driver that established the database connection.
     + [Django-allauth](https://django-allauth.readthedocs.io/en/latest/): the authentication library used to create the user accounts.
+    + [Django-crispy-forms](https://django-cryptography.readthedocs.io/en/latest/): was used to control the rendering behavior of Django forms.
     + [Render](https://render.com/): the cloud computing system that houses the website.
     + [ElephantSQL](https://www.elephantsql.com/): the cloud database used to store all the data.
     + [GitHub](https://github.com/): used to store the source code for the website.
@@ -163,3 +164,56 @@ Get ready for an even wider array of choices! We're expanding our categories and
     + [W3C CSS validator](https://jigsaw.w3.org/css-validator/): was used to validate CSS code for the website.
     + [JShint](https://jshint.com/): was used to validate JS code for the website.
     + [PEP8](https://pep8.org/): was used to validate Python code for the website.
+    + [birme.net](https://www.birme.net/): was used to crop and center unsplash images.
+    + [stripe](https://stripe.com/): was used to create the payment system.
+    + [Privacy Policy Generator](https://www.privacypolicygenerator.info/) was used to create the privacy policy.
+
+## Features
+
+
+Please refer to the [FEATURES.md](FEATURES.md) file for all test-related documentation.
+
+
+## Design Overview:
+
+At Cake Cravings, our design philosophy revolves around creating a visually appealing, user-friendly, and delightful experience for every visitor. We believe that the aesthetics of our platform should reflect the sweetness of the treats we offer. Here's an overview of our design principles:
+
+#### Whimsical Palette:
+
+Our color palette is carefully chosen to evoke a sense of whimsy and joy. Soft pastels combined with rich, indulgent tones create a visual atmosphere that mirrors the diverse and delightful world of desserts.
+
+  ![Color Scheme](documentation/color_scheme.png)
+#### Typography Overview:
+
+In crafting the visual identity of Cake Cravings, we've carefully selected fonts to enhance the overall aesthetic and readability of our platform.
+
+1. 'Lato', sans-serif:
+
+For another set of elements, we've opted for the 'Lato' font. Lato is a versatile sans-serif typeface chosen for its clean lines and modern appeal. It ensures readability and a contemporary look across different devices and browsers.
+![Typography](documentation/lato.png)
+
+2. "Great Vibes", cursive:
+
+This font brings a touch of elegance and handcrafted charm to specific elements on our website. If your device supports "Great Vibes," you'll experience a decorative and personalized feel. Otherwise, the browser will gracefully fall back to a generic cursive font for a consistent look.
+![Typography](documentation/great_vibes.png)
+#### Intuitive Navigation:
+
+Navigating through Cake Cravings is as smooth as buttercream frosting. We prioritize an intuitive and user-friendly interface, ensuring that visitors can easily explore our extensive range of treats, recipes, and community features without any hassle.
+#### Mouthwatering Imagery:
+
+Every image on Cake Cravings is carefully selected to tantalize taste buds. High-resolution, delectable visuals showcase the intricate details of our treats, leaving visitors craving for more. Whether it's a sumptuous cake slice or a perfectly crafted pastry, our imagery aims to capture the essence of indulgence.
+#### Responsive Layout:
+
+Cake Cravings is designed to be accessible from any device. Our responsive layout ensures a seamless and consistent experience, whether you're browsing on a desktop, tablet, or smartphone. The design adapts dynamically to different screen sizes, maintaining its charm across the board.
+#### Engaging Community Spaces:
+
+The design extends beyond product pages to create vibrant community spaces. Engaging visuals and interactive elements foster a sense of community, encouraging users to share their baking experiences, discover new recipes, and connect with fellow dessert enthusiasts.
+#### Clear Call-to-Actions:
+
+We understand that simplicity is key. Clear and enticing call-to-action buttons guide users through the platform, whether it's placing an order, joining a community discussion, or exploring our latest collaborations. Our design encourages seamless interaction, ensuring users can effortlessly navigate through their Cake Cravings journey.
+#### Consistent Branding:
+
+Consistency is the heartbeat of our design. From the website to newsletters and social media, we maintain a cohesive visual identity that reflects the warmth, creativity, and joy inherent in the Cake Cravings brand.
+#### Imagery
+- Images were downloaded from the websites listed in the **Credits section**. [Content and Images](#content-and-images)
+- At Cake Cravings, we've elevated our user experience with a distinctive approach to icons sourced from the [font awesome](https://fontawesome.com/) library. Icons play a pivotal role in guiding users through multifunctional aspects of our website. Embracing innovation, we've carefully selected and customized these icons to provide a unique and visually engaging experience. 
