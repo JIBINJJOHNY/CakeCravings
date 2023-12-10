@@ -56,3 +56,17 @@ The user acceptability test listed below was used to test usability. It was dist
 | 17           | Click login button | Redirection to login page | Y |  user is not loggedin login button is showing        |
 | 18           | Click wishlist button | Redirection to wishlist page | Y |          |
 | 19           | Click cart button | Redirection to bag page | Y |          |
+| Admin Navigation |                        |                  |      |             |
+| 1           | Click Product list | Redirection to product list page | Y |          |
+| Home Page  |                        |                  |      |             |
+| 1           | Click Order now button | Redirection to Products page | Y |          |
+| Products Page |                        |                  |      |             |
+| 1 | click on breadcrumb buttons  | redirect to home page and product page | Y |          |
+| 2  | Select a category | Products are displayed | Y |          |
+| 3  | click on category list  | Products are displayed based on category  | Y |          |
+| 4 | Click on sort by buttons | Products are correctly filtered  | Y |based  on name(ascending order and descending order) price(low to high hight zo low rating hight to low) works |
+| 5  | Click on heart button | Product is added to wishlist and message will appear to notify user | Y | If user is logged out, the user will see a message to login and the click will be ignored |
+| 5 | Click on the product card image | User will be redirected to the product details page | Y | |
+| 6 | Click on page navigation | User will be redirected to the correct page | Y | |
+| 7 | Click Back to top icon  | User will be redirected to top of page | Y | |
+
