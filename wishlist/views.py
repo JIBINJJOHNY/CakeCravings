@@ -1,4 +1,5 @@
 from django.views import View
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
 from .models import Wishlist
@@ -20,12 +21,12 @@ def view_wishlist(request):
     }
 
     return render(request, 'wishlist/wishlist.html', context)
-
+@login_required
 def plus_wishlist(request):
     if request.method == 'GET':
         print('Plus Wishlist view called')
         prod_id = request.GET['prod_id']
-        product = Product.objects.get(id=prod_id)
+        product = get_object_or_404(Product, id=prod_id)
         user = request.user
 
         # Use products instead of product

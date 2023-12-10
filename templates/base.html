@@ -58,12 +58,14 @@
         <nav class="navbar navbar-expand-md" id="navbar">
             <!-- Brand -->
             <a class="navbar-brand" href="{% url 'home' %}" id="logo">
-                <img src="{% static 'images/logo.png' %}" alt="" width="100px">
+                <img src="{% static 'images/logo.webp' %}" alt="" width="100px">
             </a>
             <!-- Navbar toggler for small screens -->
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar"
+                aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
+
             <!-- Navbar links -->
             <div class="collapse navbar-collapse" id="collapsibleNavbar">
                 <ul class="navbar-nav">
@@ -249,11 +251,7 @@
                                                     class="button" value="Subscribe">
                                                 <p style="margin: 0px auto;"><a href="http://eepurl.com/iDkqr2"
                                                         title="Mailchimp - email marketing made easy and fun"><span
-                                                            style="display: inline-block; background-color: transparent; border-radius: 4px;"><img
-                                                                class="refferal_badge"
-                                                                src="https://digitalasset.intuit.com/render/content/dam/intuit/mc-fe/en_us/images/intuit-mc-rewards-text-dark.svg"
-                                                                alt="Intuit Mailchimp"
-                                                                style="width: 220px; height: 40px; display: flex; padding: 2px 0px; justify-content: center; align-items: center;"></span></a>
+                                                            style="display: inline-block; background-color: transparent; border-radius: 4px;"></span></a>
                                                 </p>
                                             </div>
                                         </div>
@@ -318,11 +316,11 @@
 
     </footer>
     {% block postloadjs %}
-    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
-        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous">
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"
-        integrity="sha384-E7V5gzz7bqqBEsQDbKoU1PciF8Bv5TBSFw6+pgnVp7abHaiDJ7FCf1cgFwIFBc5p" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.5/dist/umd/popper.min.js"
+        integrity="sha384-Xe+8cL9oJa6tN/veChSP7q+mnSPaj5Bcu9mPX5F5xIGE0DVittaqT5lorf0EI7Vk" crossorigin="anonymous">
     </script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
         integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous">

@@ -4,7 +4,7 @@
 {% load static %}
 
 {% block content %}
-<div class="container mt-5">
+<div class="container mt-5" style="min-height: 300px;">
     {% if wishlist_products %}
     <h1>Your Wishlist</h1>
     <div class="row">
@@ -31,13 +31,19 @@
     </div>
     {% else %}
     <p>Your wishlist is empty.</p>
+    <a href="{% url 'products:all_products' %}" class="btn btn-outline-black rounded-0 btn-lg">
+        <span class="icon">
+            <i class="fas fa-chevron-left"></i>
+        </span>
+        <span>Back to Menus</span>
+    </a>
     {% endif %}
 </div>
 
 <style>
     /* Add this style to change the link color */
     .wishlist-link {
-        color: #4d3056;
+        color: #000000;
     }
 </style>
 

@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, reverse, get_object_or_404
+from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Q, Count
 from django.db.models.functions import Lower
@@ -98,7 +99,9 @@ def product_detail(request, product_id):
     reviews = Review.objects.filter(product=product).order_by('-created_at')
 
     # Check if the user has already submitted a review for this product
-    user_review_exists = reviews.filter(user=request.user).exists()
+    user_review_exists = False
+    if request.user.is_authenticated:
+        user_review_exists = reviews.filter(user=request.user).exists()
 
     wishlist = None
     if request.user.is_authenticated:
@@ -137,6 +140,8 @@ def product_detail(request, product_id):
     }
 
     return render(request, 'products/product_detail.html', context)
+
+@login_required
 @user_passes_test(is_manager)
 def product_list(request):
     products = Product.objects.filter(is_active=True)

@@ -151,28 +151,27 @@ h2 {
     height: 100vh;
     color: white;
     font-family: 'Lato';
-    margin-top: 0px;
+    margin-top: 0;
     position: relative;
-
-    /* Add an overlay */
-    &:before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.5);
-        /* Adjust the transparency (0.5 is 50%) */
-    }
 }
+
+.home-section:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    /* Adjust the transparency (0.5 is 50%) */
+}
+
 
 
 /* Set text color for better visibility */
 .home-section .content {
     color: #fff;
 }
-
 
 /* Style for the home section */
 .home-section {
@@ -196,7 +195,7 @@ h2 {
 
 /* About section*/
 .about {
-    background: url('/static/images/aboutpage.png') center center;
+    background: url('/static/images/aboutpage.webp') center center;
     background-size: cover;
     position: relative;
     padding: 80px 0;
@@ -216,6 +215,8 @@ h2 {
 .about .about-img {
     position: relative;
     transition: 0.5s;
+    object-fit: cover;
+
 }
 
 .about .about-img img {
@@ -293,6 +294,8 @@ h2 {
     /* Remove extra space below the image */
     border: 3px solid #454035;
     /* Set border for each image */
+    object-fit: cover;
+
 }
 
 .gallery .gallery-item:hover img {
@@ -314,37 +317,6 @@ h2 {
     border-radius: 5px;
     cursor: pointer;
     width: 100%;
-}
-
-.overlay {
-    display: block;
-    opacity: 0;
-    position: absolute;
-    top: 10%;
-    margin-left: 0;
-    width: 70px;
-}
-
-.card:hover .overlay {
-    opacity: 1;
-    margin-left: 5%;
-    transition: 0.5s ease;
-}
-
-.overlay i {
-    height: 30px;
-    width: 30px;
-    font-size: 20px;
-    padding: 7px;
-    margin: -20%;
-    margin-bottom: 5%;
-    cursor: pointer;
-}
-
-.overlay .btn-secondary {
-    background: transparent !important;
-    border: none;
-    box-shadow: none;
 }
 
 h1 {
@@ -429,8 +401,6 @@ h6 span button:hover {
     background-color: #000000;
     /* Set your desired background color */
     padding: 15px;
-
-
 }
 
 .categories h3,
@@ -501,7 +471,6 @@ h6 span button:hover {
     /* Optional: Change background color on hover */
 }
 
-
 .product-quantity {
     display: flex;
     align-items: center;
@@ -545,7 +514,7 @@ h6 span button:hover {
 
 .btn-secondary {
     background-color: #f8f7f8;
-    border-color: #f8f7f8;
+    border-color: #ffffff;
     color: #000000;
 }
 
@@ -613,7 +582,6 @@ h6 span button:hover {
 }
 
 /*product list page*/
-
 .action-buttons {
     width: 120px;
     display: flex;
@@ -627,7 +595,6 @@ h6 span button:hover {
     margin-right: 5px;
     /* Adjust the spacing between buttons as needed */
 }
-
 
 .star-rating {
     font-size: 24px;
@@ -770,13 +737,26 @@ select option[value=""] {
 /* Footer */
 #mc_embed_signup {
     clear: left;
-    font: 14px Helvetica, Arial, sans-serif;
     width: 350px;
 }
 
 #mc_embed_signup .button {
     background-color: #4b4646;
 }
+
+/* Meida section */
+@media (max-width: 768px) {
+    .display-4 {
+        font-size: 2.5rem;
+    }
+
+    .lead {
+        font-size: .9rem;
+        font-weight: 250;
+    }
+
+}
+
 
 @media (min-width: 1024px) {
     .about {
