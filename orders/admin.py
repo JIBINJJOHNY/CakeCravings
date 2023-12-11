@@ -12,13 +12,16 @@ class OrderAdmin(admin.ModelAdmin):
         'total_paid',
         'billing_status',
         'status',
+        'order_total',    
+        'delivery_cost',  
+        'grand_total',    
     )
     list_filter = (
         'billing_status',
         'status',
     )
     search_fields = (
-        'user__username',  # Assuming you want to search by username
+        'user__username',
         'full_name',
         'email',
         'phone',

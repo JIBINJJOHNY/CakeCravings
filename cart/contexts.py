@@ -1,67 +1,60 @@
 from decimal import Decimal
-from django.shortcuts import get_object_or_404
 from django.conf import settings
+from django.shortcuts import get_object_or_404
 from products.models import Product
 
 def cart_contents(request):
     cart_items = []
     total = 0
     product_count = 0
-    cart = request.session.get('cake_cravings_cart', {})
-    selected_delivery_option = request.session.get('delivery_option', 'pickup')
+    cart = request.session.get('cart', {})
+    delivery_option = request.GET.get('delivery_option', 'online')  # Get delivery option from the query parameters
 
     for item_id, item_data in cart.items():
         if isinstance(item_data, int):
             product = get_object_or_404(Product, pk=item_id)
-            item_total = item_data * product.price
-            total += item_total
+            total += item_data * product.price
             product_count += item_data
             cart_items.append({
-                'product_id': item_id,
+                'item_id': item_id,
                 'quantity': item_data,
                 'product': product,
-                'item_total': item_total,
             })
         else:
             product = get_object_or_404(Product, pk=item_id)
-            if 'items_by_size' in item_data:
-                for size, quantity in item_data['items_by_size'].items():
-                   # Assuming the size prices are stored as a dictionary in the product model
-                    size_price = product.size_prices.get(size, product.price)
-                    item_total = quantity * size_price
-                    total += item_total
-                    product_count += quantity
-                    cart_items.append({
-                        'product_id': item_id,
-                        'quantity': quantity,
-                        'product': product,
-                        'size': size,
-                        'item_total': item_total,
-                    })
+            for size, quantity in item_data['items_by_size'].items():
+                total += quantity * product.price
+                product_count += quantity
+                cart_items.append({
+                    'item_id': item_id,
+                    'quantity': quantity,
+                    'product': product,
+                    'size': size,
+                })
 
-    # Set delivery cost based on the selected delivery option
-    if selected_delivery_option == 'local_delivery':
-        delivery_cost = min(Decimal('2.00'), total * Decimal(10 / 100))  # Minimum €2.00 or 10% of total
-    elif selected_delivery_option == 'national_delivery':
-        delivery_cost = Decimal('5.00')  # Fixed €5.00 for national delivery
-    else:
-        delivery_cost = Decimal('0.00')  # No delivery cost for pickup
-
+    # Adjust delivery cost based on the selected delivery option
     if total < settings.FREE_DELIVERY_THRESHOLD:
+        if delivery_option == 'online':
+            delivery = total * Decimal(settings.STANDARD_DELIVERY_PERCENTAGE / 100)
+        else:
+            delivery = settings.DELIVERY_COST  # Use the configured DELIVERY_COST
         free_delivery_delta = settings.FREE_DELIVERY_THRESHOLD - total
     else:
+        delivery = 0
         free_delivery_delta = 0
 
-    grand_total = delivery_cost + total
+    grand_total = delivery + total
 
     context = {
         'cart_items': cart_items,
         'total': total,
         'product_count': product_count,
-        'delivery': delivery_cost,
+        'delivery': delivery,
+        'free_delivery_delta': free_delivery_delta,
         'free_delivery_threshold': settings.FREE_DELIVERY_THRESHOLD,
         'grand_total': grand_total,
-        'selected_delivery_option': selected_delivery_option,
+        'delivery_option': delivery_option,
     }
+
 
     return context

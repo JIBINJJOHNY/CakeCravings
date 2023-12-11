@@ -2,10 +2,6 @@
 from django import forms
 from .models import Order, OrderItem
 
-# forms.py
-from django import forms
-from .models import Order, OrderItem
-
 class OrderForm(forms.ModelForm):
     class Meta:
         model = Order
@@ -31,7 +27,7 @@ class OrderForm(forms.ModelForm):
             'address2': forms.TextInput(attrs={'class': 'form-control'}),
             'city': forms.TextInput(attrs={'class': 'form-control'}),
             'county_region_state': forms.TextInput(attrs={'class': 'form-control'}),
-            'country': forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),  # Make it read-only
+            'country': forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
             'zip_code': forms.TextInput(attrs={'class': 'form-control'}),
             'total_paid': forms.TextInput(attrs={'class': 'form-control'}),
             'billing_status': forms.CheckboxInput(),

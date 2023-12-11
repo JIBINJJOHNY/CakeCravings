@@ -33,16 +33,22 @@
                 </div>
             </div>
         </div>
-
         <!-- Right Column for Product Cards -->
         <div class="col-md-9">
             <div id="product-cards">
                 <h1 class="products_heading">Products</h1>
 
                 <div class="row">
-                    {% for product in products %}
+                    {% for product in products_with_tags %}
                     <div class="col-md-4 mb-4 product-card" data-product-id="{{ product.id }}">
                         <div class="card">
+                            <!-- Tags -->
+                            <div class="tags-container">
+                                {% for tag in product_tags.product.id|stringformat:"s" %}
+                                <span class="tag">{{ tag.name }}</span>
+                                {% endfor %}
+                            </div>
+
                             <a href="{% url 'products:product_detail' product.id %}"
                                 onclick="redirectToProductDetail('{{ product.id }}')">
                                 <div class="image-container" style="height: 200px; overflow: hidden;">
@@ -50,14 +56,13 @@
                                         style="width: 100%; height: auto;">
                                 </div>
                             </a>
-
                             <div class="card-body">
                                 <div class="card-body-content" style="height: 120px;">
                                     <h3>{{ product.name }}</h3>
                                     {% if average_rating %}
                                     <small class="text-muted" style="font-size: 16px;">
-                                        <i class="fas fa-star mr-1"
-                                            style="color: gold;"></i>{{ average_rating|floatformat:"1" }} / 5
+                                        <i class="fas fa-star mr-1" style="color: gold;"></i>
+                                        {{ average_rating|floatformat:"1" }} / 5
                                     </small>
                                     {% else %}
                                     <small class="text-muted" style="font-size: 16px;">No Rating</small>
@@ -74,11 +79,11 @@
                                     {% else %}
                                     <h6>€{{ product.price }}</h6>
                                     <span>
-                                        <button class="btn btn-secondary addToWishlistBtn" title="Add to Wishlist"
+                                        <button class="btn addToWishlistBtn" title="Add to Wishlist"
                                             data-product-id="{{ product.id }}">
                                             <i class="fas fa-heart" style="font-size: 20px; color: #840a0a;"></i>
                                         </button>
-                                    </span></h6>
+                                    </span>
                                     {% endif %}
                                 </div>
                             </div>
@@ -87,30 +92,31 @@
                     {% endfor %}
                 </div>
             </div>
-            <!-- Pagination -->
-            <div class="pagination">
-                <span class="step-links">
-                    {% if products.has_previous %}
-                    <a href="?page=1">&laquo; first</a>
-                    <a href="?page={{ products.previous_page_number }}">previous</a>
-                    {% endif %}
-
-                    <span class="current">
-                        Page {{ products.number }} of {{ products.paginator.num_pages }}.
-                    </span>
-
-                    {% if products.has_next %}
-                    <a href="?page={{ products.next_page_number }}">next</a>
-                    <a href="?page={{ products.paginator.num_pages }}">last &raquo;</a>
-                    {% endif %}
-                </span>
-            </div>
         </div>
-        <button onclick="topFunction()" id="back-to-top-btn" title="Go to top">
-            <i class="fas fa-arrow-up"></i>
-            <!-- FontAwesome arrow-up icon -->
-        </button>
+        <!-- Pagination -->
+        <div class="pagination">
+            <span class="step-links">
+                {% if products.has_previous %}
+                <a href="?page=1">&laquo; first</a>
+                <a href="?page={{ products.previous_page_number }}">previous</a>
+                {% endif %}
+
+                <span class="current">
+                    Page {{ products.number }} of {{ products.paginator.num_pages }}.
+                </span>
+
+                {% if products.has_next %}
+                <a href="?page={{ products.next_page_number }}">next</a>
+                <a href="?page={{ products.paginator.num_pages }}">last &raquo;</a>
+                {% endif %}
+            </span>
+        </div>
     </div>
+    <button onclick="topFunction()" id="back-to-top-btn" title="Go to top">
+        <i class="fas fa-arrow-up"></i>
+        <!-- FontAwesome arrow-up icon -->
+    </button>
+</div>
 </div>
 </div>
 

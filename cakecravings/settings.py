@@ -93,7 +93,7 @@ TEMPLATES = [
     },
 ]
 
-
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 AUTHENTICATION_BACKENDS = [
 
     # Needed to login by username in Django admin, regardless of `allauth`
@@ -183,6 +183,8 @@ LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/'
 
 FREE_DELIVERY_THRESHOLD = 60
+STANDARD_DELIVERY_PERCENTAGE = 10
+DELIVERY_COST=0
 
 #Stripe
 STRIPE_CURRENCY = 'eur'

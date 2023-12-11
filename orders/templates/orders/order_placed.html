@@ -15,7 +15,7 @@
                 <!-- You can add more details about the order here if needed -->
 
                 <div class="mt-4">
-                    <a href="{% url 'my_orders' user=request.user %}" class="btn btn-primary">
+                    <a href="{% url 'orders:user_orders' user=request.user %}" class="btn btn-primary">
                         <i class="fas fa-shopping-cart"></i> View My Orders
                     </a>
                 </div>

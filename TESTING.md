@@ -60,13 +60,31 @@ The user acceptability test listed below was used to test usability. It was dist
 | 1           | Click Product list | Redirection to product list page | Y |          |
 | Home Page  |                        |                  |      |             |
 | 1           | Click Order now button | Redirection to Products page | Y |          |
-| Products Page |                        |                  |      |             |
+| Products  |                        |                  |      |             |
 | 1 | click on breadcrumb buttons  | redirect to home page and product page | Y |          |
 | 2  | Select a category | Products are displayed | Y |          |
 | 3  | click on category list  | Products are displayed based on category  | Y |          |
 | 4 | Click on sort by buttons | Products are correctly filtered  | Y |based  on name(ascending order and descending order) price(low to high hight zo low rating hight to low) works |
 | 5  | Click on heart button | Product is added to wishlist and message will appear to notify user | Y | If user is logged out, the user will see a message to login and the click will be ignored |
-| 5 | Click on the product card image | User will be redirected to the product details page | Y | |
-| 6 | Click on page navigation | User will be redirected to the correct page | Y | |
-| 7 | Click Back to top icon  | User will be redirected to top of page | Y | |
+| 6 | Click on the product card image | User will be redirected to the product details page | Y | |
+| 7 | Click on page navigation | User will be redirected to the correct page | Y | |
+| 8 | Click Back to top icon  | User will be redirected to top of page | Y | |
+| Product Details |                        |                  |      |             |
+| 1 | click on breadcrumb buttons  | navigate to corresponsing page | Y | |
+| 2 | Click thumbnails | main image is changing based on click  | Y |  |
+|3 | Click on the product options (size) | User will see price changes | Y | the size options only shows category cakes|
+| 4 | Click on heart button | Product is added to wishlist and message will appear to notify user | Y | same time button color change to red color |
+| 5| Click on the heart button agin | Product is removed from wishlist and message will appear to notify user | Y |  |
+| 6 | Click on Add Reviews button | user can successfully add reviews | Y |  |
+| 7 | Click on plus-minus quantity | Quantity will change | Y |  |
+| 8 | Click on add to cart button | Product is added to cart and message will appear to notify user | Y | If user is logged out, the user will see a message to login and the click will be ignored |
+| 9 | Click on related product view details button | redirect to corresponding product detail page | Y |  |
 
+
+
+
+
+### CSS Validation:
+
+- ![Full CSS Validation Report](documentation/css_validator.png)
+- The official [W3C (Jigsaw)](https://jigsaw.w3.org/css-validator/#validate_by_uri) validator yielded no errors or warnings, with the exception of a note on the usage of webkits.But CSS code functions flawlessly across a range of platforms.

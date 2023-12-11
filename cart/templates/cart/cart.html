@@ -1,12 +1,22 @@
 {% extends "base.html" %}
 {% load static %}
+{% load cart_tools %}
+
+{% block page_header %}
+<div class="container header-container">
+    <div class="row">
+        <div class="col"></div>
+    </div>
+</div>
+{% endblock %}
+
 {% block content %}
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<div class="overlay"></div>
 <div class="container mb-2">
     <div class="row">
         <div class="col">
             <hr>
-            <h2 class="logo-font mb-4">Shopping cart</h2>
+            <h2 class="logo-font mb-4">Shopping Cart</h2>
             <hr>
         </div>
     </div>
@@ -23,90 +33,105 @@
                             <th scope="col">Price</th>
                             <th scope="col">Qty</th>
                             <th scope="col">Subtotal</th>
-                            <th scope="col">Action</th>
                         </tr>
                     </thead>
 
-                    {% for product_id, item in cart_items.items %}
-                    {% with product=item.product %}
-                    <tr id="item_{{ product_id }}" data-product_id="{{ product_id }}"
-                        data-product_size="{{ item.size }}">
+                    {% for item in cart_items %}
+                    <tr>
                         <td class="p-3 w-25">
-                            {% if product.images.first %}
-                            <img class="img-fluid" src="{{ product.images.first.image_url }}" alt="{{ product.name }}">
-                            {% else %}
-                            <img src="{% static 'images/default_image.png' %}" alt="{{ product.name }}"
-                                class="img-fluid mt-4" id="mainImage">
+                            {% for image in item.product.images.all %}
+                            {% if image.default_image %}
+                            <img class="img-fluid rounded" src="{{ image.image.url }}" alt="{{ image.alt_text }}">
                             {% endif %}
+                            {% endfor %}
                         </td>
                         <td class="py-3">
-                            <h6>{{ product.name }}</h6>
-                            {% if item.size %}
-                            <p class="my-0"><strong>Size:</strong> {{ item.size|upper }}</p>
-                            {% else %}
-                            <p class="my-0"><strong>Size:</strong> N/A</p>
-                            {% endif %}
+                            <p class="my-0"><strong>{{ item.product.name }}</strong></p>
+                            <p class="my-0"><strong>Size:
+                                </strong>{% if item.product.has_sizes %}{{ item.size|upper }}{% else %}N/A{% endif %}
+                            </p>
                         </td>
-                        <td class="py-3 your-price-container-selector">
-                            <p class="my-0 your-price-selector">${{ product.price }}</p>
+                        <td class="py-3">
+                            <p class="my-0">${{ item.product.price }}</p>
                         </td>
                         <td class="py-3 w-25">
-                            <div class="input-group">
-                                <button class="decrement-qty btn btn-outline-secondary" data-item_id="{{ product_id }}">
-                                    <i class="fas fa-minus"></i>
-                                </button>
-                                <input type="number" class="qty_input form-control" data-item_id="{{ product_id }}"
-                                    value="{{ item.quantity }}" min="1" max="99">
-                                <button class="increment-qty btn btn-outline-secondary" data-item_id="{{ product_id }}">
-                                    <i class="fas fa-plus"></i>
-                                </button>
-                            </div>
-                        </td>
-                        <td class="py-3 your-price-container-selector">
-                            <p class="my-0" id="item_subtotal_{{ product_id }}">${{ item.item_total }}</p>
+                            <form class="form update-form" method="POST" action="{% url 'adjust_cart' item.item_id %}">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <button class="decrement-qty btn btn-sm btn-black rounded-0"
+                                                data-item_id="{{ item.item_id }}" id="decrement-qty_{{ item.item_id }}">
+                                                <span>
+                                                    <i class="fas fa-minus fa-sm"></i>
+                                                </span>
+                                            </button>
+                                        </div>
+                                        <input class="form-control form-control-sm qty_input" type="number"
+                                            name="quantity" value="{{ item.quantity }}" min="1" max="99"
+                                            data-item_id="{{ item.item_id }}" id="id_qty_{{ item.item_id }}">
+                                        <div class="input-group-append">
+                                            <button class="increment-qty btn btn-sm btn-black rounded-0"
+                                                data-item_id="{{ item.item_id }}" id="increment-qty_{{ item.item_id }}">
+                                                <span>
+                                                    <i class="fas fa-plus fa-sm"></i>
+                                                </span>
+                                            </button>
+                                        </div>
+                                        {% if item.product.has_sizes %}
+                                        <input type="hidden" name="product_size" value="{{ item.size }}">
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </form>
+                            <a class="update-link text-info"><small><i
+                                        class="fa-solid fa-arrows-rotate"></i></small></a>
+                            <a class="remove-item text-danger float-right" id="remove_{{ item.item_id }}"
+                                data-product_size="{{ item.size }}"><small><i
+                                        class="fa-solid fa-trash-can"></i></small></a>
                         </td>
                         <td class="py-3">
-                            <button class="remove-item btn btn-link text-danger" id="remove_{{ product_id }}"
-                                data-product_id="{{ product_id }}" data-product_size="{{ item.size }}">
-                                <i class="fas fa-trash"></i>
-                            </button>
-
+                            <p class="my-0">${{ item.product.price | calc_subtotal:item.quantity }}</p>
                         </td>
                     </tr>
-                    {% endwith %}
                     {% endfor %}
-
-                    <!-- Delivery Information -->
-                    <!-- Additional row for delivery information -->
-                    <tr>
-                        <td colspan="5" class="pt-3">
-                            <h6>Delivery Information</h6>
-                            <label for="delivery_option">Select Delivery Option:</label>
-                            <select name="delivery_option" id="delivery_option">
-                                <option value="pickup" {% if selected_delivery_option == 'pickup' %}selected{% endif %}>
-                                    Pickup</option>
-                                <option value="local_delivery"
-                                    {% if selected_delivery_option == 'local_delivery' %}selected{% endif %}>
-                                    Local Delivery</option>
-                                <option value="national_delivery"
-                                    {% if selected_delivery_option == 'national_delivery' %}selected{% endif %}>
-                                    National Delivery</option>
+                    <td colspan="5" class="text-right">
+                        <h6>Delivery:
+                            <select id="delivery-option" name="delivery_option" onchange="updateDeliveryOption()">
+                                <option value="online" {% if delivery_option == 'online' %}selected{% endif %}>Online
+                                    Delivery</option>
+                                <option value="pickup" {% if delivery_option == 'pickup' %}selected{% endif %}>Pickup
+                                </option>
                             </select>
-                            <!-- Display other delivery information -->
-                            <p id="delivery_cost_label">Delivery Cost: €{{ delivery_cost }}</p>
-                            <p id="free_delivery_threshold">Free Delivery Threshold: €{{ free_delivery_threshold }}</p>
-                        </td>
-                    </tr>
-                    <!-- Grand Total -->
-                    <tr>
-                        <td colspan="5" class="pt-3 text-right">
-                            <h6>Grand Total: €{{ grand_total }}</h6>
-                        </td>
-                    </tr>
+                        </h6>
+                    </td>
+                    <td colspan="5" class="pt-5 text-right">
+                        <h6><strong>Cart Total: ${{ total|floatformat:2 }}</strong></h6>
+                        <h6>Delivery: ${{ delivery|floatformat:2 }}</h6>
+                        <h4 class="mt-4"><strong>Grand Total: ${{ total|add:delivery|floatformat:2 }}</strong></h4>
+                        {% if free_delivery_delta > 0 %}
+                        <p class="mb-1 text-danger">
+                            You could get free delivery by spending just <strong>${{ free_delivery_delta }}</strong>
+                            more!
+                        </p>
+                        {% endif %}
+                    </td>
 
+                    </tr>
                     <tr>
-                        <td colspan="6" class="pt-3 text-right">
-                            <button id="checkoutButton" onclick="checkout()">Checkout</button>
+                        <td colspan="5" class="text-right">
+                            <a href="{% url 'products:all_products' %}" class="btn btn-outline-black rounded-0 btn-lg">
+                                <span class="icon">
+                                    <i class="fas fa-chevron-left"></i>
+                                </span>
+                                <span class="text-uppercase">Keep Shopping</span>
+                            </a>
+                            <a href="{% url 'orders:basket_view' %}" class="btn btn-black rounded-0 btn-lg">
+                                <span class="text-uppercase">Secure Checkout</span>
+                                <span class="icon">
+                                    <i class="fas fa-lock"></i>
+                                </span>
+                            </a>
                         </td>
                     </tr>
                 </table>
@@ -117,7 +142,7 @@
                 <span class="icon">
                     <i class="fas fa-chevron-left"></i>
                 </span>
-                <span>Back to Menus</span>
+                <span class="text-uppercase">Keep Shopping</span>
             </a>
             {% endif %}
         </div>
@@ -126,102 +151,76 @@
 {% endblock %}
 
 {% block postloadjs %}
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        // Increment quantity and update subtotal
-        $('.increment-qty').click(function (e) {
-            e.preventDefault();
-            var itemId = $(this).data('item_id');
-            var quantityInput = $(this).closest('tr').find('.qty_input');
-            var currentValue = parseInt(quantityInput.val());
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"
+    integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+<script type="text/javascript">
+    function updateDeliveryOption() {
+        var deliveryOption = $('#delivery-option').val();
+        window.location.href = '{% url "view_cart" %}?delivery_option=' + deliveryOption;
+    }
+    // Update quantity on click
+    $('.update-link').click(function (e) {
+        var form = $(this).prev('.update-form');
+        form.submit();
+    })
 
-            // Add logic to increment quantity (example: +1)
-            var newValue = currentValue + 1;
+    // Remove item and reload on click
+    $('.remove-item').click(function (e) {
+        var csrfToken = "{{ csrf_token }}";
+        var itemId = $(this).attr('id').split('remove_')[1];
+        var size = $(this).data('product_size');
+        var url = `/cart/remove/${itemId}/`;
+        var data = {
+            'csrfmiddlewaretoken': csrfToken,
+            'product_size': size
+        };
 
-            // Update the quantity input field
-            quantityInput.val(newValue);
+        $.post(url, data)
+            .done(function () {
+                location.reload();
+            });
+    })
 
-            // Add logic to update subtotal based on the new quantity
-            updateSubtotal(itemId, newValue);
-        });
+    // Disable +/- buttons outside 1-99 range
+    function handleEnableDisable(itemId) {
+        var currentValue = parseInt($(`#id_qty_${itemId}`).val());
+        var minusDisabled = currentValue < 2;
+        var plusDisabled = currentValue > 98;
+        $(`#decrement-qty_${itemId}`).prop('disabled', minusDisabled);
+        $(`#increment-qty_${itemId}`).prop('disabled', plusDisabled);
+    }
 
-        // Decrement quantity and update subtotal
-        $('.decrement-qty').click(function (e) {
-            e.preventDefault();
-            var itemId = $(this).data('item_id');
-            var quantityInput = $(this).closest('tr').find('.qty_input');
-            var currentValue = parseInt(quantityInput.val());
+    // Ensure proper enabling/disabling of all inputs on page load
+    var allQtyInputs = $('.qty_input');
+    for (var i = 0; i < allQtyInputs.length; i++) {
+        var itemId = $(allQtyInputs[i]).data('item_id');
+        handleEnableDisable(itemId);
+    }
 
-            // Add logic to decrement quantity (example: -1)
-            var newValue = currentValue - 1;
+    // Check enable/disable every time the input is changed
+    $('.qty_input').change(function () {
+        var itemId = $(this).data('item_id');
+        handleEnableDisable(itemId);
+    });
 
-            // Update the quantity input field, ensuring it's not less than 1
-            quantityInput.val(Math.max(newValue, 1));
+    // Increment quantity
+    $('.increment-qty').click(function (e) {
+        e.preventDefault();
+        var closestInput = $(this).closest('.input-group').find('.qty_input')[0];
+        var currentValue = parseInt($(closestInput).val());
+        $(closestInput).val(currentValue + 1);
+        var itemId = $(this).data('item_id');
+        handleEnableDisable(itemId);
+    });
 
-            // Add logic to update subtotal based on the new quantity
-            updateSubtotal(itemId, Math.max(newValue, 1));
-        });
-
-        // Quantity input change event
-        $('.qty_input').on('input', function () {
-            var itemId = $(this).data('item_id');
-            var newQuantity = parseInt($(this).val());
-
-            // Update subtotal based on the new quantity
-            updateSubtotal(itemId, newQuantity);
-        });
-
-        // Modify the click event handler for the 'remove-item' button
-        $('.remove-item').click(function (e) {
-            e.preventDefault();
-
-            var csrfToken = "{{ csrf_token }}";
-            var productId = $(this).closest('tr').data('product_id');
-            var size = $(this).closest('tr').data('product_size');
-
-            // Debugging: Log the values to the console
-            console.log("Product ID:", productId);
-            console.log("Size:", size);
-
-            // Check if productId and size are defined before making the AJAX request
-            if (productId !== undefined && size !== undefined) {
-                var url = `/cart/remove/${productId}/`;
-                var data = {
-                    'csrfmiddlewaretoken': csrfToken,
-                    'product_size': size
-                };
-
-                $.post(url, data)
-                    .done(function () {
-                        location.reload();
-                    })
-                    .fail(function (error) {
-                        console.error('Error removing item:', error);
-                    });
-            } else {
-                console.error("Product ID or Size is undefined");
-            }
-        });
-
-        // Function to update subtotal based on quantity
-        function updateSubtotal(itemId, newQuantity) {
-            var csrfToken = "{{ csrf_token }}";
-            var url = `/update-subtotal/${itemId}/`;
-            var data = {
-                'csrfmiddlewaretoken': csrfToken,
-                'new_quantity': newQuantity
-            };
-
-            // Make an AJAX request to the backend to update subtotal
-            $.post(url, data)
-                .done(function (response) {
-                    // Update the DOM to display the new subtotal
-                    console.log(response);
-                })
-                .fail(function (error) {
-                    console.error('Error updating subtotal:', error);
-                });
-        }
+    // Decrement quantity
+    $('.decrement-qty').click(function (e) {
+        e.preventDefault();
+        var closestInput = $(this).closest('.input-group').find('.qty_input')[0];
+        var currentValue = parseInt($(closestInput).val());
+        $(closestInput).val(currentValue - 1);
+        var itemId = $(this).data('item_id');
+        handleEnableDisable(itemId);
     });
 </script>
 {% endblock %}

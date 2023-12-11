@@ -1,7 +1,10 @@
 from django.db import models
 from django.contrib.auth.models import User
 from products.models import Product
-from shortuuid.django_fields import ShortUUIDField  # Import shortUUIDField
+from django.db.models import Sum
+from django.conf import settings
+from shortuuid.django_fields import ShortUUIDField
+
 
 class Order(models.Model):
     PENDING = 'Pending'
@@ -37,7 +40,7 @@ class Order(models.Model):
     total_paid = models.DecimalField(max_digits=5, decimal_places=2)
     order_id = ShortUUIDField(
         unique=True,
-        max_length=20,  # Adjusted max_length here
+        max_length=20,
         prefix='cc',
         alphabet='abcdefgh12345'
     )
@@ -48,16 +51,37 @@ class Order(models.Model):
         choices=STATUS_CHOICES,
         default=PENDING
     )
+    order_total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    delivery_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    grand_total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
     class Meta:
         ordering = ('-created',)
 
     def __str__(self):
-        return str(self.order_id)
+        return f"Order ID: {self.order_id}, Order Number: {self.order_key}, Order Total: ${self.order_total}"
+
 
     def get_order_items(self):
         items = OrderItem.objects.filter(order=self)
         return items
+    def update_total(self):
+        """
+        Update order total, delivery cost, and grand total.
+        """
+        # Calculate the order total using aggregate
+        order_total_aggregate = self.order_item.aggregate(Sum('product__price'))['product__price__sum']
+
+        # Use 0 if the order_total_aggregate is None
+        self.order_total = order_total_aggregate if order_total_aggregate is not None else 0
+
+        if self.order_total < settings.FREE_DELIVERY_THRESHOLD:
+            self.delivery_cost = self.order_total * settings.STANDARD_DELIVERY_PERCENTAGE / 100
+        else:
+            self.delivery_cost = 0
+
+        self.grand_total = self.order_total + self.delivery_cost
+        self.save()
 
 
 class OrderItem(models.Model):
@@ -69,5 +93,6 @@ class OrderItem(models.Model):
     def __str__(self):
         return f"{self.quantity} x {self.product.name}" + (f" ({self.size})" if self.size else "")
 
-
+    def get_total(self):
+            return self.quantity * self.product.price
 

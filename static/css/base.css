@@ -193,6 +193,21 @@ h2 {
     /* Add any additional styles as needed */
 }
 
+.message-container {
+    position: fixed;
+    top: 72px;
+    right: 15px;
+    z-index: 99999999999;
+}
+
+.custom-toast {
+    overflow: visible;
+}
+
+.toast-capper {
+    height: 2px;
+}
+
 /* About section*/
 .about {
     background: url('/static/images/aboutpage.webp') center center;
@@ -317,6 +332,22 @@ h2 {
     border-radius: 5px;
     cursor: pointer;
     width: 100%;
+}
+
+.tags-container {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+}
+
+.tag {
+    display: inline-block;
+    padding: 5px;
+    margin-right: 5px;
+    background-color: #3498db;
+    color: #fff;
+    font-size: 12px;
+    border-radius: 3px;
 }
 
 h1 {
@@ -513,9 +544,9 @@ h6 span button:hover {
 }
 
 .btn-secondary {
-    background-color: #f8f7f8;
+    background-color: #4f314f;
     border-color: #ffffff;
-    color: #000000;
+    color: #ffffff;
 }
 
 .main-image img {
@@ -565,6 +596,25 @@ h6 span button:hover {
     padding: 20px;
     border-radius: 8px;
     margin-top: 20px;
+}
+
+.btn-black {
+    background: black;
+    color: white;
+}
+
+.btn-outline-black {
+    background: white;
+    color: black !important;
+    /* use important to override link colors for <a> elements */
+    border: 1px solid black;
+}
+
+.btn-outline-black:hover,
+.btn-outline-black:active,
+.btn-outline-black:focus {
+    background: black;
+    color: white !important;
 }
 
 /* Adjust the width as needed */

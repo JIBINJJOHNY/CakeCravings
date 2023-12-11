@@ -44,7 +44,7 @@
         font-weight: bold;
         margin-bottom: 1rem;
         text-align: center;
-        color: #000000;
+        color: #007bff;
         /* Blue title color */
     }
 
@@ -191,9 +191,9 @@
                                     <!-- Payment elements will appear here -->
                                 </div>
                                 <hr class="my-4">
-                                <button id="submit" class="btn btn-info w-100 fw-bold"
-                                    data-secret="{{ client_secret }}">
-                                    Pay €{{ total_sum }}
+                                <button id="submit" class="btn btn-primary w-100 fw-bold"
+                                    data-secret="{{ client_secret }}" data-sum="{{ total_sum }}">
+                                    Pay ${{ total_sum }}
                                 </button>
                             </form>
                             <!-- Error messages in this element -->

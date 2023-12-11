@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, reverse, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.db.models import Q, Count
+from django.db.models import Q, Count,Avg
 from django.db.models.functions import Lower
 from django.core.paginator import Paginator,Page,EmptyPage, PageNotAnInteger
 from django.middleware.csrf import get_token
@@ -25,7 +25,6 @@ def is_manager(user):
 def get_csrf_token(request):
     csrf_token = get_token(request)
     return JsonResponse({'csrf_token': csrf_token})
-
 
 def all_products(request, category_slug=None):
     """ A view to show all products, including sorting and search queries """
@@ -82,8 +81,17 @@ def all_products(request, category_slug=None):
     product_counts = Product.objects.values('category__name').annotate(count=Count('id'))
 
     current_sorting = f'{sort}_{direction}'
+
+    # Include tags for each product in the context
+    product_tags = {str(product.id): product.tags.all() for product in products}
+    print(product_tags)
+
+    # Include products with tags in the context
+    products_with_tags = Product.objects.filter(id__in=product_tags.keys())
+
     context = {
-        'products': products,
+        'products_with_tags': products_with_tags,
+        'product_tags': product_tags,
         'search_term': query,
         'all_categories': all_categories,
         'product_counts': product_counts,
@@ -94,6 +102,7 @@ def all_products(request, category_slug=None):
     }
     return render(request, 'products/products.html', context)
 
+    
 def product_detail(request, product_id):
     product = get_object_or_404(Product, pk=product_id)
     reviews = Review.objects.filter(product=product).order_by('-created_at')
@@ -112,6 +121,9 @@ def product_detail(request, product_id):
     # Calculate average rating
     average_rating = reviews.aggregate(Avg('rating'))['rating__avg']
 
+    # Declare the review_form variable outside the if statement
+    review_form = None
+
     if request.method == 'POST':
         # Check if the user has already submitted a review
         if not user_review_exists:
@@ -124,9 +136,10 @@ def product_detail(request, product_id):
                 return redirect('products:product_detail', product_id=product_id)
         else:
             # Display a message indicating that the user can only submit one review
-            messages.warning(request, 'You can only submit one review per product.')
-    else:
-        # If the user has already submitted a review, don't display the review form
+            messages.warning(request, 'You can only submit one review per product.')  # Add this line
+
+    # If the user has already submitted a review, don't display the review form
+    if review_form is None:
         review_form = ReviewForm() if not user_review_exists else None
 
     related_products = Product.objects.filter(category=product.category).exclude(id=product.id)[:4]

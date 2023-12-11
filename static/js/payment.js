@@ -72,7 +72,7 @@ form.addEventListener('submit', function (ev) {
     formData.append('action', 'post');
     // AJAX to handle order creation and AJAX payment
     $.ajax({
-        url: window.location.origin + '/orders/add/',
+        url: window.location.origin + '/orders/add_order/',
         type: "POST",
         data: formData,
         processData: false,
@@ -104,7 +104,7 @@ form.addEventListener('submit', function (ev) {
                     $('#card-errors').html(error);
                 } else {
                     if (result.paymentIntent.status === 'succeeded') {
-                        window.location.replace(window.location.origin + "/payment/order_placed/");
+                        window.location.replace(window.location.origin + "/orders/order_placed/");
                     }
                     // enable the submit button again
                     $('#submit').prop('disabled', false);

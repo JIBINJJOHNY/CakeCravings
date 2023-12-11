@@ -1,20 +1,13 @@
 from django.urls import path
-from .views import (
-    AddOrder,
-    UserOrders,
-    UserOrderDetails,
-    BasketView,
-    order_placed,
-    StripeWebhookView,
-)
+from .views import AddOrder, basket_view, order_placed, OrdersView, OrderDetailsView, stripe_webhook
 
-app_name = 'orders'  
+app_name = 'orders'
+
 urlpatterns = [
     path('add_order/', AddOrder.as_view(), name='add_order'),
-    path('user_orders/', UserOrders.as_view(), name='user_orders'),
-    path('user_order_details/<str:order_number>/', UserOrderDetails.as_view(), name='user_order_details'),
-    path('basket/', BasketView, name='basket'),
+    path('basket_view/', basket_view, name='basket_view'),
     path('order_placed/', order_placed, name='order_placed'),
-    path('stripe_webhook/', StripeWebhookView.as_view(), name='stripe_webhook'),
-
+    path('user_orders/', OrdersView.as_view(), name='user_orders'),
+    path('order_details/<str:order_number>/', OrderDetailsView.as_view(), name='order_details'), 
+    path('stripe_webhook/', stripe_webhook, name='stripe_webhook'),
 ]

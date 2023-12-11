@@ -141,7 +141,7 @@
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link position-relative" href="{% url 'cart:view_cart' %}" id="cart-icon">
+                        <a class="nav-link position-relative" href="{% url 'view_cart' %}" id="cart-icon">
                             <i class="fas fa-shopping-cart"></i>
                             <span id="cartCount" class="notification-badge">0</span>
                         </a>
@@ -150,26 +150,30 @@
             </div>
         </nav>
     </header>
-    {% comment %} Main content container {% endcomment %}
-    <main class="main">
-        <div class="content__container">
-            {% comment %} Messages {% endcomment %}
-            {% if messages %}
-            <div class="message-container" id="messages-notes-main">
-                {% for message in messages %}
-                <div class="message-container__message">
-                    <p class="message-container__message--text">{{ message }}</p>
-                </div>
-                {% endfor %}
-            </div>
-            {% endif %}
+    {% if messages %}
+    <div class="message-container">
+        {% for message in messages %}
+        {% with message.level as level %}
+        {% if level == 40 %}
+        {% include 'includes/toasts/toast_error.html' %}
+        {% elif level == 30 %}
+        {% include 'includes/toasts/toast_warning.html' %}
+        {% elif level == 25 %}
+        {% include 'includes/toasts/toast_success.html' %}
+        {% else %}
+        {% include 'includes/toasts/toast_info.html' %}
+        {% endif %}
+        {% endwith %}
+        {% endfor %}
+    </div>
+    {% endif %}
 
-            {% block page_header %}
-            {% endblock %}
+    {% block page_header %}
+    {% endblock %}
 
-            {% block content %}
-            {% endblock %}
-        </div>
+    {% block content %}
+    {% endblock %}
+    </div>
     </main>
     {% comment %} Footer {% endcomment %}
     <footer class="text-white text-center text-lg-start" style="background-color:black; padding: 60px 0;">
@@ -318,6 +322,8 @@
     {% block postloadjs %}
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"
         integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.5/dist/umd/popper.min.js"
         integrity="sha384-Xe+8cL9oJa6tN/veChSP7q+mnSPaj5Bcu9mPX5F5xIGE0DVittaqT5lorf0EI7Vk" crossorigin="anonymous">
@@ -346,6 +352,11 @@
             ftypes[5] = 'birthday';
         }(jQuery));
         var $mcj = jQuery.noConflict(true);
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.toast').toast('show');
+        });
     </script>
 
     {% endblock %}
