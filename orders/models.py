@@ -34,20 +34,20 @@ class Order(models.Model):
     city = models.CharField(max_length=100)
     county_region_state = models.CharField(max_length=100)
     country = models.CharField(max_length=100)
-    zip_code = models.CharField(max_length=20)
+    zip_code = models.CharField(max_length=50)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     total_paid = models.DecimalField(max_digits=5, decimal_places=2)
     order_id = ShortUUIDField(
         unique=True,
-        max_length=20,
+        max_length=30,
         prefix='cc',
         alphabet='abcdefgh12345'
     )
     order_key = models.CharField(max_length=200, blank=True, null=True)
     billing_status = models.BooleanField(default=False)
     status = models.CharField(
-        max_length=20,
+        max_length=50,
         choices=STATUS_CHOICES,
         default=PENDING
     )

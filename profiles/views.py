@@ -4,12 +4,14 @@ from django.contrib import messages
 from django.views import View
 from .forms import ProfileForm
 from .models import  Profile
-# Create your views here.
+from django.shortcuts import get_object_or_404
+
 class Profileview(View):
-    def get(self,request):
+    def get(self, request):
         form = ProfileForm()
-        return render(request,'profiles/profile.html',locals())
-    def post(self,request):
+        return render(request, 'profiles/profile.html', locals())
+
+    def post(self, request):
         form = ProfileForm(request.POST)
         if form.is_valid():
             user = request.user
@@ -23,14 +25,30 @@ class Profileview(View):
             street_address1 = form.cleaned_data['street_address1']
             street_address2 = form.cleaned_data['street_address2']
             county = form.cleaned_data['county']
-            
-            prfl = Profile(user=user,first_name=first_name,last_name=last_name,birthday=birthday,phone_number=phone_number,country=country,postcode=postcode,town_or_city=town_or_city,street_address1=street_address1,street_address2=street_address2,county=county)
-            prfl.save()
-            messages.success(request,"Congratulations! Profile save successfully")
-        else:
-            messages.warning(request,'Invalid input Data')
 
-        return render(request,'profiles/profile.html',locals())
+       
+            profile = get_object_or_404(Profile, user= request.user)
+
+            # Update existing profile or create a new one
+            profile.first_name = first_name
+            profile.last_name = last_name
+            profile.birthday = birthday
+            profile.phone_number = phone_number
+            profile.country = country
+            profile.postcode = postcode
+            profile.town_or_city = town_or_city
+            profile.street_address1 = street_address1
+            profile.street_address2 = street_address2
+            profile.county = county
+
+            profile.save()
+
+            messages.success(request, "Congratulations! Profile saved successfully")
+        else:
+            messages.warning(request, 'Invalid input data')
+
+        return render(request, 'profiles/profile.html', locals())
+
 
 def address(request):
         add = Profile.objects.filter(user=request.user)
