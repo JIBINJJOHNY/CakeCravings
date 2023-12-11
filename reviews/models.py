@@ -21,6 +21,8 @@ class Review(models.Model):
         Product,
         on_delete=models.CASCADE,
         related_name='reviews',
+        blank=True,
+        null=True,
     )
     order = models.ForeignKey(
         Order,

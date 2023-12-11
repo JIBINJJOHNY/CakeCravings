@@ -16,22 +16,20 @@ class TagAdmin(admin.ModelAdmin):
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ['name', 'is_active', 'created_at', 'updated_at', 'category_image']
-    list_filter = ['is_active']
+    list_display = ('name', 'slug', 'is_active', 'created_at', 'updated_at')
+    list_filter = ('is_active', 'created_at', 'updated_at')
+    search_fields = ('name', 'slug')
     prepopulated_fields = {'slug': ('name',)}
-
-    def category_image(self, obj):
-        return mark_safe(f'<img src="{obj.image.url}" width="50" height="50" />')
-
-    category_image.short_description = 'Image'
+    date_hierarchy = 'created_at'
+    ordering = ('name',)
 
 @admin.register(Discount)
 class DiscountAdmin(admin.ModelAdmin):
     list_display = ('percentage', 'start_date', 'end_date', 'is_active')
 
-class ProductImageInline(admin.TabularInline):  
+class ProductImageInline(admin.TabularInline):
     model = ProductImage
-    extra = 1  # Number of empty image forms to display
+    extra = 1
 
 class ProductAdmin(admin.ModelAdmin):
     list_display = ('name', 'category', 'is_active', 'availability', 'created_at', 'updated_at', 'price')

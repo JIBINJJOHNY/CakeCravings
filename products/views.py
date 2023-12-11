@@ -88,18 +88,19 @@ def all_products(request, category_slug=None):
 
     # Include products with tags in the context
     products_with_tags = Product.objects.filter(id__in=product_tags.keys())
-
+    all_products = Product.objects.all()
     context = {
-        'products_with_tags': products_with_tags,
-        'product_tags': product_tags,
-        'search_term': query,
-        'all_categories': all_categories,
-        'product_counts': product_counts,
-        'current_sorting': current_sorting,
-        'selected_category_slug': category_slug,
-        'total_product_count': total_product_count,
-        'average_rating': average_rating,
-    }
+    'products_with_tags': products_with_tags,
+    'product_tags': product_tags,
+    'search_term': query,
+    'all_categories': all_categories,
+    'product_counts': product_counts,
+    'current_sorting': current_sorting,
+    'selected_category_slug': category_slug,
+    'total_product_count': total_product_count,
+    'average_rating': average_rating,
+    'all_products': all_products  
+}
     return render(request, 'products/products.html', context)
 
     

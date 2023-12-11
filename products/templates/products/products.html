@@ -39,12 +39,13 @@
                 <h1 class="products_heading">Products</h1>
 
                 <div class="row">
-                    {% for product in products_with_tags %}
+                    {% for product in all_products %}
+                    {{produt.tags}}
                     <div class="col-md-4 mb-4 product-card" data-product-id="{{ product.id }}">
                         <div class="card">
                             <!-- Tags -->
                             <div class="tags-container">
-                                {% for tag in product_tags.product.id|stringformat:"s" %}
+                                {% for tag in product.tags.all %}
                                 <span class="tag">{{ tag.name }}</span>
                                 {% endfor %}
                             </div>

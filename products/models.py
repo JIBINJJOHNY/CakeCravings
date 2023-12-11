@@ -18,7 +18,7 @@ class Category(models.Model):
         help_text='Format: required, max_length=150'
     )
     is_active = models.BooleanField(default=False)
-    image = CloudinaryField(folder='category', null=True, blank=True)
+  
 
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Created at')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='Updated at')
@@ -32,8 +32,6 @@ class Category(models.Model):
         self.slug = slugify(self.name, allow_unicode=True)
         super().save(*args, **kwargs)
 
-    def category_image(self):
-        return mark_safe(f'<img src="{self.image.url}" width="50" height="50" />')
 
     def __str__(self):
         return self.name
@@ -141,6 +139,7 @@ class Product(models.Model):
 
         # Only adjust price based on size if the category is 'cakes'
         if self.category.name.lower() == 'cakes' and self.size:
+            print(self.category.name.lower())
             if self.size == 'S':
                 self.price = Decimal('30.0')
             elif self.size == 'M':
