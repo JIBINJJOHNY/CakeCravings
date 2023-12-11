@@ -202,3 +202,4 @@ GRAPH_MODELS = {
     'all_applications':True,
     'group_models':True,
 }
+django_heroku.settings(locals())
