@@ -108,6 +108,289 @@ The user acceptability test listed below was used to test usability. It was dist
 | Order Placed |
 
 
+
+## Automated testing
+
+### Django unit testing
+I made the decision to use Django's integrated unit testing framework.To test the code, I have the following testing commands open in my terminal:
+Products App
+```python
+from django.test import TestCase
+from django.utils import timezone
+from .models import Category, Tag, Discount, Product, ProductImage
+
+class CategoryModelTest(TestCase):
+    def setUp(self):
+        self.category = Category.objects.create(name='Test Category', is_active=True)
+
+    def test_category_creation(self):
+        category = Category.objects.create(name='Test Category', is_active=True)
+        self.assertEqual(category.name, 'Test Category')
+        self.assertTrue(category.is_active)
+        self.assertIsNotNone(category.slug)
+
+class TagModelTest(TestCase):
+    def setUp(self):
+        self.tag = Tag.objects.create(name='Test Tag', is_active=True)
+
+    def test_tag_creation(self):
+        tag = Tag.objects.create(name='Test Tag', is_active=True)
+        self.assertEqual(tag.name, 'Test Tag')
+        self.assertTrue(tag.is_active)
+        self.assertIsNotNone(tag.slug)
+
+class DiscountModelTest(TestCase):
+    def setUp(self):
+        self.discount = Discount.objects.create(
+            percentage=10,
+            start_date=timezone.now().date(),
+            end_date=timezone.now().date() + timezone.timedelta(days=1),
+            is_active=True
+        )
+        def test_discount_validity(self):
+            self.assertTrue(self.discount.is_valid())
+
+        def test_discount_invalidity(self):
+            invalid_discount = Discount.objects.create(
+                percentage=10,
+                start_date=timezone.now().date() + timezone.timedelta(days=2),
+                end_date=timezone.now().date() + timezone.timedelta(days=3),
+                is_active=True
+            )
+            self.assertFalse(invalid_discount.is_valid())
+class ProductModelTest(TestCase):
+    def setUp(self):
+        self.category = Category.objects.create(name='Test Category', is_active=True)
+        self.tag = Tag.objects.create(name='Test Tag', is_active=True)
+        self.discount = Discount.objects.create(percentage=10, start_date=timezone.now().date(), end_date=timezone.now().date() + timezone.timedelta(days=1), is_active=True)
+
+    def test_product_creation(self):
+        product = Product.objects.create(name='Test Product', description='Test Description', category=self.category, price=50.0, discount_price=self.discount, availability='in_stock')
+        product.tags.add(self.tag)
+
+        self.assertEqual(product.name, 'Test Product')
+        self.assertEqual(product.description, 'Test Description')
+        self.assertEqual(product.category, self.category)
+        self.assertEqual(product.price, 45.0)  # Discounted price
+        self.assertTrue(product.is_active)
+        self.assertIsNotNone(product.slug)
+        self.assertTrue(product.discount_price.is_valid())
+        self.assertEqual(product.availability, 'in_stock')
+
+class ProductImageModelTest(TestCase):
+    def setUp(self):
+        self.category = Category.objects.create(name='Test Category', is_active=True)
+        self.product = Product.objects.create(name='Test Product', description='Test Description', category=self.category, price=50.0, availability='in_stock')
+        self.product_image = ProductImage.objects.create(product=self.product, alt_text='Test Alt Text', default_image=True, is_active=True)
+
+    def test_product_image_creation(self):
+        self.assertEqual(self.product_image.product, self.product)
+        self.assertEqual(self.product_image.alt_text, 'Test Alt Text')
+        self.assertTrue(self.product_image.default_image)
+        self.assertTrue(self.product_image.is_active)
+        self.assertIsNotNone(self.product_image.image_url)
+
+```
+Review App
+
+```python
+  from django.test import TestCase
+from django.contrib.auth.models import User
+from products.models import Product
+from orders.models import Order
+from .models import Review
+
+class ReviewModelTest(TestCase):
+    def setUp(self):
+        # Create a user, product, and order for testing
+        self.user = User.objects.create(username='testuser')
+        self.product = Product.objects.create(name='Test Product', price=10.0)
+        self.order = Order.objects.create(user=self.user, total_paid=10.0)
+
+    def test_review_creation(self):
+        # Create a review and check if it's saved successfully
+        review = Review.objects.create(
+            user=self.user,
+            product=self.product,
+            order=self.order,
+            rating=5,
+            comment='Great product!',
+        )
+
+        self.assertEqual(review.user, self.user)
+        self.assertEqual(review.product, self.product)
+        self.assertEqual(review.order, self.order)
+        self.assertEqual(review.rating, 5)
+        self.assertEqual(review.comment, 'Great product!')
+
+    def test_review_str_method(self):
+        # Test the __str__ method of the Review model
+        review = Review.objects.create(
+            user=self.user,
+            product=self.product,
+            order=self.order,
+            rating=4,
+            comment='Nice product!',
+        )
+
+        expected_str = f'{self.user.username} - {self.product.name} - 4'
+        self.assertEqual(str(review), expected_str)
+
+    def test_review_ordering(self):
+        # Test the ordering of reviews by created_at
+        review1 = Review.objects.create(user=self.user, product=self.product, rating=3)
+        review2 = Review.objects.create(user=self.user, product=self.product, rating=4)
+
+        reviews = Review.objects.all()
+        self.assertEqual(reviews[0], review2)
+        self.assertEqual(reviews[1], review1)
+
+```
+Profile App
+```python
+ from django.test import TestCase
+from django.contrib.auth.models import User
+from .models import Profile
+from django_countries.fields import Country
+from datetime import date
+
+class ProfileModelTest(TestCase):
+    def setUp(self):
+        # Create a user for testing
+        self.user = User.objects.create(username='testuser')
+
+    def test_profile_creation(self):
+        # Create a profile and check if it's saved successfully
+        profile = Profile.objects.create(
+            user=self.user,
+            first_name='John',
+            last_name='Doe',
+            birthday=date(1990, 1, 1),
+            phone_number='123456789',
+            country=Country('US'),
+            postcode='12345',
+            town_or_city='Test City',
+            street_address1='123 Test St',
+            street_address2='Apt 4',
+            county='Test County',
+        )
+
+        self.assertEqual(profile.user, self.user)
+        self.assertEqual(profile.first_name, 'John')
+        self.assertEqual(profile.last_name, 'Doe')
+        self.assertEqual(profile.birthday, date(1990, 1, 1))
+        self.assertEqual(profile.phone_number, '123456789')
+        self.assertEqual(profile.country, Country('US'))
+        self.assertEqual(profile.postcode, '12345')
+        self.assertEqual(profile.town_or_city, 'Test City')
+        self.assertEqual(profile.street_address1, '123 Test St')
+        self.assertEqual(profile.street_address2, 'Apt 4')
+        self.assertEqual(profile.county, 'Test County')
+
+    def test_profile_str_method(self):
+        # Test the __str__ method of the Profile model
+        profile = Profile.objects.create(user=self.user, first_name='John', last_name='Doe')
+
+        self.assertEqual(str(profile), 'John Doe')
+
+    def test_profile_age_property(self):
+        # Test the age property of the Profile model
+        profile = Profile.objects.create(user=self.user, birthday=date(1990, 1, 1))
+
+        self.assertEqual(profile.age, 33)  # Assuming the current year is 2023
+
+    def test_profile_age_property_invalid_birthday(self):
+        # Test the age property with an invalid birthday
+        profile = Profile.objects.create(user=self.user, birthday=date(2090, 1, 1))
+
+        self.assertEqual(profile.age, 'Invalid birthday')
+
+    def test_profile_age_property_no_birthday(self):
+        # Test the age property with no birthday
+        profile = Profile.objects.create(user=self.user)
+
+        self.assertIsNone(profile.age)
+
+```
+
+Order App
+```python
+from django.test import TestCase
+from django.contrib.auth.models import User
+from products.models import Product
+from .models import Order, OrderItem
+from decimal import Decimal
+from django.utils import timezone
+
+class OrderModelTest(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='testuser', password='testpassword')
+        self.product = Product.objects.create(name='Test Product', description='Test Description', category=your_category_instance, price=50.0, availability='in_stock')
+        self.order = Order.objects.create(
+            user=self.user,
+            full_name='John Doe',
+            email='john@example.com',
+            phone='123456789',
+            address1='Test Address 1',
+            city='Test City',
+            county_region_state='Test County',
+            country='Test Country',
+            zip_code='12345',
+            total_paid=50.0,
+            order_key='test_order_key',
+            billing_status=False,
+            status=Order.PENDING,
+            order_total=50.0,
+            delivery_cost=0.0,
+            grand_total=50.0
+        )
+        self.order_item = OrderItem.objects.create(order=self.order, product=self.product, quantity=2, size='M')
+
+    def test_order_creation(self):
+        self.assertEqual(str(self.order), f"Order ID: {self.order.order_id}, Order Number: {self.order.order_key}, Order Total: ${self.order.order_total}")
+        self.assertEqual(self.order.get_order_items().count(), 1)
+        self.assertEqual(self.order.total_paid, 50.0)
+
+    def test_update_total(self):
+        self.order_item.quantity = 3
+        self.order_item.save()
+        self.order.update_total()
+        self.assertEqual(self.order.order_total, 150.0)
+        self.assertEqual(self.order.delivery_cost, 0.0)
+        self.assertEqual(self.order.grand_total, 150.0)
+
+class OrderItemModelTest(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='testuser', password='testpassword')
+        self.product = Product.objects.create(name='Test Product', description='Test Description', category=your_category_instance, price=50.0, availability='in_stock')
+        self.order = Order.objects.create(
+            user=self.user,
+            full_name='Jibin johny',
+            email='jibin@example.com',
+            phone='123456789',
+            address1='Test Address 1',
+            city='Test City',
+            county_region_state='Test County',
+            country='Test Country',
+            zip_code='12345',
+            total_paid=50.0,
+            order_key='test_order_key',
+            billing_status=False,
+            status=Order.PENDING,
+            order_total=50.0,
+            delivery_cost=0.0,
+            grand_total=50.0
+        )
+        self.order_item = OrderItem.objects.create(order=self.order, product=self.product, quantity=2, size='M')
+
+    def test_order_item_creation(self):
+        self.assertEqual(str(self.order_item), "2 x Test Product (M)")
+        self.assertEqual(self.order_item.get_total(), 100.0)
+
+
+```
+
+
 ### CSS Validation:
 
 - ![Full CSS Validation Report](documentation/css_validator.png)

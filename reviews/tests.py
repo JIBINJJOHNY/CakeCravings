@@ -48,3 +48,4 @@ class ReviewModelTest(TestCase):
         reviews = Review.objects.all()
         self.assertEqual(reviews[0], review2)
         self.assertEqual(reviews[1], review1)
+

@@ -69,3 +69,4 @@ class OrderItemModelTest(TestCase):
     def test_order_item_creation(self):
         self.assertEqual(str(self.order_item), "2 x Test Product (M)")
         self.assertEqual(self.order_item.get_total(), 100.0)
+
