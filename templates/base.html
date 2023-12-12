@@ -124,7 +124,7 @@
                             </a>
                             <div class="dropdown-menu">
                                 <a class="dropdown-item" href="{% url 'profile'%}">Profile</a>
-                                <a class="dropdown-item" href="#">Orders</a>
+                                <a class="dropdown-item" href="{% url 'orders:user_orders' %}">Orders</a>
                                 <a class="dropdown-item" href="{% url 'account_logout' %}">Logout</a>
                             </div>
                         </div>

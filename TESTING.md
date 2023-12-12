@@ -79,9 +79,33 @@ The user acceptability test listed below was used to test usability. It was dist
 | 7 | Click on plus-minus quantity | Quantity will change | Y |  |
 | 8 | Click on add to cart button | Product is added to cart and message will appear to notify user | Y | If user is logged out, the user will see a message to login and the click will be ignored |
 | 9 | Click on related product view details button | redirect to corresponding product detail page | Y |  |
-
-
-
+| 10 | we can write comment and star rating in the review section | added reviews in product detail page | Y |  |
+| Wishlist |                        |                  |      |             |
+| 1 | Click on empty wishlist button | User will see go to product menu button | Y | If user is logged out, the user will see a message to login and the click will be ignored |
+| Profile |                        |                  |      |             |
+| 1 | Click on the profile button | User will be redirected to the edit profile page | Y | |
+| 2 | Click on the  address button | User will be redirected to the address page | Y | |
+| 3 | Click on the update addresses button | User will be redirected to the manage addresses page | Y |  |
+| 4 | Click on the account settings button | User will be redirected to the setting page | Y | user can rest email and password |
+| 5 | Click on the account delete button | User will be redirected to the account delete page | Y | user can delete account |
+| Cart |                        |                  |      |             |
+| 1 | Click on quantity button | quantity number increase and decrease | Y | |
+| 2 | Click on the update icon | User can see updated total price based on quantity| Y | |
+| 3 | Click on the trash icon |carted product delete | Y |  |
+| 4 | delivery option drop down | user can select online delivery and pickup | Y | Based on delivery option delivery cost is change |
+| 5 | Click on checkout button | user will be redirect to payment page | Y | |
+| Checkout |                        |                  |      |             |
+| 1 | Type in the Full name | Full name is changed | Y | If user has filled out the profile name and email id comes automatically |
+| 2 | Type in the email | Email is changed | Y | |
+| 3 | Type in the phone number | Phone number is changed | Y | If user has set the primary address, the phone number will be set automatically |
+| 4 | Type in the address | Address is changed | Y | If user has set the primary address, the address will be set automatically |
+| 5 | Type in the zip code | Zip code is changed | Y | If user has set the primary address, the zip code will be set automatically |
+| 6 | Select country | Country is selected | Y | If user has set the primary address, the country will be set automatically |
+| 7 | Select state | State is selected | Y | If user has set the primary address, the state will be set automatically |
+| 8 | Select city | City is selected | Y | If user has set the primary address, the city will be set automatically |
+| 9 | Type payment card data | Payment card data is changed | Y | |
+| 10 | Click on the pay button | The pay button will be disabled and the user will see a message to notify them | Y | If the payment card is not valid, the user will see a message to notify them. If the payment was successful, the user will be redirected to the order placed page and user will also receive an email notification |
+| Order Placed |
 
 
 ### CSS Validation:
