@@ -22,9 +22,6 @@
                         <strong>Order Total:</strong> {{ order.total_paid }}<br>
                         <strong>Status:</strong> {{ order.status }}
                     </p>
-                    <a class="" href="{% url 'orders:order_details' order_number=order.order_key %}">
-                        View Details
-                    </a>
                 </div>
             </div>
         </div>

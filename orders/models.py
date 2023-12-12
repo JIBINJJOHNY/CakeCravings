@@ -95,4 +95,3 @@ class OrderItem(models.Model):
 
     def get_total(self):
             return self.quantity * self.product.price
-

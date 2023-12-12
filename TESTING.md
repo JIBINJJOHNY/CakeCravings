@@ -88,3 +88,8 @@ The user acceptability test listed below was used to test usability. It was dist
 
 - ![Full CSS Validation Report](documentation/css_validator.png)
 - The official [W3C (Jigsaw)](https://jigsaw.w3.org/css-validator/#validate_by_uri) validator yielded no errors or warnings, with the exception of a note on the usage of webkits.But CSS code functions flawlessly across a range of platforms.
+
+### JS Validation:
+
+- [Full JS Validation Report](documentation/jsvalidation.pdf)
+No errors or are found when passing through the official [JSHint](https://www.jshint.com/) validator.

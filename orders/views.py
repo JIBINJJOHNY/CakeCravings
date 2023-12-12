@@ -131,33 +131,33 @@ def basket_view(request):
     }
     return render(request, 'orders/payment.html', context)
 
-
 def order_placed(request):
-    """View for the order placed page."""
-    cart = cart_contents(request)
-    cart_items = cart['cart_items']
 
-    order_instance = get_or_create_order(request)
-
-    for item in cart_items:
-        product = item['product']
-        quantity = item['quantity']
-        order_item = OrderItem.objects.create(
-            order=order_instance,
-            product=product,
-            quantity=quantity,
-            size=item.get('size'),
-        )
-        order_item.save()
-
-    # Clear the cart
+ # Clear the cart
     cart = request.session.get('cart', {})
     cart.clear()
     request.session['cart'] = cart
+    # Send email confirmation
+    subject = 'Order Placed Successfully'
 
-    # Redirect to the order_placed page
-    order_placed_url = reverse('orders:order_placed')  
-    return redirect(order_placed_url)
+    # Create HTML content directly
+    order_number = order.order_key
+    html_content = f'''
+        <h1>Order Placed Successfully</h1>
+        <p>Thank you for shopping with us. Your order number is: {order_number}</p>
+        <!-- You can customize the HTML content as needed -->
+    '''
+
+    plain_message = strip_tags(html_content)
+    from_email = settings.DEFAULT_FROM_EMAIL
+    to_email = [my_profile.user.email]  # Replace with the actual user's email
+
+    # Attach HTML content to the email
+    email = EmailMultiAlternatives(subject, plain_message, from_email, to_email)
+    email.attach_alternative(html_content, "text/html")
+    email.send()
+
+    return render(request, 'orders/order_placed.html')
 
 class OrdersView(View):
     """View for user orders page."""

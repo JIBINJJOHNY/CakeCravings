@@ -15,9 +15,12 @@
                 <!-- You can add more details about the order here if needed -->
 
                 <div class="mt-4">
-                    <a href="{% url 'orders:user_orders' user=request.user %}" class="btn btn-primary">
+                    {% with user=request.user %}
+                    <a href="{% url 'orders:user_orders' %}" class="btn btn-primary">
                         <i class="fas fa-shopping-cart"></i> View My Orders
                     </a>
+                    {% endwith %}
+
                 </div>
             </div>
         </div>

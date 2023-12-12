@@ -4,7 +4,7 @@ let stripe = Stripe(stripePublicKey);
 let elem = document.getElementById('submit');
 clientsecret = elem.getAttribute('data-secret');
 
-// Set up Stripe.js and Elements to use in checkout form
+// Set up Stripe.js and Elements to use in the checkout form
 let elements = stripe.elements();
 let style = {
     base: {
@@ -45,7 +45,7 @@ form.addEventListener('submit', function (ev) {
     let customerRegion = document.getElementById("customer-region").value;
     let customerCity = document.getElementById("customer-city").value;
     let postCode = document.getElementById("post-code").value;
-    // warning message for the user to prevent refreshing the page,
+    // Warning message for the user to prevent refreshing the page,
     // which will cause the payment to fail
     let warning = `
     <div class="col-12">
@@ -56,6 +56,7 @@ form.addEventListener('submit', function (ev) {
     </div>
   `;
     $('#card-errors').html(warning);
+
     // Set up order details
     let formData = new FormData();
     formData.append('full_name', customerName);
@@ -70,6 +71,10 @@ form.addEventListener('submit', function (ev) {
     formData.append('order_key', clientsecret);
     formData.append('csrfmiddlewaretoken', CSRF_TOKEN);
     formData.append('action', 'post');
+
+    // Log order details to the console
+    console.log("Order Details:", formData);
+
     // AJAX to handle order creation and AJAX payment
     $.ajax({
         url: window.location.origin + '/orders/add_order/',
@@ -78,6 +83,7 @@ form.addEventListener('submit', function (ev) {
         processData: false,
         contentType: false,
         success: function (json) {
+            console.log("AJAX Request Successful", json);
             stripe.confirmCardPayment(clientsecret, {
                 payment_method: {
                     card: card,
@@ -91,6 +97,8 @@ form.addEventListener('submit', function (ev) {
                 }
             }).then(function (result) {
                 if (result.error) {
+                    // Log error details to the console
+                    console.error("Payment Error:", result.error);
                     error = `
             <div class="col-12">
               <div class="alert alert-danger" role="alert">
@@ -99,18 +107,23 @@ form.addEventListener('submit', function (ev) {
               </div>
             </div>
           `;
-                    // enable the submit button again
+                    // Enable the submit button again
                     $('#submit').prop('disabled', false);
                     $('#card-errors').html(error);
                 } else {
                     if (result.paymentIntent.status === 'succeeded') {
+                        // Log success details to the console
+                        console.log("Payment Succeeded");
                         window.location.replace(window.location.origin + "/orders/order_placed/");
                     }
-                    // enable the submit button again
+                    // Enable the submit button again
                     $('#submit').prop('disabled', false);
                 }
             });
         },
-        error: function (xhr, errmsg, err) {},
+        error: function (xhr, errmsg, err) {
+            // Log AJAX request error details to the console
+            console.error("AJAX Request Error:", errmsg, err);
+        },
     });
 });
