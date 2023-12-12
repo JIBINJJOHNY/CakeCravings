@@ -39,6 +39,37 @@ Cake Cravings is not just a website; it's an experience crafted with love and pa
 Embark on this delightful journey with Cake Cravings – where every slice tells a story!
 
 ---
+### User Stories
+
+#### First Time Visitor:
+* As a First Time Visitor, I want to easily understand the purpose of the CakeCravings website.
+* As a First Time Visitor, I want to navigate through the website effortlessly to find products and information.
+* As a First Time Visitor, I want to register for an account and discover the benefits of using the website.
+* As a First Time Visitor, I want to find the website valuable and tailored to my shopping needs.
+* As a First Time Visitor, I expect clear error messages during the registration process for quick issue resolution.
+* As a First Time Visitor, I want to explore a comprehensive product list to understand the website's offerings.
+* As a First Time Visitor, I anticipate the option to register using my social media accounts for a quick and seamless registration process (Future feature).
+#### Returning Visitor:
+* As a Returning Visitor, I want to easily log in to my account for a personalized shopping experience.
+* As a Returning Visitor, I want quick access to my order history to track previous purchases.
+* As a Returning Visitor, I expect personalized recommendations based on my previous shopping behavior.
+* As a Returning Visitor, I want to easily update my account information, including shipping details.
+#### Admin/User Management:
+* As an Admin/User Manager, I want to efficiently manage product listings, including adding, editing, and removing items.
+* As an Admin/User Manager, I want to review and manage customer orders with ease.
+* As an Admin/User Manager, I expect to have tools for monitoring and managing user accounts.
+* As an Admin/User Manager, I want the ability to send important notifications or updates to registered users.
+#### Shopper:
+* As a Shopper, I want to easily browse and search for products using intuitive filters.
+* As a Shopper, I want to view detailed product information, including prices, descriptions, and customer reviews.
+* As a Shopper, I expect a secure and user-friendly checkout process.
+* As a Shopper, I want to receive order confirmation emails with detailed information.
+* As a Shopper, I want the option to save items to my wishlist for future consideration.
+#### Technical Improvements:
+* As a Developer, I want the codebase to follow best practices for maintainability and scalability.
+* As a Developer, I want regular updates and security patches to ensure the website's integrity.
+* As a Developer, I want detailed documentation for seamless onboarding and troubleshooting.
+
 ## UX
 ### User-Focused Design
 #### Eye-Catching Interface:
@@ -104,6 +135,122 @@ Whether you're a cake connoisseur, a busy professional, an event planner, or som
 Embark on a delightful journey through the enticing universe of Cake Cravings! Elevate your sweet tooth experience by connecting with us through our carefully curated newsletters, where we share exclusive updates, tempting offers, and mouthwatering insights. Dive deeper into the confectionery magic on our vibrant Facebook page, where the community comes together to celebrate the art of baking, exchange delightful recipes, and revel in the joy of all things sweet. For a visual feast and behind-the-scenes sneak peeks, follow us on Instagram, where every post is a visual ode to the exquisite world of Cake Cravings. Join our thriving online community and indulge in the sweetness that transcends the ordinary – because at Cake Cravings, every interaction is a celebration of flavor, creativity, and the pure joy of savoring life's sweet moments!
 ![Cake Cravings Facebook Page](documentation/facebook.png)
 ![Cake Cravings instagram Page](documentation/instagram.png)
+
+### Marketing Types Challenge
+
+- Who are your users?
+Cake lovers, individuals celebrating special occasions, busy professionals, and families looking for delightful treats.
+- Which online platforms would you find lots of your users?
+        *CakeCravings can find its users on various online platforms, including:
+        * Social media platforms like Facebook, Instagram, and Pinterest.
+        * Local food delivery apps and websites.
+        * Google Search for those looking for specific cake-related queries.
+        * Food-related forums and communities.
+- Would your users use social media? If yes, which platforms do you think you would find them on?
+    * Yes, CakeCravings' users are active on social media.
+    * Facebook and Instagram would be ideal platforms for sharing visually appealing images of cakes and engaging with a broad audience.
+- What do your users need? Could you meet that need with useful content? If yes, how could you best deliver that content to them?
+        * CakeCravings' users need:
+        * Delicious cake options for various occasions.
+        * Cake customization options.
+        * Special offers and discounts.
+        * Useful content can be delivered through:
+        * Regular posts of cake images and promotions on social media.
+        * Blog posts on your website with cake decorating tips, recipes, and more.
+- Would your business run sales or offer discounts? How do you think your users would most like to hear about these offers?
+    * CakeCravings will run periodic sales and offer seasonal discounts.
+        * Users would like to hear about these offers through:
+        * Email newsletters to subscribers.
+        * Social media announcements.
+        * Pop-up banners on the website.
+- What are the goals of your business? Which marketing strategies would offer the best ways to meet those goals?
+        * The goals of CakeCravings include:
+        * Increasing online sales.
+        * Expanding the customer base.
+        * Establishing itself as a reputable bakery brand.
+        * Marketing strategies to meet these goals:
+        * Content marketing through a blog to attract and engage potential customers.
+        * Social media advertising to reach a broader audience.
+        * SEO optimization for improved online visibility.
+        * Collaborations with local event planners and venues.
+- Would your business have a budget to spend on advertising? Or would it need to work with free or low-cost options to market itself?
+
+    * CakeCravings will allocate a modest budget for advertising, but it will also leverage free or low-cost options.
+    * Initially, the focus would be on cost-effective strategies such as social media marketing, content creation, and local partnerships. As the business grows, the budget for advertising can increase.
+
+### Business Idea: CakeCravings - E-commerce Bakery
+
+- Keyword Research Steps:
+* 		Brainstorm Your General Topics:
+    * CakeCravings
+    * Online bakery
+    * Custom cakes
+    * Cake delivery
+    * Bakery products
+    * Cake shop
+    * Gourmet cakes
+    * Special occasion cakes
+    * Dessert delivery
+    * Artisanal pastries
+- Brain Dump Possible Keywords for Each of the General Topics:
+        * CakeCravings:
+        * "CakeCravings bakery"
+        * "CakeCravings cakes"
+        * "CakeCravings desserts"
+        * "CakeCravings online"
+        * Online Bakery:
+        * "Online cake order"
+        * "Online bakery delivery"
+        * "Bakery shop online"
+        * "Order desserts online"
+        * Custom Cakes:
+        * "Custom cake designs"
+        * "Personalized cakes"
+        * "Bespoke cake orders"
+        * "Custom cake delivery"
+        * Cake Delivery:
+        * "Cake delivery service"
+        * "Same-day cake delivery"
+        * "Cake courier near me"
+        * "Local cake delivery"
+        * Bakery Products:
+        * "Gourmet bakery items"
+        * "Artisanal pastries"
+        * "Delicious baked goods"
+        * "Bakery treats"
+        * Cake Shop:
+        * "Cake store near me"
+        * "Local cake shop"
+        * "Cake boutique"
+        * "Bakery outlet"
+        * Gourmet Cakes:
+        * "Gourmet cake flavors"
+        * "Luxury cakes"
+        * "Exquisite cake selection"
+        * "High-end cake products"
+        * Special Occasion Cakes:
+        * "Birthday cakes"
+        * "Wedding cakes"
+        * "Anniversary cakes"
+        * "Baby shower cakes"
+        * Dessert Delivery:
+        * "Dessert delivery service"
+        * "Desserts to your door"
+        * "Sweet treats online"
+        * "Cake and dessert delivery"
+        * Artisanal Pastries:
+        * "Handcrafted pastries"
+        * "Artisan desserts"
+        * "Small-batch pastries"
+        * "Artisanal sweet creations"
+- Research Your Brain Dump of Ideas in Google Search:
+- Perform Google searches for each keyword and assess the competition and search results.
+- Ensure You Have a Selection of Short and Long-Tail Keywords:
+- Ensure the list includes both short keywords (e.g., "cake delivery") and long-tail phrases (e.g., "best custom cake delivery in [your location]").
+- Assess Your Choices for Relevance and Authoritativeness:
+- Evaluate the chosen keywords for their relevance to your bakery business and how authoritative your website's content can be for these keywords.
+- Dig into the Data Available on Keyword Volume and Competition Using wordtracker.com:
+- Utilize keyword research tools like Wordtracker to determine search volumes and competition for selected keywords.
 
 
 ## Future Development:
