@@ -365,6 +365,9 @@ Consistency is the heartbeat of our design. From the website to newsletters and 
 - Images were downloaded from the websites listed in the **Credits section**. [Content and Images](#content-and-images)
 - At Cake Cravings, we've elevated our user experience with a distinctive approach to icons sourced from the [font awesome](https://fontawesome.com/) library. Icons play a pivotal role in guiding users through multifunctional aspects of our website. Embracing innovation, we've carefully selected and customized these icons to provide a unique and visually engaging experience. 
 
+### Wireframes
+
+  [WoWder Wireframes](documentation/wireframe.png)
 
 ## Information Architecture
 
@@ -610,7 +613,19 @@ Please refer to the [DEPLOYMENT.md](DEPLOYMENT.md) file for all deployment and p
 - [Gallery_image6 ](https://www.pexels.com/) 
 - [Gallery_image7 ](https://www.freepik.com/photos/pastry-shop) 
 - [Gallery_image8 ](https://www.freepik.com/free-photos-vectors/food-catering-cake/16) 
-- [Gallery_image6 ](https://www.pexels.com/) 
+- [christmas_cake ](https://traditionallymodernfood.com/eggless-christmas-fruit-kerala-plum-cake/) 
+- [christmas_cake](https://justfunfacts.com/interesting-facts-about-fruitcakes/) 
+- [vanilla cupcake](https://m.facebook.com/p/Piece-by-Piece-Cakes-100063610293202/) 
+- [vanilla cupcake](https://briochebd.com/product/vanilla-cup-cake/) 
+- [Red velvet cake](https://thescranline.com/red-velvet-cake/) 
+- [Red velvet cake](https://livforcake.com/red-velvet-cake-recipe/) 
+- [Red velvet cake](https://sugargeekshow.com/recipe/red-velvet-cake-recipe-2/) 
+- [Choclate chip cookies](https://crumbncrust.com/products/chocolate-chip-cookies)
+- [Choclate chip cookies](https://www.shugarysweets.com/perfect-chocolate-chip-cookies/)
+- [Choclate chip cookies](https://www.gosoftstuff.com/shop/fsc1200-2-5oz-chocolate-chip-cookie-dough-clean-33460)
+
+
+
 
 ## Acknowledgments
 
