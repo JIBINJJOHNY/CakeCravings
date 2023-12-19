@@ -27,10 +27,10 @@ def get_csrf_token(request):
     return JsonResponse({'csrf_token': csrf_token})
 
 def all_products(request, category_slug=None):
-    """ A view to show all products, including sorting and search queries """
+    """A view to show all products, including sorting and search queries"""
 
     products = Product.objects.filter(is_active=True)
-    query = None
+    query = request.GET.get('q', None)
     sort = request.GET.get('sort', 'name')
     direction = request.GET.get('direction', 'asc')
 
@@ -38,6 +38,9 @@ def all_products(request, category_slug=None):
     if category_slug:
         category = get_object_or_404(Category, slug=category_slug)
         products = products.filter(category=category)
+
+    # Define the default sort key
+    default_sort_key = 'name'
 
     if sort == 'name':
         sort_key = 'name' if direction == 'asc' else '-name'
@@ -47,7 +50,7 @@ def all_products(request, category_slug=None):
         sort_key = '-avg_rating' if direction == 'desc' else 'avg_rating'
         products = products.annotate(avg_rating=Avg('reviews__rating')).order_by(sort_key)
     else:
-        sort_key = 'name'
+        sort_key = default_sort_key
 
     # Calculate average rating for all products
     average_rating = products.aggregate(avg_rating=Avg('reviews__rating'))['avg_rating']
@@ -55,19 +58,14 @@ def all_products(request, category_slug=None):
     # Order products after calculating average rating
     products = products.order_by(sort_key)
 
-    if request.GET:
-        if 'q' in request.GET:
-            query = request.GET['q']
-            if not query:
-                messages.error(request, "You didn't enter any search criteria!")
-                return redirect(reverse('products'))
-
-            queries = Q(name__icontains=query) | Q(description__icontains=query)
-            products = products.filter(queries)
+    if query:
+        queries = Q(name__icontains=query) | Q(description__icontains=query)
+        products = products.filter(queries)
 
     # Pagination
     page = request.GET.get('page', 1)
     paginator = Paginator(products, 12)  # Show 12 products per page
+
     try:
         products = paginator.page(page)
     except PageNotAnInteger:
@@ -84,26 +82,22 @@ def all_products(request, category_slug=None):
 
     # Include tags for each product in the context
     product_tags = {str(product.id): product.tags.all() for product in products}
-    print(product_tags)
 
     # Include products with tags in the context
     products_with_tags = Product.objects.filter(id__in=product_tags.keys())
-    all_products = Product.objects.all()
     context = {
-    'products_with_tags': products_with_tags,
-    'product_tags': product_tags,
-    'search_term': query,
-    'all_categories': all_categories,
-    'product_counts': product_counts,
-    'current_sorting': current_sorting,
-    'selected_category_slug': category_slug,
-    'total_product_count': total_product_count,
-    'average_rating': average_rating,
-    'all_products': all_products  
-}
+        'products_with_tags': products_with_tags,
+        'product_tags': product_tags,
+        'search_term': query,
+        'all_categories': all_categories,
+        'product_counts': product_counts,
+        'current_sorting': current_sorting,
+        'selected_category_slug': category_slug,
+        'total_product_count': total_product_count,
+        'average_rating': average_rating,
+        'all_products': products,  # Use the paginated products for rendering
+    }
     return render(request, 'products/products.html', context)
-
-    
 def product_detail(request, product_id):
     product = get_object_or_404(Product, pk=product_id)
     reviews = Review.objects.filter(product=product).order_by('-created_at')

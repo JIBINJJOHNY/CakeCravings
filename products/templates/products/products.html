@@ -16,8 +16,9 @@ print(f"Number of products: {products.count()}")
                     <ul>
                         <li><a href="{% url 'products:all_products' %}">All ({{ total_product_count }})</a></li>
                         {% for category in all_categories %}
-                        <li><a href="{% url 'products:products_by_category' category_slug=category.slug %}">{{ category.name }}
-                                ({{ product_counts|get_category_count:category.name }})</a></li>
+                        <li><a href="{% url 'products:products_by_category' category_slug=category.slug %}">
+                            {{ category.name }}
+                            ({{ product_counts|get_category_count:category.name }})</a></li>
                         {% endfor %}
                     </ul>
                 </div>
@@ -42,7 +43,6 @@ print(f"Number of products: {products.count()}")
 
                 <div class="row">
                     {% for product in all_products %}
-                    {{produt.tags}}
                     <div class="col-md-4 mb-4 product-card" data-product-id="{{ product.id }}">
                         <div class="card">
                             <!-- Tags -->
@@ -99,18 +99,18 @@ print(f"Number of products: {products.count()}")
         <!-- Pagination -->
         <div class="pagination">
             <span class="step-links">
-                {% if products.has_previous %}
-                <a href="?page=1">&laquo; first</a>
-                <a href="?page={{ products.previous_page_number }}">previous</a>
+                {% if all_products.has_previous %}
+                    <a href="?page=1">&laquo; first</a>
+                    <a href="?page={{ all_products.previous_page_number }}">previous</a>
                 {% endif %}
 
                 <span class="current">
-                    Page {{ products.number }} of {{ products.paginator.num_pages }}.
+                    Page {{ all_products.number }} of {{ all_products.paginator.num_pages }}.
                 </span>
 
-                {% if products.has_next %}
-                <a href="?page={{ products.next_page_number }}">next</a>
-                <a href="?page={{ products.paginator.num_pages }}">last &raquo;</a>
+                {% if all_products.has_next %}
+                    <a href="?page={{ all_products.next_page_number }}">next</a>
+                    <a href="?page={{ all_products.paginator.num_pages }}">last &raquo;</a>
                 {% endif %}
             </span>
         </div>
