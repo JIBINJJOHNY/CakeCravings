@@ -118,6 +118,8 @@ def product_detail(request, product_id):
 
     # Declare the review_form variable outside the if statement
     review_form = None
+    # Calculate the cart count
+    cart_count = sum((item.get('quantity', 0) if isinstance(item, dict) else item) for item in request.session.get('cart', {}).values())
 
     if request.method == 'POST':
         # Check if the user has already submitted a review

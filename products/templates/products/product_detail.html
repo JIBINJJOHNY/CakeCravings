@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 {% block content %}
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
 <div class="container mt-4">
     <div class="row">
         <div class="col-md-6">
@@ -43,12 +43,11 @@
                 </div>
             </div>
         </div>
-
         <div class="col-md-6 product-detail mt-4">
             <!-- Existing Product Details -->
             <h1>{{ product.name }}</h1>
             <p class="text-muted">{{ product.description }}</p>
-
+        
             <!-- Display Size, Availability, and Price -->
             <div class="product-details">
                 {% if product.size %}
@@ -56,16 +55,20 @@
                 {% endif %}
                 <p><strong>Availability:</strong> {{ product.get_availability_display }}</p>
                 <div class="product-price">
-                    <span class="current-price text-brand" id="product-price" data-product-price="{{ product.price }}">
-                        €{{ product.price }}
-                    </span>
-                    {% if product.discounted_price %}
-                    <span class="save-price font-md color3 ml-3">{{ product.discount_percentage }} Off</span>
-                    <span class="old-price font-md ml-3">€{{ product.discounted_price }}</span>
+                    {% if product.price is not None %}
+                        <span class="current-price text-brand" id="product-price" data-product-price="{{ product.price }}">
+                            €{{ product.price }}
+                        </span>
+                        {% if product.discounted_price %}
+                            <span class="save-price font-md color3 ml-3">{{ product.discount_percentage }} Off</span>
+                            <span class="old-price font-md ml-3">€{{ product.discounted_price }}</span>
+                        {% endif %}
+                    {% else %}
+                        <span class="text-muted">Price not available</span>
                     {% endif %}
                 </div>
             </div>
-
+        
             {% if average_rating %}
             <small class="text-muted" style="font-size: 16px;">
                 <i class="fas fa-star mr-1" style="color: gold;"></i>{{ average_rating|floatformat:"1" }} / 5
@@ -73,19 +76,19 @@
             {% else %}
             <small class="text-muted" style="font-size: 16px;">No Rating</small>
             {% endif %}
-
+        
             <div class="product-size mt-3">
-                <form class="form" action="{% url 'add_to_cart' product.id %}" method="POST">
+                <form id="addToCartForm" class="form" action="{% url 'add_to_cart' product.id %}" method="POST">
                     {% csrf_token %}
                     <div class="form-row">
-                        {% with product.has_sizes as s %}
-                        {% if s %}
+                        {% with product.has_sizes as S %}
+                        {% if S %}
                         <div class="col-12">
                             <p><strong>Size:</strong></p>
                             <select class="form-control rounded-0 w-50" name="product_size" id='id_product_size'>
-                                <option value="s" selected>S</option>
-                                <option value="m">M</option>
-                                <option value="l">L</option>
+                                <option value="S" selected>S</option>
+                                <option value="M">M</option>
+                                <option value="L">L</option>
                             </select>
                         </div>
                         {% endif %}
@@ -139,9 +142,11 @@
                     <i class="fas fa-heart"></i>
                 </a>
                 {% endif %}
-
+        
             </div>
         </div>
+        
+       
         <div class="product-extra-link2 mt-3">
             <!-- Ingredients Section -->
             <div class="ingredients">
@@ -398,31 +403,46 @@
     </script>
 
     <script>
-        $(document).ready(function () {
-            $("#addReviewBtn").click(submitReview);
+$(document).ready(function () {
+    // Function to fetch and update cart count on page load
+    function updateCartCountOnLoad() {
+        $.ajax({
+            type: 'GET',
+            url: '/path/to/endpoint/for/cart/count',  // Replace with your actual endpoint
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    // Update the cart count in the navbar
+                    $('#cartCount').text(response.cart_count);
+                }
+            }
         });
-    </script>
-    <script>
-        $(document).ready(function () {
-            $('#addToCartForm').submit(function (e) {
-                e.preventDefault();
+    }
 
-                // Perform an AJAX POST request to add to the cart
-                $.ajax({
-                    type: 'POST',
-                    url: $(this).data('action'),
-                    data: $(this).serialize(),
-                    dataType: 'json',
-                    success: function (response) {
-                        console.log(response);
-                        if (response.success) {
-                            // Update the cart count in the navbar
-                            $('#cartCount').text(response.total_cart_count);
-                        }
-                    }
-                });
-            });
+    // Call the function on page load
+    updateCartCountOnLoad();
+
+    // Form submission handling
+    $('#addToCartForm').submit(function (e) {
+        e.preventDefault();
+
+        // Perform an AJAX POST request to add to the cart
+        $.ajax({
+            type: 'POST',
+            url: $(this).attr('action'),  // Use attr('action') instead of data('action')
+            data: $(this).serialize(),
+            dataType: 'json',
+            success: function (response) {
+                console.log(response);
+                if (response.success) {
+                    // Update the cart count in the navbar
+                    $('#cartCount').text(response.cart_count);
+                }
+            }
         });
+    });
+});
+
 
         $('.plus-wishlist').click(function () {
             console.log('Plus Wishlist clicked');

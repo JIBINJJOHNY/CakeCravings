@@ -105,6 +105,7 @@ class Discount(models.Model):
         today = timezone.now().date()
         return self.start_date <= today <= self.end_date and self.is_active
 
+
 class Product(models.Model):
     SIZE_CHOICES = [
         ('S', 'Small (18cm - 6 portions)'),
@@ -117,6 +118,14 @@ class Product(models.Model):
         ('upcoming', 'Upcoming'),
         ('in_stock', 'In Stock'),
     ]
+
+    DEFAULT_PRICES = {
+        'cakes': {
+            'S': Decimal('30.0'),
+            'M': Decimal('45.0'),
+            'L': Decimal('80.0'),
+        },
+    }
 
     name = models.CharField(max_length=150)
     slug = models.SlugField(max_length=150, unique=True)
@@ -132,31 +141,41 @@ class Product(models.Model):
     discount_price = models.ForeignKey(Discount, on_delete=models.SET_NULL, null=True, blank=True)
     availability = models.CharField(max_length=20, choices=AVAILABILITY_CHOICES, default='in_stock')
     has_sizes = models.BooleanField(default=False)  # Set to True for products with sizes
-    size = models.CharField(max_length=5, choices=SIZE_CHOICES, null=True, blank=True)
+    size = models.CharField(max_length=5, choices=SIZE_CHOICES, default='S')
 
     def save(self, *args, **kwargs):
+        print(f"Saving product: {self.name}")
         self.slug = slugify(self.name, allow_unicode=True)
 
-        # Only adjust price based on size if the category is 'cakes'
-        if self.category.name.lower() == 'cakes' and self.size:
-            print(self.category.name.lower())
-            if self.size == 'S':
-                self.price = Decimal('30.0')
-            elif self.size == 'M':
-                self.price = Decimal('45.0')
-            elif self.size == 'L':
-                self.price = Decimal('80.0')
+        # Only adjust price based on size if the category is present in DEFAULT_PRICES
+        if self.category.name.lower() in self.DEFAULT_PRICES and self.size:
+            category_prices = self.DEFAULT_PRICES[self.category.name.lower()]
+            calculated_price = category_prices.get(self.size, self.price)
+            print(f"Category: {self.category.name}, Size: {self.size}, Price: {calculated_price}")
+        else:
+            calculated_price = self.price
 
         # Check if a discount is applicable
         if self.discount_price and self.discount_price.is_valid():
-            discount_amount = (self.discount_price.percentage / Decimal(100)) * self.price
-            self.price -= discount_amount
+            discount_amount = (self.discount_price.percentage / Decimal(100)) * calculated_price
+            calculated_price -= discount_amount
 
+        self.price = calculated_price
         super().save(*args, **kwargs)
+        print(f"Category Prices: {category_prices}")
+        print(f"Calculated Price: {calculated_price}")
 
-    def __str__(self):
-        return self.name
+    def get_price_for_size(self, size):
+        """
+        Get the price for the specified size.
+        If the size is not available, return the default price.
+        """
+        category_prices = self.DEFAULT_PRICES.get(self.category.name.lower(), {})
+        default_price = category_prices.get('S', self.price)
 
+        print(f"Category: {self.category.name}, Size: {size}, Default Price: {default_price}")
+
+        return category_prices.get(size, default_price)
 
 class ProductImage(models.Model):
     product = models.ForeignKey(
