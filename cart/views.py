@@ -52,8 +52,7 @@ def add_to_cart(request, item_id):
             messages.success(request, f'Added {product.name} to your cart')
 
     request.session['cart'] = cart
-    print("Session Data:", request.session.items())
-    print("Cart Data:", cart)
+
     # Calculate the updated cart count, including products with sizes
     cart_count = sum(
         (
@@ -61,7 +60,7 @@ def add_to_cart(request, item_id):
                 (
                     item_data.get('quantity')
                     if isinstance(item_data, dict) and 'items_by_size' not in item_data
-                    else item_data.get('items_by_size', {}).get(size, 0)
+                    else sum(item_data.get('items_by_size', {}).values())
                 )
                 if isinstance(item_data, dict)
                 else item_data
@@ -71,6 +70,12 @@ def add_to_cart(request, item_id):
     )
 
     return JsonResponse({'success': True, 'cart_count': cart_count})
+
+def get_cart_count(request):
+    context = cart_contents(request)
+    cart_count = context.get('cart_count', 0)
+    return JsonResponse({'success': True, 'cart_count': cart_count})
+
 def adjust_cart(request, item_id):
     """Adjust the quantity of the specified product to the specified amount"""
 

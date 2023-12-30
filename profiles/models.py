@@ -34,7 +34,6 @@ class Profile(models.Model):
         verbose_name='Birthday',
         help_text='Format: not required'
     )
-   
     phone_number = models.CharField(max_length=20, null=True, blank=True)
     country = CountryField(blank_label='Country *', null=True, blank=True)
     postcode = models.CharField(max_length=20, null=True, blank=True)
@@ -43,6 +42,13 @@ class Profile(models.Model):
     street_address2 = models.CharField(max_length=80, null=True, blank=True)
     county = models.CharField(max_length=80, null=True, blank=True)
     
+    # New field to indicate the primary address
+    is_primary_address = models.BooleanField(
+        default=False,
+        verbose_name='Is Primary Address',
+        help_text='Check this if it is the primary address.'
+    )
+
     created_at = models.DateTimeField(
         auto_now_add=True,
         verbose_name='Created at',
@@ -77,3 +83,13 @@ class Profile(models.Model):
             return birthday
         return None
 
+# Signal to create a profile when a new user is registered
+@receiver(post_save, sender=User)
+def create_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(user=instance)
+
+# Signal to save the profile when the user is saved
+@receiver(post_save, sender=User)
+def save_profile(sender, instance, **kwargs):
+    instance.profile.save()

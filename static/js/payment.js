@@ -76,54 +76,74 @@ form.addEventListener('submit', function (ev) {
     console.log("Order Details:", formData);
 
     // AJAX to handle order creation and AJAX payment
-    $.ajax({
-        url: window.location.origin + '/orders/add_order/',
-        type: "POST",
-        data: formData,
-        processData: false,
-        contentType: false,
-        success: function (json) {
-            console.log("AJAX Request Successful", json);
-            stripe.confirmCardPayment(clientsecret, {
-                payment_method: {
-                    card: card,
-                    billing_details: {
-                        address: {
-                            line1: customerAddress,
-                            line2: customerAddress2
-                        },
-                        name: customerName
+$.ajax({
+    url: window.location.origin + '/orders/add_order/',
+    type: "POST",
+    data: formData,
+    processData: false,
+    contentType: false,
+    success: function (json) {
+        console.log("AJAX Request Successful", json);
+
+        stripe.confirmCardPayment(clientsecret, {
+            payment_method: {
+                card: card,
+                billing_details: {
+                    address: {
+                        line1: customerAddress,
+                        line2: customerAddress2
                     },
+                    name: customerName
+                },
+            }
+        }).then(function (result) {
+            if (result.error) {
+                // Log error details to the console
+                console.error("Payment Error:", result.error);
+                error = `
+                    <div class="col-12">
+                        <div class="alert alert-danger" role="alert">
+                            ${result.error.message}
+                            Please check your card details and try again!
+                        </div>
+                    </div>
+                `;
+                // Enable the submit button again
+                $('#submit').prop('disabled', false);
+                $('#card-errors').html(error);
+            } else {
+                if (result.paymentIntent.status === 'succeeded') {
+                    // Log success details to the console
+                    console.log("Payment Succeeded");
+
+                    // After successful payment, redirect to the order confirmation page
+                    window.location.replace(window.location.origin + "/orders/order_confirmation/");
+
+                    // Send order confirmation email
+                    $.ajax({
+                        url: window.location.origin + '/orders/send_order_confirmation_email/',
+                        type: "POST",
+                        data: {
+                            'order_id': json.order_id,
+                            'csrfmiddlewaretoken': CSRF_TOKEN,
+                            'action': 'post'
+                        },
+                        success: function (emailResponse) {
+                            console.log("Order Confirmation Email Sent", emailResponse);
+                        },
+                        error: function (xhr, errmsg, err) {
+                            console.error("Order Confirmation Email Error:", errmsg, err);
+                        },
+                    });
                 }
-            }).then(function (result) {
-                if (result.error) {
-                    // Log error details to the console
-                    console.error("Payment Error:", result.error);
-                    error = `
-            <div class="col-12">
-              <div class="alert alert-danger" role="alert">
-                ${result.error.message}
-                Please check your card details and try again!
-              </div>
-            </div>
-          `;
-                    // Enable the submit button again
-                    $('#submit').prop('disabled', false);
-                    $('#card-errors').html(error);
-                } else {
-                    if (result.paymentIntent.status === 'succeeded') {
-                        // Log success details to the console
-                        console.log("Payment Succeeded");
-                        window.location.replace(window.location.origin + "/orders/order_placed/");
-                    }
-                    // Enable the submit button again
-                    $('#submit').prop('disabled', false);
-                }
-            });
-        },
-        error: function (xhr, errmsg, err) {
-            // Log AJAX request error details to the console
-            console.error("AJAX Request Error:", errmsg, err);
-        },
-    });
+                // Enable the submit button again
+                $('#submit').prop('disabled', false);
+            }
+        });
+    },
+    error: function (xhr, errmsg, err) {
+        // Log AJAX request error details to the console
+        console.error("AJAX Request Error:", errmsg, err);
+    },
+});
 });

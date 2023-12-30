@@ -162,6 +162,8 @@ class Product(models.Model):
 
         self.price = calculated_price
         super().save(*args, **kwargs)
+        print(f"Saving product: {self.name}")
+        print(f"Size: {self.size}, Price: {self.price}")
         print(f"Category Prices: {category_prices}")
         print(f"Calculated Price: {calculated_price}")
 
@@ -171,12 +173,11 @@ class Product(models.Model):
         If the size is not available, return the default price.
         """
         category_prices = self.DEFAULT_PRICES.get(self.category.name.lower(), {})
-        default_price = category_prices.get('S', self.price)
+        default_price = category_prices.get(size, self.price)
 
         print(f"Category: {self.category.name}, Size: {size}, Default Price: {default_price}")
 
-        return category_prices.get(size, default_price)
-
+        return default_price
 class ProductImage(models.Model):
     product = models.ForeignKey(
         'Product',

@@ -98,17 +98,15 @@
                     <td colspan="5" class="text-right">
                         <h6>Delivery:
                             <select id="delivery-option" name="delivery_option" onchange="updateDeliveryOption()">
-                                <option value="online" {% if delivery_option == 'online' %}selected{% endif %}>Online
-                                    Delivery</option>
-                                <option value="pickup" {% if delivery_option == 'pickup' %}selected{% endif %}>Pickup
-                                </option>
+                                <option value="online" {% if delivery_option == 'online' %}selected{% endif %}>Online Delivery</option>
+                                <option value="pickup" {% if delivery_option == 'pickup' %}selected{% endif %}>Pickup</option>
                             </select>
                         </h6>
                     </td>
                     <td colspan="5" class="pt-5 text-right">
                         <h6><strong>Cart Total: €{{ total|floatformat:2 }}</strong></h6>
                         <h6>Delivery: €{{ delivery|floatformat:2 }}</h6>
-                        <h4 class="mt-4"><strong>Grand Total: €{{ total|add:delivery|floatformat:2 }}</strong></h4>
+                        <h4 id="grand-total" class="mt-4"><strong>Grand Total: €{{ total|add:delivery|floatformat:2 }}</strong></h4>
                         {% if free_delivery_delta > 0 %}
                         <p class="mb-1 text-danger">
                             You could get free delivery by spending just <strong>€{{ free_delivery_delta }}</strong>
@@ -151,8 +149,7 @@
 {% endblock %}
 
 {% block postloadjs %}
-<script src="https://code.jquery.com/jquery-3.4.1.min.js"
-    integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script type="text/javascript">
     function updateDeliveryOption() {
         var deliveryOption = $('#delivery-option').val();
@@ -222,5 +219,20 @@
         var itemId = $(this).data('item_id');
         handleEnableDisable(itemId);
     });
+      // Add the following code for updating the grand total
+      function updateGrandTotal() {
+        var total = parseFloat("{{ total|floatformat:2 }}");
+        var delivery = parseFloat("{{ delivery|floatformat:2 }}");
+        var grandTotal = total + delivery;
+
+        // Update the DOM element that displays the grand total
+        $('#grand-total').text('Grand Total: €' + grandTotal.toFixed(2));
+    }
+
+    // Call the updateGrandTotal function when the page loads
+    $(document).ready(function () {
+        updateGrandTotal();
+    });
+
 </script>
 {% endblock %}

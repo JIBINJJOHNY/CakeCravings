@@ -24,7 +24,7 @@ class ProfileForm(forms.ModelForm):
             'phone_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Phone number'}),
             'country': CountrySelectWidget(attrs={'class': 'form-control'}),
             'postcode': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Postal code'}),
-            'own_or_city': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Town or city'}),
+            'town_or_city': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Town or city'}),
             'street_address1': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Street address 1'}),
             'street_address2': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Street address 2'}),
             'dcounty': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'County'}),

@@ -1,26 +1,27 @@
-# Views for payment app.
-from decimal import Decimal
 import json
-from django.urls import reverse
-from django.http import HttpResponseRedirect
 import stripe
-from django.contrib.auth.decorators import login_required
-from django.http.response import HttpResponse
-from django.shortcuts import render, redirect, get_object_or_404
+import uuid
+import logging
+
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
+from django.core.mail import send_mail
+from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
+from django.shortcuts import render, get_object_or_404
+from django.urls import reverse
+from django.views import View
 from django.views.decorators.csrf import csrf_exempt
-from profiles.models import Profile
+from django.core.paginator import Paginator
+
 from cart.contexts import cart_contents
 from orders.models import Order, OrderItem
-from products.models import Discount,Product
-from django.http import JsonResponse
-from django.shortcuts import render
-from django.views import View
-from django.shortcuts import get_object_or_404
-from orders.models import Order, OrderItem
-from django.core.paginator import Paginator
-import uuid 
+from products.models import Product
+from profiles.models import Profile
 from reviews.models import Review
+from decimal import Decimal
+
+# Set up logging
+logger = logging.getLogger(__name__)
 
 class AddOrder(View):
     """View for adding order AJAX."""
@@ -50,15 +51,7 @@ class AddOrder(View):
                 cart_items_json = request.POST.get('cart_items', '[]')
                 cart_items = json.loads(cart_items_json)
 
-                # Check if the order_key already exists
-                existing_order = Order.objects.filter(order_key=order_key).first()
-
-                if existing_order:
-                    # Update the existing order
-                    existing_order.total_paid = total_final_with_delivery
-                    existing_order.billing_status = True
-                    existing_order.save()
-                else:
+                try:
                     # Create a new order
                     order = Order.objects.create(
                         user=user,
@@ -85,79 +78,93 @@ class AddOrder(View):
                             size=cart_item.get('size'),
                         )
 
+                    # Send confirmation email
+                    send_payment_confirmation_email(order.email, order_key, total_final_with_delivery)
+
+                    # Clear the cart only if the payment was successful
+                    cart = request.session.get('cart', {})
+                    cart.clear()
+                    request.session['cart'] = cart
+
+                except Exception as e:
+                    # Handle the error, log it, and return a JsonResponse with an error message
+                    logger.error(f"An error occurred while creating the order: {str(e)}")
+                    return JsonResponse({'success': False, 'message': 'Error processing the order'})
+
                 return JsonResponse({'success': True, 'order_key': order_key})
             return JsonResponse({'success': False})
         else:
             return JsonResponse({'success': False, 'message': 'User not authenticated'})
 @login_required
 def basket_view(request):
-    """View for payment page."""
-    my_profile = get_object_or_404(Profile, user=request.user)
-    cart = cart_contents(request)
-    total_final = cart['grand_total']
-    total_sum = "{:.2f}".format(total_final)
-    total = int(total_final * 100) 
-    stripe_public_key = settings.STRIPE_PUBLIC_KEY
-    stripe.api_key = settings.STRIPE_SECRET_KEY
+    try:
+        # Attempt to get the latest order for the user
+        try:
+            latest_order = Order.objects.filter(user=request.user).latest('created')
+        except Order.DoesNotExist:
+            # If the order doesn't exist, create a new one
+            latest_order = Order.objects.create(user=request.user)
 
-    intent = stripe.PaymentIntent.create(
-        amount=total,
-        currency='eur',
-        metadata={'userid': request.user.id}
-    )
-    # check if user has address details
-    if any([my_profile.street_address1, my_profile.street_address2, my_profile.town_or_city, my_profile.county, my_profile.postcode]):
-        primary_address = {
-            'street_address1': my_profile.street_address1,
-            'street_address2': my_profile.street_address2,
-            'town_or_city': my_profile.town_or_city,
-            'county': my_profile.county,
-            'postcode': my_profile.postcode,
+        cart = cart_contents(request)
+
+        # Check if the delivery option is 'pickup' and adjust the total accordingly
+        if cart['delivery_option'] == 'pickup':
+            total_final = cart['total']  # Use the total without delivery cost for 'pickup'
+        else:
+            total_final = cart['grand_total']  # Use the grand total for 'online'
+
+        print("Cart Contents:")
+        print(cart)
+        print("Total Final:", total_final)
+
+        total_sum = "{:.2f}".format(total_final)
+        total = int(total_final * 100)
+        stripe_public_key = settings.STRIPE_PUBLIC_KEY
+        stripe.api_key = settings.STRIPE_SECRET_KEY
+
+        intent = stripe.PaymentIntent.create(
+            amount=total,
+            currency='eur',
+            metadata={'userid': request.user.id}
+        )
+
+        # Fetch user information from the latest order
+        user_info = {
+            'full_name': latest_order.full_name,
+            'email': latest_order.email,
+            'phone': latest_order.phone,
+            'address1': latest_order.address1,
+            'address2': latest_order.address2,
+            'country': latest_order.country,
+            'county_region_state': latest_order.county_region_state,
+            'city': latest_order.city,
+            'zip_code': latest_order.zip_code,
         }
+
+        # Fetch the primary address from the user's profile
+        try:
+            primary_address = Profile.objects.get(user=request.user, is_primary_address=True)
+        except Profile.DoesNotExist:
+            primary_address = None
+
         context = {
-            'my_profile': my_profile,
+            'my_profile': None,  # You can remove this line since we're not using the Profile model
             'primary_address': primary_address,
+            'user_info': user_info,
             'total_sum': total_sum,
             'client_secret': intent.client_secret,
             'stripe_public_key': stripe_public_key,
         }
+
         return render(request, 'orders/payment.html', context)
+    except Exception as e:
+        logger.error(f"An error occurred in basket_view: {str(e)}")
+        return HttpResponse("An error occurred.")
 
-    context = {
-        'my_profile': my_profile,
-        'total_sum': total_sum,
-        'client_secret': intent.client_secret,
-        'stripe_public_key': stripe_public_key,
-    }
-    return render(request, 'orders/payment.html', context)
-
-def order_placed(request):
-
- # Clear the cart
-    cart = request.session.get('cart', {})
-    cart.clear()
-    request.session['cart'] = cart
-    # Send email confirmation
-    subject = 'Order Placed Successfully'
-
-    # Create HTML content directly
-    order_number = order.order_key
-    html_content = f'''
-        <h1>Order Placed Successfully</h1>
-        <p>Thank you for shopping with us. Your order number is: {order_number}</p>
-        <!-- You can customize the HTML content as needed -->
-    '''
-
-    plain_message = strip_tags(html_content)
-    from_email = settings.DEFAULT_FROM_EMAIL
-    to_email = [my_profile.user.email]  # Replace with the actual user's email
-
-    # Attach HTML content to the email
-    email = EmailMultiAlternatives(subject, plain_message, from_email, to_email)
-    email.attach_alternative(html_content, "text/html")
-    email.send()
-
-    return render(request, 'orders/order_placed.html')
+class OrderConfirmation(View):
+    """View for the order placed page."""
+    def get(self, request, *args, **kwargs):
+        return render(request, 'orders/order_confirmation.html')
 
 class OrdersView(View):
     """View for user orders page."""
@@ -217,7 +224,6 @@ class OrderDetailsView(View):
                 request, 'account/login.html',
             )
 
-
 def get_or_create_order(request):
     """
     Retrieve or create an Order instance for the current user.
@@ -253,3 +259,30 @@ def stripe_webhook(request):
         print('Unhandled event type {}'.format(event.type))
 
     return HttpResponse(status=200)
+
+def payment_confirmation(client_secret):
+    try:
+        payment_intent = stripe.PaymentIntent.retrieve(client_secret)
+        order_key = payment_intent.metadata.order_key
+        order = Order.objects.get(order_key=order_key)
+        
+        # Send payment confirmation email
+        send_payment_confirmation_email(order.email, order_key, payment_intent.amount_received / 100)
+
+        # Redirect to the order confirmation page
+        return redirect('orders:order_confirmation')
+    except Exception as e:
+        logger.error(f"An error occurred in payment_confirmation: {str(e)}")
+        # Handle the error and redirect accordingly
+        return redirect('some_error_page')
+
+def send_payment_confirmation_email(customer_email, order_key, amount_received):
+    # Format the amount with 2 decimal places
+    formatted_amount = "{:.2f}".format(amount_received)
+
+    subject = 'Payment Confirmation'
+    message = f'Thank you for your order! Your payment of {formatted_amount} has been received. Your order key is {order_key}.'
+    from_email = 'jibinjjohny11@gmail.com' 
+    recipient_list = [customer_email]
+
+    send_mail(subject, message, from_email, recipient_list)
