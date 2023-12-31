@@ -10,9 +10,6 @@ def cart_contents(request):
     cart = request.session.get('cart', {})
     delivery_option = request.GET.get('delivery_option', 'online')  # Get delivery option from the query parameters
 
-    print(f"Initial Total: {total}")
-    print(f"Initial Delivery Option: {delivery_option}")
-
     # Inside the for loop where you calculate the total
     for item_id, item_data in cart.items():
         product = get_object_or_404(Product, pk=item_id)
@@ -42,8 +39,6 @@ def cart_contents(request):
                     'product': product,
                 })
 
-    print(f"Total after loop: {total}")
-    print(f"Delivery Option after loop: {delivery_option}")
 
     # Adjust delivery cost based on the selected delivery option
     if total < settings.FREE_DELIVERY_THRESHOLD:
@@ -56,7 +51,6 @@ def cart_contents(request):
         delivery = 0
         free_delivery_delta = 0
 
-    print(f"Calculated Delivery: {delivery}")
 
     grand_total = delivery + total
 

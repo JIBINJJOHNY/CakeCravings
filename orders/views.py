@@ -20,19 +20,13 @@ from profiles.models import Profile
 from reviews.models import Review
 from decimal import Decimal
 
-# Set up logging
-logger = logging.getLogger(__name__)
-
 class AddOrder(View):
     """View for adding order AJAX."""
-
     def post(self, request, *args, **kwargs):
         if request.user.is_authenticated:
             if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-                cart_data = cart_contents(request)
-                total_final = cart_data['grand_total']
-                delivery_cost = Decimal(request.POST.get('delivery_cost', '0.0'))
-                total_final_with_delivery = total_final + delivery_cost
+                cart = cart_contents(request)
+                total = cart['grand_total']  # Use 'grand_total' instead of 'total'
 
                 user = request.user
                 full_name = request.POST.get('full_name')
@@ -44,15 +38,14 @@ class AddOrder(View):
                 county_region_state = request.POST.get('county_region_state')
                 city = request.POST.get('city')
                 zip_code = request.POST.get('zip_code')
+                order_key = request.POST.get('order_key')
 
-                # Generate a unique order key using UUID
-                order_key = str(uuid.uuid4())
+                total_paid = str(total)
+                cart_items = cart['cart_items']
 
-                cart_items_json = request.POST.get('cart_items', '[]')
-                cart_items = json.loads(cart_items_json)
-
-                try:
-                    # Create a new order
+                if Order.objects.filter(order_key=order_key).exists():
+                    pass
+                else:
                     order = Order.objects.create(
                         user=user,
                         full_name=full_name,
@@ -65,36 +58,42 @@ class AddOrder(View):
                         city=city,
                         zip_code=zip_code,
                         order_key=order_key,
-                        total_paid=total_final_with_delivery,
-                        billing_status=True,
+                        total_paid=total_paid,
                     )
-
                     for cart_item in cart_items:
-                        product = get_object_or_404(Product, pk=cart_item['item_id'])
+                        # Assuming 'product' and 'quantity' are keys in your cart item
+                        product = cart_item['product']
+                        quantity = cart_item['quantity']
+
                         OrderItem.objects.create(
                             order=order,
                             product=product,
-                            quantity=cart_item['quantity'],
-                            size=cart_item.get('size'),
+                            quantity=quantity,
                         )
 
+                    # Update the order total, delivery cost, and grand total
+                    order.update_total()
+
+                    # Set billing status to True since the payment is successful
+                    order.billing_status = True
+                    order.save()
+
                     # Send confirmation email
-                    send_payment_confirmation_email(order.email, order_key, total_final_with_delivery)
+                    send_payment_confirmation_email(order.email, order_key, total)
 
                     # Clear the cart only if the payment was successful
                     cart = request.session.get('cart', {})
                     cart.clear()
                     request.session['cart'] = cart
 
-                except Exception as e:
-                    # Handle the error, log it, and return a JsonResponse with an error message
-                    logger.error(f"An error occurred while creating the order: {str(e)}")
-                    return JsonResponse({'success': False, 'message': 'Error processing the order'})
-
-                return JsonResponse({'success': True, 'order_key': order_key})
+                return JsonResponse({'success': True})
             return JsonResponse({'success': False})
         else:
-            return JsonResponse({'success': False, 'message': 'User not authenticated'})
+            return render(
+                request,
+                'account/login.html',
+            )
+
 @login_required
 def basket_view(request):
     try:
@@ -113,9 +112,6 @@ def basket_view(request):
         else:
             total_final = cart['grand_total']  # Use the grand total for 'online'
 
-        print("Cart Contents:")
-        print(cart)
-        print("Total Final:", total_final)
 
         total_sum = "{:.2f}".format(total_final)
         total = int(total_final * 100)

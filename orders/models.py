@@ -4,7 +4,8 @@ from products.models import Product
 from django.db.models import Sum
 from django.conf import settings
 from shortuuid.django_fields import ShortUUIDField
-
+from decimal import Decimal
+from django.db.models import Sum, F, ExpressionWrapper, DecimalField
 
 class Order(models.Model):
     PENDING = 'Pending'
@@ -66,22 +67,25 @@ class Order(models.Model):
         return items
     
     def update_total(self):
-            """
-            Update order total, delivery cost, and grand total.
-            """
-            # Calculate the order total using aggregate
-            order_total_aggregate = self.order_items.aggregate(Sum('product__price'))['product__price__sum']
+        """
+        Update order total, delivery cost, and grand total.
+        """
+        # Calculate the order total using aggregate
+        order_items_aggregate = self.order_item.aggregate(
+            total_price=ExpressionWrapper(Sum(F('quantity') * F('product__price')), output_field=DecimalField()),  # Update this line
+        )
 
-            # Use 0 if the order_total_aggregate is None
-            self.order_total = order_total_aggregate if order_total_aggregate is not None else Decimal('0.00')
+        # Use 0 if the order total is None
+        order_total_aggregate = order_items_aggregate['total_price']
+        self.order_total = order_total_aggregate if order_total_aggregate is not None else Decimal('0.00')
 
-            if self.order_total < settings.FREE_DELIVERY_THRESHOLD:
-                self.delivery_cost = self.order_total * (settings.STANDARD_DELIVERY_PERCENTAGE / Decimal('100.0'))
-            else:
-                self.delivery_cost = Decimal('0.00')
+        if self.order_total < settings.FREE_DELIVERY_THRESHOLD:
+            self.delivery_cost = self.order_total * (settings.STANDARD_DELIVERY_PERCENTAGE / Decimal('100.0'))
+        else:
+            self.delivery_cost = Decimal('0.00')
 
-            self.grand_total = self.order_total + self.delivery_cost
-            self.save()
+        self.grand_total = self.order_total + self.delivery_cost
+        self.save()
 class OrderItem(models.Model):
     order = models.ForeignKey('Order', on_delete=models.CASCADE, related_name='order_item')
     product = models.ForeignKey(Product, on_delete=models.CASCADE)

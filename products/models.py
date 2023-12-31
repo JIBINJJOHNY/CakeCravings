@@ -147,6 +147,9 @@ class Product(models.Model):
         print(f"Saving product: {self.name}")
         self.slug = slugify(self.name, allow_unicode=True)
 
+        # Initialize category_prices with an empty dictionary
+        category_prices = {}
+
         # Only adjust price based on size if the category is present in DEFAULT_PRICES
         if self.category.name.lower() in self.DEFAULT_PRICES and self.size:
             category_prices = self.DEFAULT_PRICES[self.category.name.lower()]
@@ -162,8 +165,8 @@ class Product(models.Model):
 
         self.price = calculated_price
         super().save(*args, **kwargs)
-        print(f"Saving product: {self.name}")
-        print(f"Size: {self.size}, Price: {self.price}")
+        
+        # Now you can print category_prices without an error
         print(f"Category Prices: {category_prices}")
         print(f"Calculated Price: {calculated_price}")
 
