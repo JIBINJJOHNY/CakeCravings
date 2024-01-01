@@ -49,6 +49,27 @@ class Profile(models.Model):
         help_text='Check this if it is the primary address.'
     )
 
+    # Additional fields for user registration
+    email_verified = models.BooleanField(
+        default=False,
+        verbose_name='Email Verified',
+        help_text='Indicates whether the user has verified their email.'
+    )
+
+    # New field for user roles
+    ROLES = (
+        ('customer', 'Customer'),
+        ('manager', 'Manager'),
+        ('admin', 'Admin'),
+    )
+    role = models.CharField(
+    max_length=10,
+    choices=ROLES,
+    default='customer',
+    verbose_name='Role',
+    help_text='User role in the system.'
+    )
+
     created_at = models.DateTimeField(
         auto_now_add=True,
         verbose_name='Created at',

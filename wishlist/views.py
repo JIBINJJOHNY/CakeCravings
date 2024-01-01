@@ -26,6 +26,7 @@ def plus_wishlist(request):
     if request.method == 'GET':
         print('Plus Wishlist view called')
         prod_id = request.GET['prod_id']
+        print(f'Product ID: {prod_id}')
         product = get_object_or_404(Product, id=prod_id)
         user = request.user
 

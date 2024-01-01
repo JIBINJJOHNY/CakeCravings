@@ -443,33 +443,33 @@
         });
     });
 
-        $('.plus-wishlist').click(function () {
-            console.log('Plus Wishlist clicked');
-            var id = $(this).attr('data-pid').toString();
-            $.ajax({
-                type: "GET",
-                url: `/wishlist/pluswishlist/?prod_id=${id}`,
-                success: function (data) {
-                    console.log('AJAX Success:', data);
-                    //alert
-                    window.location.href = `http://localhost:8000/products/${id}`;
-                }
-            });
-        });
+$('.plus-wishlist').click(function () {
+    console.log('Plus Wishlist clicked');
+    var id = $(this).attr('data-pid').toString();
+    $.ajax({
+        type: "GET",
+        url: `/wishlist/pluswishlist/?prod_id=${id}`,
+        success: function (data) {
+            console.log('AJAX Success:', data);
+            // Redirect with trailing slash
+            window.location.href = `http://localhost:8000/products/${id}/`;
+        }
+    });
+});
 
-        $('.minus-wishlist').click(function () {
-            console.log('Minus Wishlist clicked');
-            var id = $(this).attr('data-pid').toString();
-            $.ajax({
-                type: "GET",
-                url: `/wishlist/minuswishlist/?prod_id=${id}`, // Include the namespace in the URL
-                success: function (data) {
-                    console.log('AJAX Success:', data);
-                    //alert
-                    window.location.href = `http://localhost:8000/products/${id}`;
-                }
-            });
-        });
+$('.minus-wishlist').click(function () {
+    console.log('Minus Wishlist clicked');
+    var id = $(this).attr('data-pid').toString();
+    $.ajax({
+        type: "GET",
+        url: `/wishlist/minuswishlist/?prod_id=${id}`, // Include the namespace in the URL
+        success: function (data) {
+            console.log('AJAX Success:', data);
+            // Redirect with trailing slash
+            window.location.href = `http://localhost:8000/products/${id}/`;
+        }
+    });
+});
 
         function updateCartCount(count) {
             document.getElementById('cartCount').innerText = count;

@@ -1,6 +1,9 @@
 from django import forms
-from django_countries.widgets import CountrySelectWidget
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User  
 from .models import Profile
+from django_countries.widgets import CountrySelectWidget
+
 
 class ProfileForm(forms.ModelForm):
     class Meta:
@@ -16,6 +19,8 @@ class ProfileForm(forms.ModelForm):
             'street_address1',
             'street_address2',
             'county',
+            'email_verified', 
+            'role',
         ]
         widgets = {
             'first_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First name'}),
@@ -27,5 +32,8 @@ class ProfileForm(forms.ModelForm):
             'town_or_city': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Town or city'}),
             'street_address1': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Street address 1'}),
             'street_address2': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Street address 2'}),
-            'dcounty': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'County'}),
+            'county': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'County'}),  # Fix the typo in the field name
+            'email_verified': forms.CheckboxInput(attrs={'class': 'form-check-input'}),  # Adjust widget for email_verified
+            'role': forms.Select(attrs={'class': 'form-control'}),  # Use a dropdown for the role field
         }
+

@@ -1,10 +1,13 @@
 from django.shortcuts import render, redirect
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.views import View
 from .forms import ProfileForm
 from .models import  Profile
 from django.shortcuts import get_object_or_404
+from django.contrib.auth.forms import AuthenticationForm
 
 class Profileview(View):
     def get(self, request):
@@ -78,6 +81,9 @@ class addressUpdate(View):
             messages.warning(request,"Invalid Input Data")
 
         return redirect("address")
+
+
+
 
 @login_required  
 def account_settings(request):

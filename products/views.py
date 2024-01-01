@@ -99,6 +99,7 @@ def all_products(request, category_slug=None):
     }
     return render(request, 'products/products.html', context)
 def product_detail(request, product_id):
+    print(f"Product ID: {product_id}")
     product = get_object_or_404(Product, pk=product_id)
     reviews = Review.objects.filter(product=product).order_by('-created_at')
 
