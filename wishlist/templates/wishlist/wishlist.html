@@ -8,7 +8,7 @@
     <div class="row">
         {% for product in wishlist_products %}
         <div class="col-md-4 mb-4">
-            <a href="{% url 'products:product_detail' product.id %}" class="card-link wishlist-link">
+            <a href="{% url 'product_detail' product.id %}" class="card-link wishlist-link">
                 <div class="card">
                     {% if product.images.all %}
                     <img src="{{ product.images.first.image.url }}" alt="{{ product.name }}" class="card-img-top"
@@ -29,7 +29,7 @@
     </div>
     {% else %}
     <p>Your wishlist is empty.</p>
-    <a href="{% url 'products:all_products' %}" class="btn btn-outline-black rounded-0 btn-lg">
+    <a href="{% url 'all_products' %}" class="btn btn-outline-black rounded-0 btn-lg">
         <span class="icon">
             <i class="fas fa-chevron-left"></i>
         </span>

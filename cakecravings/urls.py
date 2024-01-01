@@ -16,13 +16,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path,include
-from .views import handler404
+from .views import handler404, handler500
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/',include('allauth.urls')),
     path('', include('home.urls')),
-    path('products/', include('products.urls',namespace='products')),
+    path('products/', include('products.urls')),
     path('reviews/', include('reviews.urls',namespace='reviews')), 
     path('cart/', include('cart.urls')), 
     path('orders/', include('orders.urls', namespace='orders')),
@@ -30,3 +30,4 @@ urlpatterns = [
     path('profiles/', include('profiles.urls')),
 ]
 handler404 = 'cakecravings.views.handler404'
+handler500 = 'cakecravings.views.handler500'

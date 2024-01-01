@@ -8,7 +8,7 @@
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
-                    <li class="breadcrumb-item"><a href="{% url 'products:all_products' %}">Products</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'all_products' %}">Products</a></li>
                     <li class="breadcrumb-item active" aria-current="page">{{ product.name }}</li>
                 </ol>
             </nav>
@@ -118,7 +118,7 @@
                             </div>
                         </div>
                         <div class="col{% if s %}-12 mt-2{% endif %}">
-                            <a href="{% url 'products:all_products' %}" class="btn btn-secondary rounded-0 mt-5">
+                            <a href="{% url 'all_products' %}" class="btn btn-secondary rounded-0 mt-5">
                                 <span class="icon">
                                     <i class="fas fa-chevron-left"></i>
                                 </span>
@@ -205,7 +205,7 @@
                         {% else %}
                         <p class="card-text">No Rating</p>
                         {% endif %}
-                        <a href="{% url 'products:product_detail' product_id=related_product.id %}"
+                        <a href="{% url 'product_detail' product_id=related_product.id %}"
                             class="btn btn-primary">View
                             Details</a>
                     </div>

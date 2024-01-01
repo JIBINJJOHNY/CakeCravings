@@ -14,9 +14,9 @@ print(f"Number of products: {products.count()}")
                 <div class="categories">
                     <h3>Categories:</h3>
                     <ul>
-                        <li><a href="{% url 'products:all_products' %}">All ({{ total_product_count }})</a></li>
+                        <li><a href="{% url 'all_products' %}">All ({{ total_product_count }})</a></li>
                         {% for category in all_categories %}
-                        <li><a href="{% url 'products:products_by_category' category_slug=category.slug %}">
+                        <li><a href="{% url 'products_by_category' category_slug=category.slug %}">
                             {{ category.name }}
                             ({{ product_counts|get_category_count:category.name }})</a></li>
                         {% endfor %}
@@ -52,7 +52,7 @@ print(f"Number of products: {products.count()}")
                                 {% endfor %}
                             </div>
 
-                            <a href="{% url 'products:product_detail' product.id %}"
+                            <a href="{% url 'product_detail' product.id %}"
                                 onclick="redirectToProductDetail('{{ product.id }}')">
                                 <div class="image-container" style="height: 200px; overflow: hidden;">
                                     <img src="{{ product.images.first.image_url }}" alt="{{ product.name }}"

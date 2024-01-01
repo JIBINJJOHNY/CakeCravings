@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    <style>
+        .dashboard {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        h1 {
+            color: #840a0a;
+        }
+
+        p {
+            margin-top: 10px;
+            color: #333;
+        }
+
+        .home-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #840a0a;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+    </style>
+    <div class="dashboard">
+        <h1>500 - Internal Server Error</h1>
+        <p>Something went wrong on our end. We apologize for the inconvenience.</p>
+        <a href="{% url 'all_products' %}" class="home-button">Go to Menus</a>
+    </div>
+{% endblock %}

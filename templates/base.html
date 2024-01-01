@@ -15,7 +15,7 @@
         content="Cake Cravings, cakes, cupcakes, cookies, seasonal treats, desserts, bakery, sweet treats, celebration cakes, discount prices, online bakery, cake delivery" />
     <meta name="author" content="Jibin Jain Johny" />
     {% comment %} Favicon {% endcomment %}
-    <link rel="apple-icon" sizes="57x57" href="{% static 'images/favicon_package/apple-57x57.png' %}">
+    <link rel="apple-icon" sizes="57x57" href="{% static 'images/favicon_package/apple-icon-57x57.png' %}">
     <link rel="android-icon" sizes="36x36" href="{% static 'images/favicon_package/android-icon-36x36.png' %}">
     <link rel="icon" type="image/png" sizes="96x96" href="{% static 'images/favicon_package/favicon-96x96.png' %}">
     <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon_package/favicon-32x32.png' %}">
@@ -78,15 +78,15 @@
                             Our Menu
                         </a>
                         <div class="dropdown-menu" id="categoryDropdown">
-                            <a class="dropdown-item" href="{% url 'products:all_products' %}">All Products</a>
+                            <a class="dropdown-item" href="{% url 'all_products' %}">All Products</a>
                             <a class="dropdown-item"
-                                href="{% url 'products:products_by_category' category_slug='cakes' %}">Cakes</a>
+                                href="{% url 'products_by_category' category_slug='cakes' %}">Cakes</a>
                             <a class="dropdown-item"
-                                href="{% url 'products:products_by_category' category_slug='cupcakes' %}">Cupcakes</a>
+                                href="{% url 'products_by_category' category_slug='cupcakes' %}">Cupcakes</a>
                             <a class="dropdown-item"
-                                href="{% url 'products:products_by_category' category_slug='cookies' %}">Cookies</a>
+                                href="{% url 'products_by_category' category_slug='cookies' %}">Cookies</a>
                             <a class="dropdown-item"
-                                href="{% url 'products:products_by_category' category_slug='seasonals' %}">Seasonals</a>
+                                href="{% url 'products_by_category' category_slug='seasonals' %}">Seasonals</a>
                         </div>
                     </li>
                     <li class="nav-item">
@@ -100,14 +100,14 @@
                     </li>
                     {% if user.is_authenticated and user.is_superuser %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'products:product_list' %}">Product list</a>
+                        <a class="nav-link" href="{% url 'product_list' %}">Product list</a>
                     </li>
                     {% endif %}
                 </ul>
 
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item">
-                        <form class="form-inline" method="GET" action="{% url 'products:all_products' %}">
+                        <form class="form-inline" method="GET" action="{% url 'all_products' %}">
                             <input class="form-control" type="text" name="q" placeholder="Search">
                             <button class="btn btn-outline-secondary" type="submit">
                                 <i class="fas fa-search"></i>

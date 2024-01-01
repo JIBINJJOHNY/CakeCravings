@@ -131,7 +131,7 @@ def product_detail(request, product_id):
                 new_review.product = product
                 new_review.user = request.user
                 new_review.save()
-                return redirect('products:product_detail', product_id=product_id)
+                return redirect('product_detail', product_id=product_id)
         else:
             # Display a message indicating that the user can only submit one review
             messages.warning(request, 'You can only submit one review per product.')  # Add this line
@@ -174,7 +174,7 @@ def add_product(request):
             image.save()
 
             messages.success(request, 'Successfully added product!')
-            return redirect(reverse('products:product_list'))
+            return redirect(reverse('product_list'))
         else:
             messages.error(request, 'Failed to add product. Please ensure the form is valid.')
     else:
@@ -185,7 +185,7 @@ def add_product(request):
     context = {'form': form, 'image_form': image_form}
 
     return render(request, template, context)
-
+@user_passes_test(is_manager)
 def edit_product(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     
@@ -197,7 +197,7 @@ def edit_product(request, product_id):
             form.save()
             image_form.save()
             messages.success(request, 'Product successfully updated!')
-            return redirect(reverse('products:product_list'))
+            return redirect(reverse('product_list'))
             
     else:
         form = ProductForm(instance=product)
@@ -210,4 +210,4 @@ def delete_product(request, product_id):
     product = get_object_or_404(Product, pk=product_id)
     product.delete()
     messages.success(request, 'Product deleted!')
-    return redirect(reverse('products:product_list'))
+    return redirect(reverse('product_list'))

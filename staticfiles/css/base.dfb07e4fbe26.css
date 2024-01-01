@@ -1,0 +1,846 @@
+/*------ Global Settings------*/
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    width: 100% !important;
+    min-height: 100vh !important;
+}
+
+body,
+h1,
+h2,
+p,
+header,
+nav {
+    margin: 0;
+    padding: 0;
+}
+
+ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+ul li {
+    margin-left: 0;
+    padding-left: 0;
+    cursor: pointer;
+}
+
+a {
+    text-decoration: none;
+    cursor: pointer;
+    color: #b4867b;
+
+}
+
+a:hover {
+    color: rgb(243, 235, 235);
+}
+
+
+
+img {
+    display: block;
+    width: 100%;
+    object-fit: contain;
+}
+
+button {
+    background-color: #000000;
+    color: #ffffff;
+}
+
+.hidden {
+    display: none !important;
+}
+
+h2 {
+    font-family: "Great Vibes", cursive;
+    font-size: 60px;
+    color: #e39a32;
+    text-shadow: 1px 1px 1px rgb(83, 83, 83);
+    font-weight: bold;
+}
+
+/* ------------ header ----------- */
+/* Style the navigation bar */
+#navbar {
+    background-color: black;
+}
+
+.container-fluid,
+.container-lg,
+.container-md,
+.container-sm,
+.container-xl {
+    width: 100%;
+    padding-right: 0px;
+    padding-left: 0px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.navbar-toggler-icon {
+    background: url("/static/images/hamburger_menu.4d974f53a67a.png") center center no-repeat;
+    background-size: cover;
+    width: 30px;
+    /* Adjust the width as needed */
+    height: 30px;
+    /* Adjust the height as needed */
+    border: none;
+    /* Remove the default border */
+}
+
+/* Add styles for the notification badge */
+.notification-badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: white;
+    color: black;
+    border-radius: 50%;
+    padding: 0px 4px;
+    font-size: 12px;
+    z-index: 1;
+    /* Ensure the badge is above the icon */
+}
+
+/* Add relative positioning to the parent nav-link */
+.position-relative {
+    position: relative;
+}
+
+
+/* Style the logo */
+#logo img {
+    width: 100px;
+    height: auto;
+}
+
+/* Style the search form in the navigation bar */
+.navbar-form {
+    margin-right: 20px;
+}
+
+/* Add styles for the user authentication and icons */
+.navbar-nav li {
+    margin-right: 10px;
+}
+
+.nav-link {
+    color: white;
+}
+
+.home-section {
+    background: url("/static/images/home_page.4a039b334ece.png") no-repeat center center fixed;
+    background-size: cover;
+    height: 100vh;
+    color: white;
+    font-family: 'Lato';
+    margin-top: 0;
+    position: relative;
+}
+
+.home-section:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    /* Adjust the transparency (0.5 is 50%) */
+}
+
+
+
+/* Set text color for better visibility */
+.home-section .content {
+    color: #fff;
+}
+
+/* Style for the home section */
+.home-section {
+    margin-top: 50px;
+    /* Adjust the margin based on your navbar height */
+}
+
+/* Style for the content column */
+.content {
+    padding: 60px;
+    /* Add padding for spacing around the text */
+}
+
+/* Custom style for the Order Now button */
+.order-now-button {
+    background-color: #e39a32;
+    color: #fff;
+    /* Set text color to white or your preferred color */
+    /* Add any additional styles as needed */
+}
+
+.message-container {
+    position: fixed;
+    top: 72px;
+    right: 15px;
+    z-index: 99999999999;
+}
+
+.custom-toast {
+    overflow: visible;
+}
+
+.toast-capper {
+    height: 2px;
+}
+
+/* About section*/
+.about {
+    background: url("/static/images/aboutpage.64ccc3b98a83.webp") center center;
+    background-size: cover;
+    position: relative;
+    padding: 80px 0;
+    color: white;
+}
+
+.about:before {
+    content: "";
+    background: rgba(41, 40, 42, 0.8);
+    position: absolute;
+    bottom: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+}
+
+.about .about-img {
+    position: relative;
+    transition: 0.5s;
+    object-fit: cover;
+
+}
+
+.about .about-img img {
+    max-width: 100%;
+    border: 4px solid rgba(255, 255, 255, 0.2);
+    position: relative;
+}
+
+.about .about-img::before {
+    position: absolute;
+    left: 20px;
+    top: 20px;
+    width: 60px;
+    height: 60px;
+    z-index: 1;
+    content: "";
+    border-left: 5px solid #e39a32;
+    border-top: 5px solid #e39a32;
+    transition: 0.5s;
+}
+
+.about .about-img::after {
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+    width: 60px;
+    height: 60px;
+    z-index: 2;
+    content: "";
+    border-right: 5px solid #e39a32;
+    border-bottom: 5px solid #e39a32;
+    transition: 0.5s;
+}
+
+.about .about-img:hover {
+    transform: scale(1.03);
+}
+
+.about .about-img:hover::before {
+    left: 10px;
+    top: 10px;
+}
+
+.about .about-img:hover::after {
+    right: 10px;
+    bottom: 10px;
+}
+
+.about .content {
+    position: relative;
+}
+
+.about .content h3 {
+    font-weight: 600;
+    font-size: 26px;
+}
+
+.about .content p:last-child {
+    margin-bottom: 0;
+}
+
+
+.gallery .gallery-item {
+    overflow: hidden;
+    margin-bottom: 20px;
+    /* Adjust the margin to control the spacing between items */
+}
+
+.gallery .gallery-item img {
+    width: 100%;
+    /* Ensure the image takes the full width of the container */
+    height: auto;
+    /* Maintain the aspect ratio */
+    display: block;
+    /* Remove extra space below the image */
+    border: 3px solid #454035;
+    /* Set border for each image */
+    object-fit: cover;
+
+}
+
+.gallery .gallery-item:hover img {
+    transform: scale(1.1);
+}
+
+/* Products page */
+.products_heading {
+    margin-bottom: 50px;
+}
+
+#product-cards {
+    margin-top: 20px;
+}
+
+.card {
+    background-color: #f8f7f8;
+    box-shadow: 0 0 3px #000000;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+}
+
+.tags-container {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+}
+
+.tag {
+    display: inline-block;
+    padding: 5px;
+    margin-right: 5px;
+    background-color: #e11111;
+    color: #fff;
+    font-size: 12px;
+    border-radius: 3px;
+}
+
+h1 {
+    text-align: center;
+    font-weight: bold;
+    margin-top: 20px;
+    color: rgb(0, 0, 0);
+    text-shadow: 1px 1px 1px #fafafa;
+    border-bottom: 2px solid black;
+}
+
+.card-body-content {
+    height: 120px;
+}
+
+.star .checked {
+    color: yellow;
+}
+
+h3 {
+    color: rgb(151, 140, 43);
+    font-size: 20px;
+}
+
+h6 {
+    font-size: 20px;
+    color: #000000;
+    font-weight: bold;
+}
+
+h6 span button {
+    width: 50px;
+    height: 35px;
+    font-size: 15px;
+    background: transparent;
+    letter-spacing: 3px;
+    border: 2px solid #000000;
+    border-radius: 5px;
+    float: right;
+    font-weight: bold;
+    transition: 0.5s ease;
+    cursor: pointer;
+    color: #000000;
+}
+
+h6 span button:hover {
+    background-color: #000000;
+    color: white;
+}
+
+/* Style for price filter section */
+#price-filter {
+    margin-top: 20px;
+}
+
+.slider-container {
+    margin-top: 10px;
+}
+
+.slider-range {
+    width: 80%;
+}
+
+.filter-button {
+    margin-top: 10px;
+    background-color: #000000;
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.form-check-input {
+    position: absolute;
+    margin-top: 0rem;
+    margin-left: 0.05rem;
+    max-width: 45px;
+}
+
+.category-and-sorting {
+    background-color: #000000;
+    /* Set your desired background color */
+    padding: 15px;
+}
+
+.categories h3,
+.sorting-options h3 {
+    color: #ffffff;
+    font-weight: bold;
+}
+
+.categories ul,
+.sorting-options ul {
+    list-style: none;
+    padding: 0;
+}
+
+.categories li,
+.sorting-options li {
+    margin-bottom: 10px;
+}
+
+.categories a,
+.sorting-options a {
+    text-decoration: none;
+    color: #ffffff;
+    transition: color 0.3s ease;
+    text-align: center;
+}
+
+.categories a:hover,
+.sorting-options a:hover {
+    color: #ffffff;
+    text-align: center;
+    /* Set your desired link hover color */
+}
+
+#breadcrumb-container {
+    margin-top: 50px;
+}
+
+/* Add space between breadcrumb and category section */
+.category-and-sorting {
+    margin-top: 35px;
+}
+
+#product-cards {
+    margin-top: 50px;
+}
+
+#back-to-top-btn {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #ffffff;
+    /* White background */
+    color: #000000;
+    /* Black arrow color */
+    border: none;
+    border-radius: 5px;
+    padding: 10px 15px;
+    font-size: 16px;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    /* Optional: Add a subtle box shadow */
+}
+
+#back-to-top-btn:hover {
+    background-color: #e0e0e0;
+    /* Optional: Change background color on hover */
+}
+
+.product-quantity {
+    display: flex;
+    align-items: center;
+}
+
+.quantity-label {
+    margin-right: 10px;
+}
+
+.breadcrumb-container {
+    position: relative;
+    top: 70px;
+    /* Adjust the value as needed */
+}
+
+.quantity-button {
+    background-color: #000000;
+    color: #fff;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+#quantity {
+    margin: 0 10px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.product-price {
+    font-size: 25px;
+    font-weight: bold;
+    color: #462b48;
+
+}
+
+.img-fluid {
+    margin-top: 50px;
+}
+
+.btn-secondary {
+    background-color: #4f314f;
+    border-color: #ffffff;
+    color: #ffffff;
+}
+
+.main-image img {
+    width: 100%;
+    /* Set the desired width */
+    border: 2px solid #000000;
+    /* Add a border with your preferred color */
+    border-radius: 10px;
+    /* Add border-radius for rounded corners */
+    margin-top: 20px;
+    /* Adjust margin as needed */
+}
+
+.image-gallery {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.main-image {
+    width: 100%;
+    text-align: center;
+}
+
+.thumbnails {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.thumbnail {
+    width: 80px;
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+.thumbnail:hover {
+    border: 2px solid #000000;
+}
+
+.ingredients {
+    text-align: center;
+    background-color: #f8f8f8;
+    /* Add your preferred background color */
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+.btn-black {
+    background: black;
+    color: white;
+}
+
+.btn-outline-black {
+    background: white;
+    color: black !important;
+    /* use important to override link colors for <a> elements */
+    border: 1px solid black;
+}
+
+.btn-outline-black:hover,
+.btn-outline-black:active,
+.btn-outline-black:focus {
+    background: black;
+    color: white !important;
+}
+
+/* Adjust the width as needed */
+.feature img {
+    width: 30%;
+    /* Set the desired width */
+    margin-bottom: 10px;
+    align-items: center;
+}
+
+/* Hover effect */
+.feature:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 10px #ffffff;
+}
+
+/*product list page*/
+.action-buttons {
+    width: 120px;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+    /* You can adjust the width as needed */
+}
+
+.action-buttons form {
+    display: inline;
+    margin-right: 5px;
+    /* Adjust the spacing between buttons as needed */
+}
+
+.star-rating {
+    font-size: 24px;
+}
+
+.star-rating i {
+    color: #ccc;
+    cursor: pointer;
+}
+
+.star-rating i.checked {
+    color: gold;
+}
+
+.u-color {
+    color: gold;
+}
+
+.review-form-container {
+    border: 2px solid #000000;
+    /* Set border width and color */
+    padding: 20px;
+    /* Add padding to the container */
+    margin-bottom: 20px;
+}
+
+.star-rating {
+    font-size: 24px;
+    /* Adjust the font size of the stars */
+}
+
+/* Style the submit button */
+.btn-review {
+    background-color: #4d3056;
+    color: #fff;
+    border: 2px solid #4d3056;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+/* Hover effect for the submit button */
+.btn-review:hover {
+    background-color: #fff;
+    color: #4d3056;
+}
+
+/* Style the textarea */
+#comment-below {
+    width: 100%;
+    resize: vertical;
+}
+
+#comment-below {
+    width: 100%;
+    height: 150px;
+    /* Set the fixed height */
+    resize: none;
+    /* Disable resizing */
+}
+
+.image-container {
+    display: flex;
+}
+
+.product-image {
+    max-width: 70px;
+    /* Adjust the max-width as needed */
+    margin-right: 10px;
+    /* Adjust the margin between images as needed */
+}
+
+/* Stripe */
+.StripeElement,
+.stripe-style-input {
+    box-sizing: border-box;
+    height: 40px;
+    padding: 10px 12px;
+    border: 1px solid transparent;
+    border-radius: 0px;
+    background-color: white;
+    box-shadow: 0 1px 3px 0 #e6ebf1;
+    -webkit-transition: box-shadow 150ms ease;
+    transition: box-shadow 150ms ease;
+}
+
+.StripeElement--focus,
+.stripe-style-input:focus,
+.stripe-style-input:active {
+    box-shadow: 0 1px 3px 0 #cfd7df;
+}
+
+.StripeElement--webkit-autofill {
+    background-color: #fefde5 !important;
+}
+
+.stripe-style-input::placeholder {
+    color: #aab7c4;
+}
+
+.fieldset-label {
+    position: relative;
+    right: .5rem;
+}
+
+#payment-form .form-control,
+#card-element {
+    color: #000;
+    border: 1px solid #000;
+}
+
+select,
+select option {
+    color: #000000;
+}
+
+select:invalid,
+select option[value=""] {
+    color: #aab7c4 !important;
+}
+
+#loading-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(23, 162, 184, .85);
+    z-index: 9999;
+}
+
+.loading-spinner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    height: 100%;
+}
+
+/* Footer */
+#mc_embed_signup {
+    clear: left;
+    width: 350px;
+}
+
+#mc_embed_signup .button {
+    background-color: #4b4646;
+}
+
+/* Meida section */
+@media (max-width: 768px) {
+    .display-4 {
+        font-size: 2.5rem;
+    }
+
+    .lead {
+        font-size: .9rem;
+        font-weight: 250;
+    }
+
+}
+
+
+@media (min-width: 1024px) {
+    .about {
+        background-attachment: fixed;
+    }
+}
+
+@media (max-width: 768px) {
+    .home-section {
+        margin-top: 60px;
+        /* Adjust margin for smaller screens */
+    }
+
+    .content {
+        padding: 20px;
+        /* Reduce padding for smaller screens */
+    }
+}
+
+/* Adjust the positioning for small screens */
+@media (max-width: 768px) {
+    .position-relative {
+        position: static;
+        /* Reset to normal flow for small screens */
+    }
+
+    .notification-badge {
+        position: relative;
+        /* Adjust to relative positioning for small screens */
+        display: inline-block;
+        /* Ensure inline-block to be next to the icon */
+        margin-left: 0px;
+        /* Adjust margin as needed */
+        margin-top: 0px;
+        /* Adjust margin-top as needed */
+    }
+}

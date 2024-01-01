@@ -6,7 +6,7 @@
     <h2>All Products</h2>
 
     <div class="mb-3">
-        <a href="{% url 'products:add_product' %}" class="btn btn-success">Add New Product</a>
+        <a href="{% url 'add_product' %}" class="btn btn-success">Add New Product</a>
     </div>
 
     <table class="table">
@@ -35,10 +35,10 @@
                 <td>{{ product.description }}</td>
                 <td>${{ product.price }}</td>
                 <td class="action-buttons">
-                    <form method="get" action="{% url 'products:edit_product' product.id %}" style="display: inline;">
+                    <form method="get" action="{% url 'edit_product' product.id %}" style="display: inline;">
                         <button type="submit" class="btn btn-primary btn-sm">Edit</button>
                     </form>
-                    <form method="post" action="{% url 'products:delete_product' product.id %}"
+                    <form method="post" action="{% url 'delete_product' product.id %}"
                         style="display: inline;">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-danger btn-sm"
@@ -70,7 +70,7 @@
                 // If the user confirms, redirect to the delete URL
                 if (isConfirmed) {
                     // Construct the delete URL using the url template tag
-                    var deleteUrl = '{% url "products:delete_product" product_id=0 %}'.replace(
+                    var deleteUrl = '{% url "delete_product" product_id=0 %}'.replace(
                         '0', productId);
                     window.location.href = deleteUrl;
                 }
