@@ -34,13 +34,57 @@ class Profile(models.Model):
         verbose_name='Birthday',
         help_text='Format: not required'
     )
-    phone_number = models.CharField(max_length=20, null=True, blank=True)
-    country = CountryField(blank_label='Country *', null=True, blank=True)
-    postcode = models.CharField(max_length=20, null=True, blank=True)
-    town_or_city = models.CharField(max_length=40, null=True, blank=True)
-    street_address1 = models.CharField(max_length=80, null=True, blank=True)
-    street_address2 = models.CharField(max_length=80, null=True, blank=True)
-    county = models.CharField(max_length=80, null=True, blank=True)
+    street_address1 = models.CharField(
+        max_length=80,
+        null=True,
+        blank=True,
+        verbose_name='Street Address 1',
+        help_text='Format: not required'
+    )
+    street_address2 = models.CharField(
+        max_length=80,
+        null=True,
+        blank=True,
+        verbose_name='Street Address 2',
+        help_text='Format: not required'
+    )
+    town_or_city = models.CharField(
+        max_length=40,
+        null=True,
+        blank=True,
+        verbose_name='Town or City',
+        help_text='Format: not required'
+    )
+    country = CountryField(
+        blank_label='Country *',
+        null=True,
+        blank=True,
+        default='DE',  # Set Germany as the default country
+        verbose_name='Country',
+        help_text='Format: not required'
+    )
+    postcode = models.CharField(
+        max_length=20,
+        null=True,
+        blank=True,
+        verbose_name='Postcode',
+        help_text='Format: not required'
+    )
+    phone_number = models.CharField(
+        max_length=20,
+        null=True,
+        blank=True,
+        unique=True,  # Added uniqueness
+        verbose_name='Phone Number',
+        help_text='Format: not required, unique=True'
+    )
+    county = models.CharField(
+        max_length=80,
+        null=True,
+        blank=True,
+        verbose_name='County',
+        help_text='Format: not required'
+    )
     
     # New field to indicate the primary address
     is_primary_address = models.BooleanField(
@@ -63,11 +107,11 @@ class Profile(models.Model):
         ('admin', 'Admin'),
     )
     role = models.CharField(
-    max_length=10,
-    choices=ROLES,
-    default='customer',
-    verbose_name='Role',
-    help_text='User role in the system.'
+        max_length=10,
+        choices=ROLES,
+        default='customer',
+        verbose_name='Role',
+        help_text='User role in the system.'
     )
 
     created_at = models.DateTimeField(

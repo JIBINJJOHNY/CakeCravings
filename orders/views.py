@@ -5,6 +5,7 @@ import logging
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from django.core.mail import EmailMultiAlternatives
 from django.core.mail import send_mail
 from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
@@ -12,13 +13,14 @@ from django.urls import reverse
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import Paginator
-
+from django.utils.decorators import method_decorator
 from cart.contexts import cart_contents
 from orders.models import Order, OrderItem
 from products.models import Product
 from profiles.models import Profile
 from reviews.models import Review
 from decimal import Decimal
+from django.utils.html import strip_tags
 
 class AddOrder(View):
     """View for adding order AJAX."""
@@ -26,7 +28,7 @@ class AddOrder(View):
         if request.user.is_authenticated:
             if request.headers.get('x-requested-with') == 'XMLHttpRequest':
                 cart = cart_contents(request)
-                total = cart['grand_total']  # Use 'grand_total' instead of 'total'
+                total = cart['grand_total']
 
                 user = request.user
                 full_name = request.POST.get('full_name')
@@ -44,7 +46,7 @@ class AddOrder(View):
                 cart_items = cart['cart_items']
 
                 if Order.objects.filter(order_key=order_key).exists():
-                    pass
+                    return JsonResponse({'success': False, 'message': 'Order with the same key already exists.'})
                 else:
                     order = Order.objects.create(
                         user=user,
@@ -86,13 +88,11 @@ class AddOrder(View):
                     cart.clear()
                     request.session['cart'] = cart
 
-                return JsonResponse({'success': True})
-            return JsonResponse({'success': False})
+                    return JsonResponse({'success': True, 'message': 'Order added successfully.'})
+            return JsonResponse({'success': False, 'message': 'Invalid request.'})
         else:
-            return render(
-                request,
-                'account/login.html',
-            )
+            return render(request, 'account/login.html')
+
 
 @login_required
 def basket_view(request):
@@ -179,47 +179,24 @@ class OrdersView(View):
             return render(
                 request, 'account/login.html',
             )
-
+@method_decorator(login_required, name='dispatch')
 class OrderDetailsView(View):
-    """View for user order details page."""
+    """View for displaying order details."""
 
-    def get(self, request, *args, **kwargs):
-        if request.user.is_authenticated:
-            order = get_object_or_404(
-                Order,
-                order_key=kwargs['order_number']
-            )
-            # get order items
-            order_items = OrderItem.objects.filter(order=order)
-            all_items = Order.get_order_items(order)
-            # check if the order is completed
-            user_reviews_for_this_order = Review.objects.filter(
-                order=order,
-                user=request.user
-            )
-            # get which products are in these reviews
-            products_in_reviews = []
-            for review in user_reviews_for_this_order:
-                products_in_reviews.append(review.product)
+    def get(self, request, order_number, *args, **kwargs):
+        print("DEBUG: Inside OrderDetailsView GET method")
+        try:
+            order = Order.objects.get(order_key=order_number, user=request.user)
             context = {
                 'order': order,
-                'order_items': order_items,
-                'all_items': all_items,
-                'products_in_reviews': products_in_reviews,
+                'order_items': order.order_item.all(),
+                
             }
-            # Add the reverse URL statement here
-            order_details_url = reverse('orders:order_details', kwargs={'order_number': order.order_key})
-            if order.user == request.user:
-                return HttpResponseRedirect(order_details_url)
-            else:
-                return render(
-                    request, 'profiles/access_denied.html',
-                )
-        else:
-            return render(
-                request, 'account/login.html',
-            )
-
+            return render(request, 'orders/order_details.html', context)
+        except Order.DoesNotExist:
+            print("DEBUG: Order not found")
+            # Handle the case where the order is not found (redirect or show an error page)
+            return render(request, 'orders/order_error.html')
 def get_or_create_order(request):
     """
     Retrieve or create an Order instance for the current user.
@@ -250,11 +227,18 @@ def stripe_webhook(request):
 
     # Handle the event
     if event.type == 'payment_intent.succeeded':
-        payment_confirmation(event.data.object.client_secret)
+        try:
+            payment_confirmation(event.data.object.client_secret)
+            return HttpResponse(status=200)
+        except Exception as e:
+            logger.error(f"Error in handling payment_intent.succeeded: {str(e)}")
+            return HttpResponse(status=500)
     else:
-        print('Unhandled event type {}'.format(event.type))
-
-    return HttpResponse(status=200)
+        logger.warning(f"Unhandled event type: {event.type}")
+        return HttpResponse(status=200)
+class ErrorView(View):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'orders/order_error.html')
 
 def payment_confirmation(client_secret):
     try:
@@ -270,15 +254,50 @@ def payment_confirmation(client_secret):
     except Exception as e:
         logger.error(f"An error occurred in payment_confirmation: {str(e)}")
         # Handle the error and redirect accordingly
-        return redirect('some_error_page')
+        return redirect('orders:error')
 
 def send_payment_confirmation_email(customer_email, order_key, amount_received):
+  
+    BASE_URL = settings.BASE_URL
     # Format the amount with 2 decimal places
     formatted_amount = "{:.2f}".format(amount_received)
 
     subject = 'Payment Confirmation'
-    message = f'Thank you for your order! Your payment of {formatted_amount} has been received. Your order key is {order_key}.'
-    from_email = 'jibinjjohny11@gmail.com' 
-    recipient_list = [customer_email]
+    order_detail_url = reverse('orders:order_details', args=[order_key])
 
-    send_mail(subject, message, from_email, recipient_list)
+    # Construct the absolute URL to the logo
+    logo_url = 'https://cakecravingss-93e2bca9bc4c.herokuapp.com' + settings.STATIC_URL + 'images/login_page.png'
+
+    # Additional marketing sentence
+    marketing_sentence = "At Cake Cravings, we strive to make your moments sweet and memorable. Your order is being prepared with care and attention to detail."
+
+    # Get the order details and items
+    order = Order.objects.get(order_key=order_key)
+    order_items = order.order_item.all()
+
+    # Construct the list of ordered items
+    ordered_items_list = "<ul>"
+    for item in order_items:
+        ordered_items_list += f"<li><strong>{item.quantity} x {item.product.name}</strong></li>"
+    ordered_items_list += "</ul>"
+
+    order_detail_link = f'{BASE_URL}{order_detail_url}'
+
+
+    # Construct the HTML content inline
+    html_content = f"""
+        <h1>Thank you for your order!</h1>
+        <p>Your payment of ${formatted_amount} has been received. Your order key is {order_key}.</p>
+        <p>{marketing_sentence}</p>
+        <p>Your Order Details:</p>
+        {ordered_items_list}
+        <p>Click <a href="{order_detail_link}">here</a> to view your order details.</p>
+        <img src="{logo_url}" alt="Bakery Logo" width="100" height="50">
+    """
+
+    # Create an EmailMultiAlternatives instance
+    msg = EmailMultiAlternatives(subject, strip_tags(html_content), 'jibinjjohny11@gmail.com', [customer_email])
+    msg.attach_alternative(html_content, "text/html")
+
+    # Send the email
+    msg.send(fail_silently=False)

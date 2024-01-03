@@ -32,30 +32,37 @@
                 <div class="card-body">
                     <form method="post">
                         {% csrf_token %}
-                        {% crispy form %}
-
+                        
+                        {{ form.first_name.label_tag }} {{ form.first_name }}
+                        {{ form.last_name.label_tag }} {{ form.last_name }}
+                        {{ form.birthday.label_tag }} {{ form.birthday }}
+                        {{ form.phone_number.label_tag }} {{ form.phone_number }}
+                        {{ form.country.label_tag }} {{ form.country }}
+                        {{ form.postcode.label_tag }} {{ form.postcode }}
+                        {{ form.town_or_city.label_tag }} {{ form.town_or_city }}
+                        {{ form.street_address1.label_tag }} {{ form.street_address1 }}
+                        {{ form.street_address2.label_tag }} {{ form.street_address2 }}
+    
                         <div class="col-12 mt-3">
                             <button type="submit" class="btn btn-custom">Submit</button>
                         </div>
                     </form>
-
+    
                     {% if messages %}
-                    {% for msg in messages %}
-                    <div class="alert alert-{{ msg.tags }}" role="alert">
-                        {{ msg }}
-                    </div>
-                    {% endfor %}
+                        {% for msg in messages %}
+                            <div class="alert alert-{{ msg.tags }}" role="alert">
+                                {{ msg }}
+                            </div>
+                        {% endfor %}
                     {% endif %}
                 </div>
             </div>
         </div>
     </div>
-</div>
-<style>
-    .btn-custom {
-        background-color: #000000;
-        color: #ffffff;
-
-    }
-</style>
-{% endblock %}
+    <style>
+        .btn-custom {
+            background-color: #000000;
+            color: #ffffff;
+        }
+    </style>
+    {% endblock %}

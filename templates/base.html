@@ -98,7 +98,7 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'home' %}#contact">Contact</a>
                     </li>
-                    {% if user.is_authenticated and user.is_superuser %}
+                    {% if user.is_authenticated %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'product_list' %}">Product list</a>
                     </li>
@@ -115,7 +115,7 @@
                         </form>
                     </li>
                     <li class="nav-item">
-                        {% if user.is_authenticated %}
+                    {% if user.is_authenticated %}
                     <li class="nav-item dropdown">
                         <div class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown"

@@ -114,7 +114,7 @@ class Product(models.Model):
     ]
 
     AVAILABILITY_CHOICES = [
-        ('out_of_stock', 'Out of Stock'),
+        ('out_of_stock', 'Out of Stock'), 
         ('upcoming', 'Upcoming'),
         ('in_stock', 'In Stock'),
     ]

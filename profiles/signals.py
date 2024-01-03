@@ -7,11 +7,8 @@ from .models import Profile
 def create_profile(sender, instance, created, **kwargs):
     """Signal handler to create a profile when a new user is created."""
     if created:
-        Profile.objects.create(
-            user=instance,
-            email_verified=False,  # Default value for email_verified
-            role='customer'  # Default value for role
-        )
+        # Only create a profile if one doesn't already exist
+        Profile.objects.get_or_create(user=instance, defaults={'email_verified': False, 'role': 'customer'})
 
 @receiver(post_save, sender=User)
 def save_profile(sender, instance, **kwargs):

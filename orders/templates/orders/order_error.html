@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block extra_title %}Error{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Error</h1>
+    <p>An unexpected error occurred during payment confirmation.</p>
+    
+    <p>
+        <a href="{% url 'orders:basket_view' %}">Retry payment</a>
+    </p>
+</div>
+{% endblock %}

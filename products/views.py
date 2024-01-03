@@ -18,9 +18,9 @@ from .models import Product, Category
 from wishlist.models import Wishlist
 
 
-
 def is_manager(user):
-    return user.is_authenticated and user.is_superuser
+    return user.is_authenticated and user.profile.role == 'manager'
+
 @require_GET
 def get_csrf_token(request):
     csrf_token = get_token(request)

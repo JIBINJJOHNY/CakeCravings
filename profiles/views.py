@@ -9,53 +9,41 @@ from .models import  Profile
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.forms import AuthenticationForm
 
-class Profileview(View):
+class ProfileView(View):
     def get(self, request):
         form = ProfileForm()
-        return render(request, 'profiles/profile.html', locals())
+        return render(request, 'profiles/profile.html', {'form': form})
 
     def post(self, request):
         form = ProfileForm(request.POST)
         if form.is_valid():
-            user = request.user
-            first_name = form.cleaned_data['first_name']
-            last_name = form.cleaned_data['last_name']
-            birthday = form.cleaned_data['birthday']
-            phone_number = form.cleaned_data['phone_number']
-            country = form.cleaned_data['country']
-            postcode = form.cleaned_data['postcode']
-            town_or_city = form.cleaned_data['town_or_city']
-            street_address1 = form.cleaned_data['street_address1']
-            street_address2 = form.cleaned_data['street_address2']
-            county = form.cleaned_data['county']
+            # Retrieve the user's profile or create a new one
+            profile, created = Profile.objects.get_or_create(user=request.user)
 
-       
-            profile = get_object_or_404(Profile, user= request.user)
+            # Update the profile fields
+            profile.first_name = form.cleaned_data['first_name']
+            profile.last_name = form.cleaned_data['last_name']
+            profile.birthday = form.cleaned_data['birthday']
+            profile.phone_number = form.cleaned_data['phone_number']
+            profile.country = form.cleaned_data['country']
+            profile.postcode = form.cleaned_data['postcode']
+            profile.town_or_city = form.cleaned_data['town_or_city']
+            profile.street_address1 = form.cleaned_data['street_address1']
+            profile.street_address2 = form.cleaned_data['street_address2']
 
-            # Update existing profile or create a new one
-            profile.first_name = first_name
-            profile.last_name = last_name
-            profile.birthday = birthday
-            profile.phone_number = phone_number
-            profile.country = country
-            profile.postcode = postcode
-            profile.town_or_city = town_or_city
-            profile.street_address1 = street_address1
-            profile.street_address2 = street_address2
-            profile.county = county
-
+            # Save the profile
             profile.save()
 
             messages.success(request, "Congratulations! Profile saved successfully")
         else:
             messages.warning(request, 'Invalid input data')
 
-        return render(request, 'profiles/profile.html', locals())
+        return render(request, 'profiles/profile.html', {'form': form})
 
 
 def address(request):
-        add = Profile.objects.filter(user=request.user)
-        return render(request,'profiles/address.html',locals())
+    profile = get_object_or_404(Profile, user=request.user)
+    return render(request, 'profiles/address.html', {'profile': profile})
 
 
 class addressUpdate(View):

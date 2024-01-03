@@ -29,9 +29,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['cakecravingss-93e2bca9bc4c.herokuapp.com', '127.0.0.1']
+ALLOWED_HOSTS = ['cakecravingss-93e2bca9bc4c.herokuapp.com', '127.0.0.1','localhost',]
 
 # Application definition
 
@@ -173,6 +173,7 @@ STATICFILES_STORAGE = 'cloudinary_storage.storage.StaticHashedCloudinaryStorage'
 MEDIA_URL = '/media/'
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
+BASE_URL = f'https://{ALLOWED_HOSTS[0]}' if ALLOWED_HOSTS else 'http://localhost:8000'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
