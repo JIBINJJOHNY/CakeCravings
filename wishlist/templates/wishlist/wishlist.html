@@ -2,9 +2,9 @@
 {% load static %}
 
 {% block content %}
-<div class="container mt-5" style="min-height: 300px;">
+<div class="container mt-5 mb-5" style="min-height: 300px;">
     {% if wishlist_products %}
-    <h1>Your Wishlist</h1>
+    <h1 class="mb-4">Your Wishlist</h1>
     <div class="row">
         {% for product in wishlist_products %}
         <div class="col-md-4 mb-4">
@@ -12,15 +12,20 @@
                 <div class="card">
                     {% if product.images.all %}
                     <img src="{{ product.images.first.image.url }}" alt="{{ product.name }}" class="card-img-top"
-                        style="max-height: 150px; object-fit: contain;">
+                        style="object-fit: contain;">
                     {% else %}
                     <!-- Display a default image if no product image is available -->
-                    <img src="{% static 'images/default_image.png' %}" alt="{{ product.name }}" class="card-img-top"
-                        style="max-height: 150px; object-fit: contain;">
+                    <img src="{% static 'images/default_image.png' %}" alt="{{ product.name }}"
+                        class="card-img-top" style="object-fit: contain;">
                     {% endif %}
                     <div class="card-body">
-                        <h5 class="card-title" style="font-size: 1.5rem;">{{ product.name }}</h5>
-                        <p class="card-text" style="font-size: 1.2rem;">{{ product.price }}</p>
+                        <h3 class="card-title" style="font-size: 1.5rem;">{{ product.name }}</h3>
+                        <h6 class="card-text" style="font-size: 1.2rem;">€{{ product.price }}</h6>
+                        <form method="POST" action="{% url 'wishlist:wishlist_delete' product.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+                        </form>
+                        
                     </div>
                 </div>
             </a>
@@ -37,12 +42,10 @@
     </a>
     {% endif %}
 </div>
-
 <style>
-    /* Add this style to change the link color */
-    .wishlist-link {
-        color: #000000;
-    }
+    .mt-5, .my-5 {
+    margin-top: 7rem!important;
+}
 </style>
 
 {% endblock %}

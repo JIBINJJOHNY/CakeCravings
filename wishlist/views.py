@@ -1,6 +1,7 @@
 from django.views import View
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 from .models import Wishlist
 from products.models import Product
@@ -57,3 +58,11 @@ def minus_wishlist(request):
             'removed': removed,  # Add this to indicate whether the removal was successful
         }
         return JsonResponse(data)
+def wishlist_delete(request, product_id):
+    user = request.user
+    if user.is_authenticated:
+        wishlist, created = Wishlist.objects.get_or_create(user=user)
+        product = get_object_or_404(Product, id=product_id)
+        wishlist.products.remove(product)
+
+    return redirect('wishlist:view_wishlist')

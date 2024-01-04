@@ -99,12 +99,13 @@
                         <a class="nav-link" href="{% url 'home' %}#contact">Contact</a>
                     </li>
                     {% if user.is_authenticated %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'product_list' %}">Product list</a>
-                    </li>
+                        {% if user.profile.role == 'admin' or user.profile.role == 'manager' %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'product_list' %}">Product list</a>
+                            </li>
+                        {% endif %}
                     {% endif %}
                 </ul>
-
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item">
                         <form class="form-inline" method="GET" action="{% url 'all_products' %}">
