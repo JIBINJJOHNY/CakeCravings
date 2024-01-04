@@ -25,19 +25,19 @@
             </div>
         </div>
         <div class="col-md-9">
-            {% for ad in add %}
+            {% for address in addresses %}
             <div class="card m-2">
                 <div class="card-body">
                     <h3>Address{{forloop.counter}}</h3>
-                    <p>First Name:{{ad.first_name}}</p>
-                    <p>Last Name:{{ad.last_name}}</p>
-                    <p>Street_address1:{{ad.street_address1}}</p>
-                    <p>Street_address2:{{ad.street_address2}}</p>
-                    <p>Town/City:{{ad.town_or_city}}</p>
-                    <p>Postcode:{{ad.postcode}}</p>
-                    <p>Country:{{ad.country}}</p>
-                    <p>Phone Number:{{ad.phone_number}}</p>
-                    <p class="text-center"><a href="{% url 'address_update' pk=ad.id %}" type="button"
+                    <p>First Name:{{address.first_name}}</p>
+                    <p>Last Name:{{address.last_name}}</p>
+                    <p>Street_address1:{{address.street_address1}}</p>
+                    <p>Street_address2:{{address.street_address2}}</p>
+                    <p>Town/City:{{address.town_or_city}}</p>
+                    <p>Postcode:{{address.postcode}}</p>
+                    <p>Country:{{address.country}}</p>
+                    <p>Phone Number:{{address.phone_number}}</p>
+                    <p class="text-center"><a href="{% url 'address_update' pk=address.id %}" type="button"
                             class="btn btn-custom">Update</a></p>
                 </div>
             </div>

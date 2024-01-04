@@ -12,5 +12,8 @@ def create_profile(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender=User)
 def save_profile(sender, instance, **kwargs):
-    """Signal handler to save the profile when the user is saved."""
-    instance.profile.save()
+    # Check if the user has a profile before saving
+    if hasattr(instance, 'profile'):
+        instance.profile.save()
+    else:
+        Profile.objects.create(user=instance)

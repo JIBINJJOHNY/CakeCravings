@@ -101,12 +101,13 @@
                                 <div class="row g-3">
                                     <div class="col-sm-7">
                                         <label for="customer-name" class="form-label">Customer Name</label>
-                                        <input type="text" value="{{ my_profile.full_name }}" class="form-control"
+                                        <input type="text" value="{% if my_profile.first_name %}{{ my_profile.first_name }}{% endif %}{% if my_profile.first_name and my_profile.last_name %} {% endif %}{% if my_profile.last_name %}{{ my_profile.last_name }}{% endif %}" class="form-control"
                                             id="customer-name" placeholder="" required>
                                         <div class="invalid-feedback">
                                             Valid full name is required.
                                         </div>
                                     </div>
+                                    
                                 </div>
                                 <div class="col-12">
                                     <label for="customer-email" class="form-label">Email <span
@@ -149,13 +150,14 @@
                                     </div>
                                 </div>
                                 <div class="col-12">
-                                    <label for="customer-region" class="form-label">State</label>
-                                    <input type="text" value="{{ my_profile.county }}" class="form-control"
-                                        id="customer-region" placeholder="State" required>
+                                    <label for="customer-state" class="form-label">State</label>
+                                    <input type="text" value="{{ my_profile.state }}" class="form-control"
+                                        id="customer-state" placeholder="State" required>
                                     <div class="invalid-feedback">
-                                        Please provide a valid region/county/state.
+                                        Please provide a valid state.
                                     </div>
                                 </div>
+                                
                                 <div class="col-12">
                                     <label for="customer-city" class="form-label">City</label>
                                     <input type="text" value="{{ my_profile.town_or_city }}" class="form-control"

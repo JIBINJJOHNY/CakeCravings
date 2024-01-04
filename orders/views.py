@@ -21,6 +21,10 @@ from profiles.models import Profile
 from reviews.models import Review
 from decimal import Decimal
 from django.utils.html import strip_tags
+import logging
+
+# Set up the logger
+logger = logging.getLogger(__name__)
 
 class AddOrder(View):
     """View for adding order AJAX."""
@@ -112,7 +116,6 @@ def basket_view(request):
         else:
             total_final = cart['grand_total']  # Use the grand total for 'online'
 
-
         total_sum = "{:.2f}".format(total_final)
         total = int(total_final * 100)
         stripe_public_key = settings.STRIPE_PUBLIC_KEY
@@ -138,13 +141,17 @@ def basket_view(request):
         }
 
         # Fetch the primary address from the user's profile
+        primary_address = None
+        my_profile = None  # Initialize my_profile variable
+
         try:
-            primary_address = Profile.objects.get(user=request.user, is_primary_address=True)
+            my_profile = Profile.objects.get(user=request.user)
+            primary_address = my_profile if my_profile.is_primary_address else None
         except Profile.DoesNotExist:
-            primary_address = None
+            pass
 
         context = {
-            'my_profile': None,  # You can remove this line since we're not using the Profile model
+            'my_profile': my_profile,
             'primary_address': primary_address,
             'user_info': user_info,
             'total_sum': total_sum,
@@ -156,7 +163,6 @@ def basket_view(request):
     except Exception as e:
         logger.error(f"An error occurred in basket_view: {str(e)}")
         return HttpResponse("An error occurred.")
-
 class OrderConfirmation(View):
     """View for the order placed page."""
     def get(self, request, *args, **kwargs):

@@ -50,9 +50,6 @@
         
             <!-- Display Size, Availability, and Price -->
             <div class="product-details">
-                {% if product.size %}
-                <p><strong>Size:</strong> {{ product.get_size_display }}</p>
-                {% endif %}
                 <p><strong>Availability:</strong> {{ product.get_availability_display }}</p>
                 <div class="product-price">
                     {% if product.price is not None %}
@@ -90,6 +87,12 @@
                                 <option value="M">M</option>
                                 <option value="L">L</option>
                             </select>
+                            <!-- Images based on size -->
+                            <span id="productImages" class="col-12">
+                                <img src="{% static 'images/small.png' %}" alt="Small Image" class="product-image" data-size="S">
+                                <img src="{% static 'images/medium.png' %}" alt="Medium Image" class="product-image" data-size="M">
+                                <img src="{% static 'images/large.png' %}" alt="Large Image" class="product-image" data-size="L">
+                            </span>
                         </div>
                         {% endif %}
                         <div class="col-12">
@@ -302,6 +305,38 @@
                 mainImage.src = newImageSource;
             }
         }
+    </script>
+     <script>
+        // JavaScript to handle size change and show corresponding image
+        document.addEventListener('DOMContentLoaded', function () {
+            const sizeDropdown = document.getElementById('id_product_size');
+            const productImages = document.getElementById('productImages').querySelectorAll('.product-image');
+
+            // Set the initial display property for each image
+            productImages.forEach(image => {
+                image.style.display = 'none';
+            });
+            const defaultImage = document.querySelector('.product-image[data-size="S"]');
+            if (defaultImage) {
+                defaultImage.style.display = 'block';
+            }
+
+            // Add an event listener for size change
+            sizeDropdown.addEventListener('change', function () {
+                const selectedSize = sizeDropdown.value;
+
+                // Hide all images
+                productImages.forEach(image => {
+                    image.style.display = 'none';
+                });
+
+                // Show the image corresponding to the selected size
+                const selectedImage = document.querySelector(`.product-image[data-size="${selectedSize}"]`);
+                if (selectedImage) {
+                    selectedImage.style.display = 'block';
+                }
+            });
+        });
     </script>
     <script type="text/javascript">
         // Disable +/- buttons outside 1-99 range

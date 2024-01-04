@@ -55,6 +55,13 @@ class Profile(models.Model):
         verbose_name='Town or City',
         help_text='Format: not required'
     )
+    state = models.CharField(
+        max_length=80,
+        null=True,
+        blank=True,
+        verbose_name='State',
+        help_text='Format: not required'
+    )
     country = CountryField(
         blank_label='Country *',
         null=True,
