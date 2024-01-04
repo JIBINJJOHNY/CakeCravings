@@ -105,7 +105,6 @@ class Discount(models.Model):
         today = timezone.now().date()
         return self.start_date <= today <= self.end_date and self.is_active
 
-
 class Product(models.Model):
     SIZE_CHOICES = [
         ('S', 'Small (18cm - 6 portions)'),
@@ -139,6 +138,7 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     related_products = models.ManyToManyField('self', blank=True)
     discount_price = models.ForeignKey(Discount, on_delete=models.SET_NULL, null=True, blank=True)
+    discounted_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     availability = models.CharField(max_length=20, choices=AVAILABILITY_CHOICES, default='in_stock')
     has_sizes = models.BooleanField(default=False)  # Set to True for products with sizes
     size = models.CharField(max_length=5, choices=SIZE_CHOICES, default='S')
@@ -161,15 +161,14 @@ class Product(models.Model):
         # Check if a discount is applicable
         if self.discount_price and self.discount_price.is_valid():
             discount_amount = (self.discount_price.percentage / Decimal(100)) * calculated_price
-            calculated_price -= discount_amount
+            self.discounted_price = calculated_price - discount_amount
+        else:
+            self.discounted_price = None
 
         self.price = calculated_price
         super().save(*args, **kwargs)
         
-        # Now you can print category_prices without an error
-        print(f"Category Prices: {category_prices}")
-        print(f"Calculated Price: {calculated_price}")
-
+        
     def get_price_for_size(self, size):
         """
         Get the price for the specified size.

@@ -36,66 +36,63 @@ print(f"Number of products: {products.count()}")
                 </div>
             </div>
         </div>
-        <!-- Right Column for Product Cards -->
-        <div class="col-md-9">
-            <div id="product-cards">
-                <h1 class="products_heading">Products</h1>
+       <!-- Right Column for Product Cards -->
+<div class="col-md-9">
+    <div id="product-cards">
+        <h1 class="products_heading">Products</h1>
 
-                <div class="row">
-                    {% for product in all_products %}
-                    <div class="col-md-4 mb-4 product-card" data-product-id="{{ product.id }}">
-                        <div class="card">
-                            <!-- Tags -->
-                            <div class="tags-container">
-                                {% for tag in product.tags.all %}
-                                <span class="tag">{{ tag.name }}</span>
-                                {% endfor %}
-                            </div>
+        <div class="row">
+            {% for product in all_products %}
+            <div class="col-md-4 mb-4 product-card" data-product-id="{{ product.id }}">
+                <div class="card">
+                    <!-- Tags -->
+                    <div class="tags-container">
+                        {% for tag in product.tags.all %}
+                        <span class="tag">{{ tag.name }}</span>
+                        {% endfor %}
+                    </div>
 
-                            <a href="{% url 'product_detail' product.id %}"
-                                onclick="redirectToProductDetail('{{ product.id }}')">
-                                <div class="image-container" style="height: 200px; overflow: hidden;">
-                                    <img src="{{ product.images.first.image_url }}" alt="{{ product.name }}"
-                                        style="width: 100%; height: auto;">
-                                </div>
-                            </a>
-                            <div class="card-body">
-                                <div class="card-body-content" style="height: 120px;">
-                                    <h3>{{ product.name }}</h3>
-                                    {% if average_rating %}
-                                    <small class="text-muted" style="font-size: 16px;">
-                                        <i class="fas fa-star mr-1" style="color: gold;"></i>
-                                        {{ average_rating|floatformat:"1" }} / 5
-                                    </small>
-                                    {% else %}
-                                    <small class="text-muted" style="font-size: 16px;">No Rating</small>
-                                    {% endif %}
-                                    {% if product.discount_price %}
-                                    <h6>
-                                        {% if product.discount_price < product.price %}
-                                        <span>€{{ product.discount_price }}</span>
-                                        <span style="text-decoration: line-through;">(€{{ product.price }})</span>
-                                        {% else %}
-                                        <span>€{{ product.price }}</span>
-                                        {% endif %}
-                                    </h6>
-                                    {% else %}
-                                    <h6>€{{ product.price }}</h6>
-                                    <span>
-                                        <button class="btn addToWishlistBtn" title="Add to Wishlist"
-                                            data-product-id="{{ product.id }}">
-                                            <i class="fas fa-heart" style="font-size: 20px; color: #840a0a;"></i>
-                                        </button>
-                                    </span>
-                                    {% endif %}
-                                </div>
-                            </div>
+                    <a href="{% url 'product_detail' product.id %}"
+                        onclick="redirectToProductDetail('{{ product.id }}')">
+                        <div class="image-container" style="height: 200px; overflow: hidden;">
+                            <img src="{{ product.images.first.image_url }}" alt="{{ product.name }}"
+                                style="width: 100%; height: auto;">
+                        </div>
+                    </a>
+                    <div class="card-body">
+                        <div class="card-body-content" style="height: 120px;">
+                            <h3>{{ product.name }}</h3>
+                            {% if average_rating %}
+                            <small class="text-muted" style="font-size: 16px;">
+                                <i class="fas fa-star mr-1" style="color: gold;"></i>
+                                {{ average_rating|floatformat:"1" }} / 5
+                            </small>
+                            {% else %}
+                            <small class="text-muted" style="font-size: 16px;">No Rating</small>
+                            {% endif %}
+                            {% if product.discounted_price %}
+                            <h6>
+                                <span style="color: red;">€{{ product.discounted_price }}</span>
+                                <span style="text-decoration: line-through;" >€{{ product.price }}</span>
+                            </h6>
+                            {% else %}
+                            <h6>€{{ product.price }}</h6>
+                            {% endif %}
+                            <span>
+                                <button class="btn addToWishlistBtn" title="Add to Wishlist"
+                                    data-product-id="{{ product.id }}">
+                                    <i class="fas fa-heart" style="font-size: 20px; color: #840a0a;"></i>
+                                </button>
+                            </span>
                         </div>
                     </div>
-                    {% endfor %}
                 </div>
             </div>
+            {% endfor %}
         </div>
+    </div>
+</div>
+
         <!-- Pagination -->
         <div class="pagination">
             <span class="step-links">
@@ -120,9 +117,6 @@ print(f"Number of products: {products.count()}")
         <!-- FontAwesome arrow-up icon -->
     </button>
 </div>
-</div>
-</div>
-
 
 <script src="{% static 'js/breadscrumb.js' %}"></script>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>

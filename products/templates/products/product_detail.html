@@ -53,17 +53,21 @@
                 <p><strong>Availability:</strong> {{ product.get_availability_display }}</p>
                 <div class="product-price">
                     {% if product.price is not None %}
-                        <span class="current-price text-brand" id="product-price" data-product-price="{{ product.price }}">
-                            €{{ product.price }}
-                        </span>
                         {% if product.discounted_price %}
-                            <span class="save-price font-md color3 ml-3">{{ product.discount_percentage }} Off</span>
-                            <span class="old-price font-md ml-3">€{{ product.discounted_price }}</span>
+                            <span style="color: red;"class="current-price text-brand" id="product-price" data-product-price="{{ product.price }}">
+                                €{{ product.discounted_price }}
+                            </span>
+                            <span style="text-decoration: line-through;" >€{{ product.price }}</span>
+                        {% else %}
+                            <span class="current-price text-brand" id="product-price" data-product-price="{{ product.price }}">
+                                €{{ product.price }}
+                            </span>
                         {% endif %}
                     {% else %}
                         <span class="text-muted">Price not available</span>
                     {% endif %}
                 </div>
+                
             </div>
         
             {% if average_rating %}
