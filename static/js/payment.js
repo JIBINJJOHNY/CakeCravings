@@ -42,7 +42,7 @@ form.addEventListener('submit', function (ev) {
     let customerAddress = document.getElementById("customer-address").value;
     let customerAddress2 = document.getElementById("customer-address-2").value;
     let customerCountry = document.getElementById("customer-country").value;
-    let customerRegion = document.getElementById("customer-region").value;
+    let customerRegion = document.getElementById("customer-state").value;
     let customerCity = document.getElementById("customer-city").value;
     let postCode = document.getElementById("post-code").value;
     // Warning message for the user to prevent refreshing the page,
