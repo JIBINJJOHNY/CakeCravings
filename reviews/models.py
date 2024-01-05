@@ -3,10 +3,11 @@ from django.contrib.auth.models import User
 from products.models import Product
 from orders.models import Order
 
+
 class Review(models.Model):
     """Review model."""
     STAR_CHOICES = (
-        ('1', '1'),  
+        ('1', '1'),
         ('2', '2'),
         ('3', '3'),
         ('4', '4'),
@@ -33,7 +34,7 @@ class Review(models.Model):
     )
     rating = models.IntegerField(
         choices=STAR_CHOICES,
-        default=1,  
+        default=1,
     )
     comment = models.TextField(
         max_length=1000,

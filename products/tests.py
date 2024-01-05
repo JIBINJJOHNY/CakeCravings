@@ -2,6 +2,7 @@ from django.test import TestCase
 from django.utils import timezone
 from .models import Category, Tag, Discount, Product, ProductImage
 
+
 class CategoryModelTest(TestCase):
     def setUp(self):
         self.category = Category.objects.create(name='Test Category', is_active=True)
@@ -11,6 +12,7 @@ class CategoryModelTest(TestCase):
         self.assertEqual(category.name, 'Test Category')
         self.assertTrue(category.is_active)
         self.assertIsNotNone(category.slug)
+
 
 class TagModelTest(TestCase):
     def setUp(self):
@@ -22,6 +24,7 @@ class TagModelTest(TestCase):
         self.assertTrue(tag.is_active)
         self.assertIsNotNone(tag.slug)
 
+
 class DiscountModelTest(TestCase):
     def setUp(self):
         self.discount = Discount.objects.create(
@@ -30,6 +33,7 @@ class DiscountModelTest(TestCase):
             end_date=timezone.now().date() + timezone.timedelta(days=1),
             is_active=True
         )
+
         def test_discount_validity(self):
             self.assertTrue(self.discount.is_valid())
 
@@ -41,6 +45,8 @@ class DiscountModelTest(TestCase):
                 is_active=True
             )
             self.assertFalse(invalid_discount.is_valid())
+
+
 class ProductModelTest(TestCase):
     def setUp(self):
         self.category = Category.objects.create(name='Test Category', is_active=True)
@@ -59,6 +65,7 @@ class ProductModelTest(TestCase):
         self.assertIsNotNone(product.slug)
         self.assertTrue(product.discount_price.is_valid())
         self.assertEqual(product.availability, 'in_stock')
+
 
 class ProductImageModelTest(TestCase):
     def setUp(self):

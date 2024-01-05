@@ -4,6 +4,7 @@ from cloudinary.models import CloudinaryField
 from decimal import Decimal
 from django.utils import timezone
 
+
 class Category(models.Model):
     name = models.CharField(
         max_length=100,
@@ -18,8 +19,6 @@ class Category(models.Model):
         help_text='Format: required, max_length=150'
     )
     is_active = models.BooleanField(default=False)
-  
-
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Created at')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='Updated at')
 
@@ -32,9 +31,9 @@ class Category(models.Model):
         self.slug = slugify(self.name, allow_unicode=True)
         super().save(*args, **kwargs)
 
-
     def __str__(self):
         return self.name
+
 
 class Tag(models.Model):
     """Cake Cravings Tag model"""
@@ -105,6 +104,7 @@ class Discount(models.Model):
         today = timezone.now().date()
         return self.start_date <= today <= self.end_date and self.is_active
 
+
 class Product(models.Model):
     SIZE_CHOICES = [
         ('S', 'Small (18cm - 6 portions)'),
@@ -113,7 +113,7 @@ class Product(models.Model):
     ]
 
     AVAILABILITY_CHOICES = [
-        ('out_of_stock', 'Out of Stock'), 
+        ('out_of_stock', 'Out of Stock'),
         ('upcoming', 'Upcoming'),
         ('in_stock', 'In Stock'),
     ]
@@ -167,8 +167,7 @@ class Product(models.Model):
 
         self.price = calculated_price
         super().save(*args, **kwargs)
-        
-        
+
     def get_price_for_size(self, size):
         """
         Get the price for the specified size.
@@ -180,6 +179,8 @@ class Product(models.Model):
         print(f"Category: {self.category.name}, Size: {size}, Default Price: {default_price}")
 
         return default_price
+
+
 class ProductImage(models.Model):
     product = models.ForeignKey(
         'Product',
@@ -189,7 +190,7 @@ class ProductImage(models.Model):
         help_text='The associated product for this image.'
     )
     image = CloudinaryField(
-        'image', 
+        'image',
         folder='product_images',
         null=True,
         blank=True,
@@ -244,6 +245,7 @@ class ProductImage(models.Model):
     def get_not_active_product_images(cls):
         return cls.objects.filter(is_active=False)
 
+
 def save(self, *args, **kwargs):
     if self.default_image:
         for image in self.product.images.all().exclude(id=self.id):
@@ -251,4 +253,3 @@ def save(self, *args, **kwargs):
             image.save()
 
     super().save(*args, **kwargs)
-

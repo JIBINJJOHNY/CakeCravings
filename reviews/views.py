@@ -5,6 +5,8 @@ from django.views.decorators.http import require_POST
 from .models import Review
 from .forms import ReviewForm
 from products.models import Product
+
+
 @require_POST
 def ajax_add_review(request, pid):
     try:
@@ -12,7 +14,6 @@ def ajax_add_review(request, pid):
         user = request.user
 
         rating = int(request.POST.get('rating', 0))
-      
 
         review = Review.objects.create(
             user=user,
@@ -44,7 +45,7 @@ def ajax_add_review(request, pid):
 def product_reviews(request, product_id):
     product = get_object_or_404(Product, pk=product_id)
     product_reviews = Review.objects.filter(product=product).order_by('-created_at')
-    
+
     # Calculate the average rating
     average_reviews = Review.objects.filter(product=product).aggregate(rating=Avg("rating"))
 

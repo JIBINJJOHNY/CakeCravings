@@ -7,6 +7,7 @@ from django.contrib.auth import logout  # Add logout import
 from .forms import ProfileForm
 from .models import Profile
 
+
 class ProfileView(View):
     def get(self, request):
         form = ProfileForm()
@@ -34,18 +35,20 @@ class ProfileView(View):
 
         return render(request, 'profiles/profile.html', {'form': form})
 
+
 @login_required
 def address(request):
     profile = get_object_or_404(Profile, user=request.user)
     addresses = Profile.objects.filter(user=request.user)
     return render(request, 'profiles/address.html', {'profile': profile, 'addresses': addresses})
 
+
 class AddressUpdate(View):
-    def get(self, request, pk): 
+    def get(self, request, pk):
         address = get_object_or_404(Profile, pk=pk)
         form = ProfileForm(instance=address)
         return render(request, 'profiles/address_update.html', {'form': form, 'address': address})
-    
+
     def post(self, request, pk):
         form = ProfileForm(request.POST)
         if form.is_valid():
@@ -59,7 +62,7 @@ class AddressUpdate(View):
             address.country = form.cleaned_data['country']
             address.phone_number = form.cleaned_data['phone_number']
             address.state = form.cleaned_data['state']  # Include state field
-            address.is_primary_address = form.cleaned_data['is_primary_address']  # Include is_primary_address field
+            address.is_primary_address = form.cleaned_data['is_primary_address']
             address.save()
             messages.success(request, "Your profile was successfully updated.")
             return redirect("address")
@@ -67,11 +70,13 @@ class AddressUpdate(View):
             messages.warning(request, "Invalid input data")
             return render(request, 'profiles/address_update.html', {'form': form})
 
-@login_required  
+
+@login_required
 def account_settings(request):
     user = request.user
     context = {'user': user}
     return render(request, 'profiles/account_settings.html', context)
+
 
 @login_required
 def account_delete(request):

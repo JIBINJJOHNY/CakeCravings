@@ -9,6 +9,7 @@ from django.core import serializers
 from django.template.loader import render_to_string
 from django.http import HttpResponse
 
+
 def view_wishlist(request):
     user = request.user
     if user.is_authenticated:
@@ -22,6 +23,8 @@ def view_wishlist(request):
     }
 
     return render(request, 'wishlist/wishlist.html', context)
+
+
 @login_required
 def plus_wishlist(request):
     if request.method == 'GET':
@@ -39,6 +42,7 @@ def plus_wishlist(request):
             'message': 'Wishlist Added Successfully',
         }
         return JsonResponse(data)
+
 
 def minus_wishlist(request):
     if request.method == 'GET':
@@ -58,6 +62,8 @@ def minus_wishlist(request):
             'removed': removed,  # Add this to indicate whether the removal was successful
         }
         return JsonResponse(data)
+
+
 def wishlist_delete(request, product_id):
     user = request.user
     if user.is_authenticated:

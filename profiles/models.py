@@ -6,6 +6,7 @@ from django.core.mail import send_mail
 from django_countries.fields import CountryField
 from datetime import date
 
+
 class Profile(models.Model):
     user = models.OneToOneField(
         User,
@@ -92,7 +93,7 @@ class Profile(models.Model):
         verbose_name='County',
         help_text='Format: not required'
     )
-    
+
     # New field to indicate the primary address
     is_primary_address = models.BooleanField(
         default=False,
@@ -155,11 +156,13 @@ class Profile(models.Model):
             return birthday
         return None
 
+
 # Signal to create a profile when a new user is registered
 @receiver(post_save, sender=User)
 def create_profile(sender, instance, created, **kwargs):
     if created:
         Profile.objects.create(user=instance)
+
 
 # Signal to save the profile when the user is saved
 @receiver(post_save, sender=User)

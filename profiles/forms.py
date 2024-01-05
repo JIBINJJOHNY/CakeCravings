@@ -2,6 +2,7 @@
 from django import forms
 from .models import Profile
 
+
 class ProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
@@ -25,9 +26,9 @@ class ProfileForm(forms.ModelForm):
             'street_address1': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Street address 1'}),
             'street_address2': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Street address 2'}),
             'town_or_city': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Town or city'}),
-            'state': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'State'}),  
+            'state': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'State'}),
             'country': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Country'}),
             'postcode': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Postal code'}),
             'phone_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Phone number'}),
-            'is_primary_address': forms.CheckboxInput(attrs={'class': 'form-check-input'}),  
+            'is_primary_address': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }

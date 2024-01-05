@@ -4,6 +4,7 @@ from products.models import Product
 from orders.models import Order
 from .models import Review
 
+
 class ReviewModelTest(TestCase):
     def setUp(self):
         # Create a user, product, and order for testing
@@ -48,4 +49,3 @@ class ReviewModelTest(TestCase):
         reviews = Review.objects.all()
         self.assertEqual(reviews[0], review2)
         self.assertEqual(reviews[1], review1)
-

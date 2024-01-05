@@ -1,9 +1,9 @@
 from django.shortcuts import render, redirect, reverse, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.db.models import Q, Count,Avg
+from django.db.models import Q, Count, Avg
 from django.db.models.functions import Lower
-from django.core.paginator import Paginator,Page,EmptyPage, PageNotAnInteger
+from django.core.paginator import Paginator, Page, EmptyPage, PageNotAnInteger
 from django.middleware.csrf import get_token
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET
@@ -11,7 +11,7 @@ from django.db.models import Avg
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.views.generic import ListView
-from .forms import ProductForm,ProductImageForm
+from .forms import ProductForm, ProductImageForm
 from reviews.forms import ReviewForm
 from reviews.models import Review
 from .models import Product, Category
@@ -21,10 +21,12 @@ from wishlist.models import Wishlist
 def is_manager(user):
     return user.is_authenticated and user.profile.role == 'manager'
 
+
 @require_GET
 def get_csrf_token(request):
     csrf_token = get_token(request)
     return JsonResponse({'csrf_token': csrf_token})
+
 
 def all_products(request, category_slug=None):
     """A view to show all products, including sorting and search queries"""
@@ -98,6 +100,8 @@ def all_products(request, category_slug=None):
         'all_products': products,  # Use the paginated products for rendering
     }
     return render(request, 'products/products.html', context)
+
+
 def product_detail(request, product_id):
     print(f"Product ID: {product_id}")
     product = get_object_or_404(Product, pk=product_id)
@@ -152,6 +156,7 @@ def product_detail(request, product_id):
 
     return render(request, 'products/product_detail.html', context)
 
+
 @login_required
 @user_passes_test(is_manager)
 def product_list(request):
@@ -160,6 +165,7 @@ def product_list(request):
         'products': products,
     }
     return render(request, 'products/product_list.html', context)
+
 
 @user_passes_test(is_manager)
 def add_product(request):
@@ -185,10 +191,12 @@ def add_product(request):
     context = {'form': form, 'image_form': image_form}
 
     return render(request, template, context)
+
+
 @user_passes_test(is_manager)
 def edit_product(request, product_id):
     product = get_object_or_404(Product, id=product_id)
-    
+
     if request.method == 'POST':
         form = ProductForm(request.POST, instance=product)
         image_form = ProductImageForm(request.POST, request.FILES, instance=product.images.first())
@@ -198,12 +206,13 @@ def edit_product(request, product_id):
             image_form.save()
             messages.success(request, 'Product successfully updated!')
             return redirect(reverse('product_list'))
-            
+
     else:
         form = ProductForm(instance=product)
         image_form = ProductImageForm(instance=product.images.first())
 
     return render(request, 'products/product_edit.html', {'product': product, 'form': form, 'image_form': image_form})
+
 
 @user_passes_test(is_manager)
 def delete_product(request, product_id):
