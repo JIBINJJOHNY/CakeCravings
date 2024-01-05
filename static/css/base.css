@@ -43,15 +43,13 @@ ul li {
 a {
     text-decoration: none;
     cursor: pointer;
-    color: #b4867b;
+    color: #532e2e;
 
 }
 
 a:hover {
-    color: rgb(243, 235, 235);
+    color: rgb(39, 21, 21);
 }
-
-
 
 img {
     display: block;
@@ -165,8 +163,6 @@ h2 {
     background: rgba(0, 0, 0, 0.5);
     /* Adjust the transparency (0.5 is 50%) */
 }
-
-
 
 /* Set text color for better visibility */
 .home-section .content {
