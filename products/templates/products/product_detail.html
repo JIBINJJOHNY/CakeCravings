@@ -67,7 +67,6 @@
                         <span class="text-muted">Price not available</span>
                     {% endif %}
                 </div>
-                
             </div>
         
             {% if average_rating %}
@@ -132,24 +131,25 @@
                                 <span>Our Menus</span>
                             </a>
                             <input type="submit" class="btn btn-secondary rounded-0  mt-5" value="Add to Cart">
+                             <!-- Wishlist Button -->
+                            {% if wishlist %}
+                            <a data-pid="{{ product.id }}" aria-label="remove from Wishlist"
+                                class="btn minus-wishlist btn-danger px-2 py-2 ms-2" href="#" style="margin-top: 45px;">
+                                <i class="fas fa-heart"></i>
+                            </a>
+                            {% else %}
+                            <a data-pid="{{ product.id }}" aria-label="Add to Wishlist"
+                                class="btn plus-wishlist btn-custom-color px-2 py-2 ms-2" href="#" style="margin-top: 40px;">
+                                <i class="fas fa-heart"></i>
+                            </a>
+                            {% endif %}
+                    
                         </div>
                         <input type="hidden" name="redirect_url" value="{{ request.path }}">
                         {% endwith %}
                     </div>
                 </form>
-                <!-- Wishlist Button -->
-                {% if wishlist %}
-                <a data-pid="{{ product.id }}" aria-label="remove from Wishlist"
-                    class="btn minus-wishlist btn-danger px-2 py-2 ms-2" href="#">
-                    <i class="fas fa-heart"></i>
-                </a>
-                {% else %}
-                <a data-pid="{{ product.id }}" aria-label="Add to Wishlist"
-                    class="btn plus-wishlist btn-custom-color px-2 py-2 ms-2" href="#">
-                    <i class="fas fa-heart"></i>
-                </a>
-                {% endif %}
-        
+                
             </div>
         </div>
         
