@@ -313,34 +313,35 @@
      <script>
         // JavaScript to handle size change and show corresponding image
         document.addEventListener('DOMContentLoaded', function () {
-            const sizeDropdown = document.getElementById('id_product_size');
-            const productImages = document.getElementById('productImages').querySelectorAll('.product-image');
+    const sizeDropdown = document.getElementById('id_product_size');
+    const productImages = document.getElementById('productImages').querySelectorAll('.product-image');
 
-            // Set the initial display property for each image
-            productImages.forEach(image => {
-                image.style.display = 'none';
-            });
-            const defaultImage = document.querySelector('.product-image[data-size="S"]');
-            if (defaultImage) {
-                defaultImage.style.display = 'block';
-            }
+    // Set the initial display property for each image
+    productImages.forEach(image => {
+        image.style.display = 'none';
+    });
+    const defaultImage = document.querySelector('.product-image[data-size="S"]');
+    if (defaultImage) {
+        defaultImage.style.display = 'block';
+    }
 
-            // Add an event listener for size change
-            sizeDropdown.addEventListener('change', function () {
-                const selectedSize = sizeDropdown.value;
+    // Add an event listener for size change
+    sizeDropdown.addEventListener('change', function () {
+        const selectedSize = sizeDropdown.value;
 
-                // Hide all images
-                productImages.forEach(image => {
-                    image.style.display = 'none';
-                });
-
-                // Show the image corresponding to the selected size
-                const selectedImage = document.querySelector(`.product-image[data-size="${selectedSize}"]`);
-                if (selectedImage) {
-                    selectedImage.style.display = 'block';
-                }
-            });
+        // Hide all images
+        productImages.forEach(image => {
+            image.style.display = 'none';
         });
+
+        // Show the image corresponding to the selected size
+        const selectedImage = document.querySelector(`.product-image[data-size="${selectedSize}"]`);
+        if (selectedImage) {
+            selectedImage.style.display = 'block';
+        }
+    });
+});
+
     </script>
     <script type="text/javascript">
         // Disable +/- buttons outside 1-99 range

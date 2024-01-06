@@ -52,7 +52,16 @@
                             </p>
                         </td>
                         <td class="py-3">
-                            <p class="my-0">€{{ item.price_for_size|default:item.product.price }}</p>
+                            {% if item.product.discounted_price %}
+                                <p class="my-0" style="color: red;" data-product-price="{{ item.product.price }}">
+                                    €{{ item.product.discounted_price }}
+                                </p>
+                                <p style="text-decoration: line-through;">€{{ item.price_for_size|default:item.product.price }}</p>
+                            {% else %}
+                                <p class="my-0" data-product-price="{{ item.product.price }}">
+                                    €{{ item.price_for_size|default:item.product.price }}
+                                </p>
+                            {% endif %}
                         </td>
                         <td class="py-3 w-25">
                             <form class="form update-form" method="POST" action="{% url 'adjust_cart' item.item_id %}">

@@ -6,12 +6,45 @@
 {% block head_title %}{% trans "Verify Your E-mail Address" %}{% endblock %}
 
 {% block content %}
+<style>
+  
+    .container {
+        margin-top: 150px;
+        margin-bottom: 150px; 
+    }
+
+    .row {
+        justify-content: center;
+        margin-top: 30px; 
+    }
+
+    .card {
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 4px 8px rgba(8, 1, 1, 0.1);
+    }
+
+    .card-body {
+        text-align: center;
+    }
+
+    .card-title {
+        font-size: 45px;
+        margin-bottom: 35px;
+    }
+
+    .card-text {
+        color: #242425; 
+        font-size: 20px;
+    }
+</style>
+
 <div class="container">
-    <div class="row justify-content-center" style="margin-top: 50px;">
+    <div class="row justify-content-center">
         <div class="col-md-6">
             <div class="card">
                 <div class="card-body">
-                    <h1 class="card-title">{% trans "Verify Your E-mail Address" %}</h1>
+                    <h2 class="card-title">{% trans "Verify Your E-mail Address" %}</h2>
 
                     <p class="card-text">
                         {% blocktrans %}

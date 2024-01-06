@@ -19,6 +19,7 @@ def cart_contents(request):
                 price_for_size = product.get_price_for_size(size)
 
                 total += quantity * price_for_size
+                print("total on line 22", total)
                 product_count += quantity
                 cart_items.append({
                     'item_id': item_id,
@@ -32,13 +33,13 @@ def cart_contents(request):
             quantity = item_data
             if product.price is not None:  # Check if the price is not None
                 total += quantity * product.price
+                print("total on line 22", total)
                 product_count += quantity
                 cart_items.append({
                     'item_id': item_id,
                     'quantity': quantity,
                     'product': product,
                 })
-
 
     # Adjust delivery cost based on the selected delivery option
     if total < settings.FREE_DELIVERY_THRESHOLD:
@@ -50,7 +51,6 @@ def cart_contents(request):
     else:
         delivery = 0
         free_delivery_delta = 0
-
 
     grand_total = delivery + total
 

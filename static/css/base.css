@@ -545,15 +545,14 @@ h6 span button:hover {
     color: #ffffff;
 }
 
-.main-image img {
-    width: 100%;
-    /* Set the desired width */
+.main-image img,
+.thumbnail img {
+    max-width: 100%;
+    height: auto;
     border: 2px solid #000000;
-    /* Add a border with your preferred color */
     border-radius: 10px;
-    /* Add border-radius for rounded corners */
+    object-fit: cover; /* Adjust the object-fit property as needed */
     margin-top: 20px;
-    /* Adjust margin as needed */
 }
 
 .image-gallery {
@@ -573,18 +572,20 @@ h6 span button:hover {
     justify-content: center;
     align-items: center;
     margin-top: 10px;
+    overflow-x: auto;
+    white-space: nowrap;
 }
 
 .thumbnail {
     width: 80px;
+    height: auto;
     margin-right: 10px;
     cursor: pointer;
 }
 
-.thumbnail:hover {
+.thumbnail:hover img {
     border: 2px solid #000000;
 }
-
 .ingredients {
     text-align: center;
     background-color: #f8f8f8;

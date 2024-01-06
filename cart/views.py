@@ -5,6 +5,8 @@ from decimal import Decimal
 from products.models import Product
 from .contexts import cart_contents
 from django.http import JsonResponse
+
+
 def view_cart(request):
     """ A view that renders the cart contents page """
     context = cart_contents(request)
@@ -15,6 +17,7 @@ def view_cart(request):
         context['cart_items'] = []
 
     return render(request, 'cart/cart.html', context)
+
 def add_to_cart(request, item_id):
     """ Add a quantity of the specified product to the shopping cart """
 
@@ -70,7 +73,7 @@ def add_to_cart(request, item_id):
     )
 
     return JsonResponse({'success': True, 'cart_count': cart_count})
-
+    
 def get_cart_count(request):
     context = cart_contents(request)
     cart_count = context.get('cart_count', 0)
@@ -115,18 +118,27 @@ def remove_from_cart(request, item_id):
         size = None
         if 'product_size' in request.POST:
             size = request.POST['product_size']
-        cart = request.session.get('cart', {})
 
-        if size:
-            del cart[item_id]['items_by_size'][size]
-            if not cart[item_id]['items_by_size']:
-                cart.pop(item_id)
-            messages.success(request, f'Removed size {size.upper()} {product.name} from your cart')
+       # Check if the order is placed or not
+        if request.user.is_authenticated and hasattr(request.user, 'orders') and request.user.orders.filter(status='Placed').exists():
+            # Order is placed, don't remove from the cart
+            messages.error(request, "Cannot remove items from the cart after the order is placed.")
         else:
-            cart.pop(item_id)
+            # Continue with removing from the cart
+            cart = request.session.get('cart', {})
+
+            if size:
+                del cart[item_id]['items_by_size'][size]
+                if not cart[item_id]['items_by_size']:
+                    cart.pop(item_id)
+                messages.success(request, f'Removed size {size.upper()} {product.name} from your cart')
+            else:
+                cart.pop(item_id)
+                messages.success(request, f'Removed {product.name} from your cart')
+
+            request.session['cart'] = cart
             messages.success(request, f'Removed {product.name} from your cart')
 
-        request.session['cart'] = cart
         return HttpResponse(status=200)
 
     except Exception as e:
