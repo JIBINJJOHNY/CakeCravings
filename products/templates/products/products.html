@@ -40,10 +40,11 @@ print(f"Number of products: {products.count()}")
 <div class="col-md-9">
     <div id="product-cards">
         <h1 class="products_heading">Products</h1>
-
         <div class="row">
             {% for product in all_products %}
             <div class="col-md-4 mb-4 product-card" data-product-id="{{ product.id }}">
+                <a href="{% url 'product_detail' product.id %}"
+                onclick="redirectToProductDetail('{{ product.id }}')">
                 <div class="card">
                     <!-- Tags -->
                     <div class="tags-container">
@@ -52,13 +53,11 @@ print(f"Number of products: {products.count()}")
                         {% endfor %}
                     </div>
 
-                    <a href="{% url 'product_detail' product.id %}"
-                        onclick="redirectToProductDetail('{{ product.id }}')">
+                    
                         <div class="image-container" style="height: 200px; overflow: hidden;">
                             <img src="{{ product.images.first.image_url }}" alt="{{ product.name }}"
                                 style="width: 100%; height: auto;">
                         </div>
-                    </a>
                     <div class="card-body">
                         <div class="card-body-content" style="height: 120px;">
                             <h3>{{ product.name }}</h3>
@@ -87,6 +86,7 @@ print(f"Number of products: {products.count()}")
                         </div>
                     </div>
                 </div>
+            </a>
             </div>
             {% endfor %}
         </div>
@@ -163,9 +163,26 @@ print(f"Number of products: {products.count()}")
 </script>
 
 <script>
+    // Use event delegation to handle click events on product cards
+    $('#product-cards').on('click', '.product-card', function (event) {
+        // Check if the click occurred on the wishlist button
+        if ($(event.target).hasClass('addToWishlistBtn')) {
+            // Clicked on the wishlist button, prevent redirection
+            event.stopPropagation();
+        } else {
+            // Clicked on the card, redirect to the product detail page
+            var productId = $(this).data('product-id');
+            console.log('Clicked on the card. Product ID:', productId);
+            redirectToProductDetail(productId);
+        }
+    });
+
     // Add click event to all elements with the "addToWishlistBtn" class
-    $('.addToWishlistBtn').click(function () {
-        var productId = $(this).attr('data-product-id');
+    $('.addToWishlistBtn').click(function (event) {
+        // Stop the event from propagating to the product card
+        event.stopPropagation();
+
+        var productId = $(this).data('product-id');
         console.log('Add to Wishlist clicked for product ID:', productId);
 
         // Perform the AJAX request to add the product to the wishlist
@@ -183,7 +200,7 @@ print(f"Number of products: {products.count()}")
         });
     });
 </script>
-<!-- ... -->
+
 
 
 {% endblock %}

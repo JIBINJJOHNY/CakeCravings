@@ -5,22 +5,18 @@ from decimal import Decimal
 from products.models import Product
 from .contexts import cart_contents
 from django.http import JsonResponse
-
+from django.views.decorators.http import require_POST
 
 def view_cart(request):
-    """ A view that renders the cart contents page """
+    delivery_option = request.GET.get('delivery_option', 'online')
     context = cart_contents(request)
-
-    # Check if cart_items is an integer
-    if isinstance(context['cart_items'], int):
-        # Handle the case where cart_items is an integer (e.g., total quantity)
-        context['cart_items'] = []
+    context['delivery_option'] = delivery_option  # Make sure it's added to the context
+    request.session['delivery_option'] = delivery_option
 
     return render(request, 'cart/cart.html', context)
 
 def add_to_cart(request, item_id):
     """ Add a quantity of the specified product to the shopping cart """
-
     product = get_object_or_404(Product, pk=item_id)
     quantity = int(request.POST.get('quantity'))
     redirect_url = request.POST.get('redirect_url')
@@ -31,30 +27,36 @@ def add_to_cart(request, item_id):
 
     cart = request.session.get('cart', {})
 
+    print(f"Initial Cart: {cart}")
+
     if size:
         if item_id in cart:
             if 'items_by_size' in cart[item_id] and size in cart[item_id]['items_by_size']:
                 cart[item_id]['items_by_size'][size] += quantity
-                messages.success(
-                    request, f'Updated size {size.upper()} {product.name} quantity to {cart[item_id]["items_by_size"][size]}')
+                messages.success(request, f'Updated size {size.upper()} {product.name} quantity to {cart[item_id]["items_by_size"][size]}')
             else:
                 cart[item_id].setdefault('items_by_size', {})[size] = quantity
-                messages.success(
-                    request, f'Added size {size.upper()} {product.name} to your cart')
+                messages.success(request, f'Added size {size.upper()} {product.name} to your cart')
         else:
             cart[item_id] = {'items_by_size': {size: quantity}}
-            messages.success(
-                request, f'Added size {size.upper()} {product.name} to your cart')
+            messages.success(request, f'Added size {size.upper()} {product.name} to your cart')
     else:
         if item_id in cart:
             cart[item_id] += quantity
-            messages.success(
-                request, f'Updated {product.name} quantity to {cart[item_id]}')
+            messages.success(request, f'Updated {product.name} quantity to {cart[item_id]}')
         else:
             cart[item_id] = quantity
             messages.success(request, f'Added {product.name} to your cart')
 
+    print(f"Updated Cart: {cart}")
+
+    # Explicitly assign the modified cart back to the session
     request.session['cart'] = cart
+    request.session.modified = True
+
+    # Print the delivery_option value
+    delivery_option = request.GET.get('delivery_option', 'online')
+    print(f"Delivery Option (add_to_cart): {delivery_option}")
 
     # Calculate the updated cart count, including products with sizes
     cart_count = sum(
@@ -72,16 +74,19 @@ def add_to_cart(request, item_id):
         )
     )
 
+    print(f"Cart Count: {cart_count}")
+
     return JsonResponse({'success': True, 'cart_count': cart_count})
-    
+
+
 def get_cart_count(request):
     context = cart_contents(request)
     cart_count = context.get('cart_count', 0)
+    print(f"Cart Count (get_cart_count): {cart_count}")
     return JsonResponse({'success': True, 'cart_count': cart_count})
 
 def adjust_cart(request, item_id):
     """Adjust the quantity of the specified product to the specified amount"""
-
     product = get_object_or_404(Product, pk=item_id)
     quantity = int(request.POST.get('quantity'))
     size = None
@@ -89,7 +94,6 @@ def adjust_cart(request, item_id):
         size = request.POST['product_size']
     cart = request.session.get('cart', {})
     delivery_option = request.GET.get('delivery_option', 'online')
-
     if size:
         if quantity > 0:
             cart[item_id]['items_by_size'][size] = quantity
@@ -106,8 +110,10 @@ def adjust_cart(request, item_id):
         else:
             cart.pop(item_id)
             messages.success(request, f'Removed {product.name} from your cart')
-
     request.session['cart'] = cart
+    # Print the delivery_option value
+    delivery_option = request.GET.get('delivery_option', 'online')
+    print(f"Delivery Option (adjust_cart): {delivery_option}")
     return redirect(f'{reverse("view_cart")}?delivery_option={delivery_option}')
 
 def remove_from_cart(request, item_id):
@@ -144,3 +150,30 @@ def remove_from_cart(request, item_id):
     except Exception as e:
         messages.error(request, f'Error removing item: {e}')
         return HttpResponse(status=500)
+    
+
+@require_POST
+def update_delivery_option(request):
+    try:
+        delivery_option = request.POST.get('delivery_option')
+
+        # Update the delivery option in the session or database
+        request.session['delivery_option'] = delivery_option
+
+        # ... (Your existing logic for calculating delivery cost and total)
+
+        # Update the response with the new delivery cost and total
+        response_data = {
+            'success': True,
+            'delivery_cost': str(delivery_cost),  # Convert to string for JSON compatibility
+            'total': str(total),  # Convert to string for JSON compatibility
+        }
+
+        return JsonResponse(response_data)
+
+    except Exception as e:
+        # Log the error for debugging
+        print(f"Error in update_delivery_option view: {str(e)}")
+        return JsonResponse({'success': False, 'error': 'An error occurred'})
+
+    

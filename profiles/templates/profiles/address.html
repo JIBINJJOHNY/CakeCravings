@@ -10,7 +10,7 @@
         </div>
     </div>
     <div class="row mt-3">
-        <div class="col-md-3 mb-4">
+        <div class="col-md-3 mb-4"> 
             <div class="d-grid">
                 <a href="{% url 'profile' %}" class="btn btn-lg btn-block">Profile</a>
             </div>
@@ -29,14 +29,15 @@
             <div class="card m-2">
                 <div class="card-body">
                     <h3>Address{{forloop.counter}}</h3>
-                    <p>First Name:{{address.first_name}}</p>
-                    <p>Last Name:{{address.last_name}}</p>
-                    <p>Street_address1:{{address.street_address1}}</p>
-                    <p>Street_address2:{{address.street_address2}}</p>
-                    <p>Town/City:{{address.town_or_city}}</p>
-                    <p>Postcode:{{address.postcode}}</p>
-                    <p>Country:{{address.country}}</p>
-                    <p>Phone Number:{{address.phone_number}}</p>
+                    <p>First Name:{{ address.first_name|default:"First Namer" }}</p>
+                    <p>Last Name:{{ address.last_name|default:"Last Name" }}</p>
+                    <p>Street_address1:{{ address.street_address1|default:"Street_address1" }}</p>
+                    <p>Street_address2:{{ address.street_address2|default:"Street_address2" }}</p>
+                    <p>Town/City:{{ address.town_or_city|default:"Town/City" }}</p>
+                    <p>Postcode:{{ address.postcode|default:"Postcode" }}</p>
+                    <p>State:{{ address.state|default:"State" }}</p>
+                    <p>Country:{{ address.country|default:"Germany" }}</p>
+                    <p>Phone Number:{{ address.phone_number|default:"Phone Number" }}</p>
                     <p class="text-center"><a href="{% url 'address_update' pk=address.id %}" type="button"
                             class="btn btn-custom">Update</a></p>
                 </div>

@@ -5,18 +5,20 @@ from django.views.decorators.http import require_POST
 from .models import Review
 from .forms import ReviewForm
 from products.models import Product
+from django.contrib.auth import get_user
+from django.contrib.auth.decorators import login_required
 
 
 @require_POST
+@login_required
 def ajax_add_review(request, pid):
     try:
         product = get_object_or_404(Product, pk=pid)
-        user = request.user
 
         rating = int(request.POST.get('rating', 0))
 
         review = Review.objects.create(
-            user=user,
+            user=request.user,
             product=product,
             rating=rating,
             comment=request.POST['comment'],
@@ -27,7 +29,7 @@ def ajax_add_review(request, pid):
         average_rating = int(average_reviews['rating']) if average_reviews['rating'] is not None else 0
 
         context = {
-            'user': user.username,
+            'user': request.user.username,
             'comment': request.POST['comment'],
             'rating': rating,
             'created_at': review.created_at.strftime("%B %d, %Y %I:%M %p"),

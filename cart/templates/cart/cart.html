@@ -9,14 +9,23 @@
     </div>
 </div>
 {% endblock %}
-
 {% block content %}
+<div class="container mb-8 mt-4">
+    <div class="row mt-4">
+        <div class="col  justify-cod-flex">
+            <div class="custom-banner">
+                <strong class="custom-banner-text">Great News!</strong>
+                <span class="custom-banner-text">You qualify for free delivery on purchases over<strong> €60.</strong></span>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="overlay"></div>
 <div class="container mb-2">
     <div class="row">
         <div class="col">
             <hr>
-            <h2 class="logo-font mb-4">Shopping Cart</h2>
+            <h2 class="logo-font mb-4 mt-5">Shopping Cart</h2>
             <hr>
         </div>
     </div>
@@ -100,8 +109,15 @@
                                         class="fa-solid fa-trash-can"></i></small></a>
                         </td>
                         <td class="py-3">
-                            <p class="my-0">€{{ item.price_for_size|default:item.product.price|calc_subtotal:item.quantity }}</p>
+                            {% if item.product.discounted_price %}
+                            <p class="my-0" data-product-price="{{ item.product.price }}">
+                                €{{ item.product.discounted_price }}
+                            </p>
+                            {% else %}
+                                <p class="my-0">€{{ item.price_for_size|default:item.product.price|calc_subtotal:item.quantity }}</p>
+                            {% endif %}
                         </td>
+                        
                     </tr>
                     {% endfor %}
                     <td colspan="5" class="text-right">
@@ -123,17 +139,17 @@
                         </p>
                         {% endif %}
                     </td>
-
                     </tr>
                     <tr>
                         <td colspan="5" class="text-right">
-                            <a href="{% url 'all_products' %}" class="btn btn-outline-black rounded-0 btn-lg">
+                            
+                            <a href="{% url 'all_products' %}" class="btn btn-outline-secondary">
                                 <span class="icon">
                                     <i class="fas fa-chevron-left"></i>
                                 </span>
-                                <span class="text-uppercase">Keep Shopping</span>
+                                <span class="text-uppercase">Our Menu</span>
                             </a>
-                            <a href="{% url 'orders:basket_view' %}" class="btn btn-black rounded-0 btn-lg">
+                            <a href="{% url 'orders:basket_view' %}?delivery_option={{ delivery_option }}" class="btn btn-outline-secondary">
                                 <span class="text-uppercase">Secure Checkout</span>
                                 <span class="icon">
                                     <i class="fas fa-lock"></i>
@@ -145,11 +161,11 @@
             </div>
             {% else %}
             <p class="lead mb-5">Your cart is empty.</p>
-            <a href="{% url 'all_products' %}" class="btn btn-outline-black rounded-0 btn-lg">
+            <a href="{% url 'all_products' %}" class="btn btn-outline-secondary ">
                 <span class="icon">
-                    <i class="fas fa-chevron-left"></i>
+                    <i class="fa-regular fa-circle-left"></i>
                 </span>
-                <span class="text-uppercase">Keep Shopping</span>
+                <span class="text-uppercase">Our Menus</span>
             </a>
             {% endif %}
         </div>
@@ -162,7 +178,10 @@
 <script type="text/javascript">
     function updateDeliveryOption() {
         var deliveryOption = $('#delivery-option').val();
-        window.location.href = '{% url "view_cart" %}?delivery_option=' + deliveryOption;
+        var currentUrl = window.location.href;
+        var separator = currentUrl.includes('?') ? '&' : '?';
+        var newUrl = currentUrl + separator + 'delivery_option=' + deliveryOption;
+        window.location.href = newUrl;
     }
     // Update quantity on click
     $('.update-link').click(function (e) {

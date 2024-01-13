@@ -15,15 +15,13 @@
                 <a href="{% url 'profile' %}" class="btn btn-custom btn-lg btn-block">Profile</a>
             </div>
             <div class="d-grid mt-2">
-                <a href="{% url 'address' %}" class="btn  btn-lg btn-block">Address</a>
+                <a href="{% url 'address' %}" class="btn btn-lg btn-block">Address</a>
             </div>
             <div class="d-grid mt-2">
-                <a href="{% url 'account_settings' %}" class="btn  btn-lg btn-block">Account
-                    Settings</a>
+                <a href="{% url 'account_settings' %}" class="btn btn-lg btn-block">Account Settings</a>
             </div>
             <div class="d-grid mt-2">
-                <a href="{% url 'account_delete' %}" class="btn btn-lg btn-block">Account
-                    Delete</a>
+                <a href="{% url 'account_delete' %}" class="btn btn-lg btn-block">Account Delete</a>
             </div>
         </div>
 
@@ -32,7 +30,7 @@
                 <div class="card-body">
                     <form method="post">
                         {% csrf_token %}
-                        
+                    
                         {{ form.first_name.label_tag }} {{ form.first_name }}
                         {{ form.last_name.label_tag }} {{ form.last_name }}
                         {{ form.birthday.label_tag }} {{ form.birthday }}
@@ -42,12 +40,14 @@
                         {{ form.town_or_city.label_tag }} {{ form.town_or_city }}
                         {{ form.street_address1.label_tag }} {{ form.street_address1 }}
                         {{ form.street_address2.label_tag }} {{ form.street_address2 }}
-    
+                        {{ form.state.label_tag }} {{ form.state }}
+                        {{ form.is_primary_address }} {{ form.is_primary_address.label_tag }}
+                    
                         <div class="col-12 mt-3">
                             <button type="submit" class="btn btn-custom">Submit</button>
                         </div>
                     </form>
-    
+                    
                     {% if messages %}
                         {% for msg in messages %}
                             <div class="alert alert-{{ msg.tags }}" role="alert">
@@ -59,10 +59,15 @@
             </div>
         </div>
     </div>
-    <style>
-        .btn-custom {
-            background-color: #000000;
-            color: #ffffff;
-        }
-    </style>
-    {% endblock %}
+</div>
+
+<style>
+    .btn-custom {
+        background-color: #000000;
+        color: #ffffff;
+    }
+    .form-check-input {
+    margin-top: 1.5rem;
+    }
+</style>
+{% endblock %}

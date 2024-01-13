@@ -21,6 +21,29 @@ class Order(models.Model):
         (DELIVERED, 'Delivered'),
         (READY_FOR_PICKUP, 'Ready For Pickup'),
     )
+    GERMAN_STATES_CHOICES = (
+        ('BW', 'Baden-Württemberg'),
+        ('BY', 'Bavaria (Bayern)'),
+        ('BE', 'Berlin'),
+        ('BB', 'Brandenburg'),
+        ('HB', 'Bremen'),
+        ('HH', 'Hamburg'),
+        ('HE', 'Hesse (Hessen)'),
+        ('NI', 'Lower Saxony (Niedersachsen)'),
+        ('MV', 'Mecklenburg-Western Pomerania (Mecklenburg-Vorpommern)'),
+        ('NW', 'North Rhine-Westphalia (Nordrhein-Westfalen)'),
+        ('RP', 'Rhineland-Palatinate (Rheinland-Pfalz)'),
+        ('SL', 'Saarland'),
+        ('SN', 'Saxony (Sachsen)'),
+        ('ST', 'Saxony-Anhalt (Sachsen-Anhalt)'),
+        ('SH', 'Schleswig-Holstein'),
+        ('TH', 'Thuringia (Thüringen)'),
+    )
+
+    DELIVERY_OPTIONS = (
+        ('online', 'Online Delivery'),
+        ('pickup', 'Pickup'),
+    )
 
     user = models.ForeignKey(
         User,
@@ -33,7 +56,11 @@ class Order(models.Model):
     address1 = models.CharField(max_length=250)
     address2 = models.CharField(max_length=250, blank=True)
     city = models.CharField(max_length=100)
-    county_region_state = models.CharField(max_length=100)
+    county_region_state = models.CharField(
+        max_length=100,
+        choices=GERMAN_STATES_CHOICES,
+        blank=True, 
+    )
     country = models.CharField(max_length=100)
     zip_code = models.CharField(max_length=50)
     created = models.DateTimeField(auto_now_add=True)
@@ -51,6 +78,11 @@ class Order(models.Model):
         max_length=50,
         choices=STATUS_CHOICES,
         default=PENDING
+    )
+    delivery_option = models.CharField(
+        max_length=10,
+        choices=DELIVERY_OPTIONS,
+        default='online',
     )
     order_total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     delivery_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
@@ -70,30 +102,37 @@ class Order(models.Model):
         """
         Update order total, delivery cost, and grand total.
         """
-        # Calculate the order total using aggregate
-        order_items_aggregate = self.order_item.aggregate(
-            total_price=ExpressionWrapper(Sum(F('quantity') * F('product__price')), output_field=DecimalField()),  # Update this line
-        )
+        # Calculate the order total by iterating through related OrderItem objects
+        order_items = self.order_item.all()
+        order_total = 0  # Initialize order_total
+
+        for item in order_items:
+            item_total = item.get_total()
+            
+            # If the item has a size, consider it for the order total calculation
+            if item.size and item.size != 'None':
+                order_total += item_total
 
         # Use 0 if the order total is None
-        order_total_aggregate = order_items_aggregate['total_price']
-        self.order_total = order_total_aggregate if order_total_aggregate is not None else Decimal('0.00')
+        self.order_total = order_total if order_total is not None else Decimal('0.00')
 
-        if self.order_total < settings.FREE_DELIVERY_THRESHOLD:
+        if self.order_total < settings.FREE_DELIVERY_THRESHOLD and self.delivery_option == 'online':
             self.delivery_cost = self.order_total * (settings.STANDARD_DELIVERY_PERCENTAGE / Decimal('100.0'))
         else:
             self.delivery_cost = Decimal('0.00')
 
         self.grand_total = self.order_total + self.delivery_cost
         self.save()
+
 class OrderItem(models.Model):
     order = models.ForeignKey('Order', on_delete=models.CASCADE, related_name='order_item')
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
     size = models.CharField(max_length=5, choices=Product.SIZE_CHOICES, null=True, blank=True)
+    price = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)  # Specify a default value
 
     def __str__(self):
         return f"{self.quantity} x {self.product.name}" + (f" ({self.size})" if self.size else "")
 
     def get_total(self):
-            return self.quantity * self.product.price
+        return self.quantity * self.price  # Use the price field for the calculation

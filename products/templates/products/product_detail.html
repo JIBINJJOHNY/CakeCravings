@@ -2,11 +2,11 @@
 {% load static %}
 {% block content %}
 
-<div class="container mt-4">
+<div class="container mt-5">
     <div class="row">
         <div class="col-md-6">
             <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
+                <ol class="breadcrumb mt-5">
                     <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
                     <li class="breadcrumb-item"><a href="{% url 'all_products' %}">Products</a></li>
                     <li class="breadcrumb-item active" aria-current="page">{{ product.name }}</li>
@@ -54,10 +54,10 @@
                 <div class="product-price">
                     {% if product.price is not None %}
                         {% if product.discounted_price %}
-                            <span style="color: red;"class="current-price text-brand" id="product-price" data-product-price="{{ product.price }}">
+                            <span style="color: red;" class="current-price text-brand" id="product-price" data-product-price="{{ product.price }}">
                                 €{{ product.discounted_price }}
                             </span>
-                            <span style="text-decoration: line-through;" >€{{ product.price }}</span>
+                            <span style="text-decoration: line-through;">€{{ product.price }}</span>
                         {% else %}
                             <span class="current-price text-brand" id="product-price" data-product-price="{{ product.price }}">
                                 €{{ product.price }}
@@ -113,7 +113,7 @@
                                     <input class="form-control qty_input" type="number" name="quantity" value="1"
                                         min="1" max="99" data-item_id="{{ product.id }}" id="id_qty_{{ product.id }}">
                                     <div class="input-group-append">
-                                        <button class="increment-qty btn btn-secondary rounded-0"
+                                        <button class="increment-qty btn btn-outline-secondary rounded "
                                             data-item_id="{{ product.id }}" id="increment-qty_{{ product.id }}">
                                             <span class="icon">
                                                 <i class="fas fa-plus"></i>
@@ -124,9 +124,9 @@
                             </div>
                         </div>
                         <div class="col{% if s %}-12 mt-2{% endif %}">
-                            <a href="{% url 'all_products' %}" class="btn btn-secondary rounded-0 mt-5">
+                            <a href="{% url 'all_products' %}" class="btn btn-outline-secondary mt-5">
                                 <span class="icon">
-                                    <i class="fas fa-chevron-left"></i>
+                                    <i class="fa-regular fa-circle-left"></i>
                                 </span>
                                 <span>Our Menus</span>
                             </a>
@@ -296,11 +296,42 @@
     </div>
     {% endblock %}
     {% block postloadjs %}
-    <!-- Add this before your script -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Include jQuery and star_rating.js -->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="{% static 'js/star_rating.js' %}"></script>
 
+    <!-- Script to handle product size change and update price -->
     <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Get the product size dropdown element
+            var sizeDropdown = document.getElementById('id_product_size');
+
+            // Add event listener for size change
+            sizeDropdown.addEventListener('change', function () {
+                // Get the selected size
+                var selectedSize = this.value;
+
+                // Get the price element
+                var currentPriceElement = document.getElementById('product-price');
+
+                // Update the price based on the selected size
+                switch (selectedSize) {
+                    case 'S':
+                        currentPriceElement.innerHTML = '€{{ 30 }}';
+                        break;
+                    case 'M':
+                        currentPriceElement.innerHTML = '€{{ 45 }}'; 
+                        break;
+                    case 'L':
+                        currentPriceElement.innerHTML = '€{{ 80 }}';   
+                        break;
+                    default:
+                        currentPriceElement.innerHTML = 'Price not available';
+                }
+            });
+        });
+
+        // Function to change the main product image on thumbnail click
         function changeMainImage(event) {
             var thumbnail = event.target;
             if (thumbnail.classList.contains('thumbnail')) {
@@ -310,41 +341,45 @@
             }
         }
     </script>
-     <script>
-        // JavaScript to handle size change and show corresponding image
+
+    <!-- Script to handle size change and show corresponding image -->
+    <script>
         document.addEventListener('DOMContentLoaded', function () {
-    const sizeDropdown = document.getElementById('id_product_size');
-    const productImages = document.getElementById('productImages').querySelectorAll('.product-image');
+            // Get the size dropdown and product images container
+            const sizeDropdown = document.getElementById('id_product_size');
+            const productImages = document.getElementById('productImages').querySelectorAll('.product-image');
 
-    // Set the initial display property for each image
-    productImages.forEach(image => {
-        image.style.display = 'none';
-    });
-    const defaultImage = document.querySelector('.product-image[data-size="S"]');
-    if (defaultImage) {
-        defaultImage.style.display = 'block';
-    }
+            // Set initial display property for each image
+            productImages.forEach(image => {
+                image.style.display = 'none';
+            });
 
-    // Add an event listener for size change
-    sizeDropdown.addEventListener('change', function () {
-        const selectedSize = sizeDropdown.value;
+            // Display default image for size 'S'
+            const defaultImage = document.querySelector('.product-image[data-size="S"]');
+            if (defaultImage) {
+                defaultImage.style.display = 'block';
+            }
 
-        // Hide all images
-        productImages.forEach(image => {
-            image.style.display = 'none';
+            // Add event listener for size change
+            sizeDropdown.addEventListener('change', function () {
+                const selectedSize = sizeDropdown.value;
+
+                // Hide all images
+                productImages.forEach(image => {
+                    image.style.display = 'none';
+                });
+
+                // Show the image corresponding to the selected size
+                const selectedImage = document.querySelector(`.product-image[data-size="${selectedSize}"]`);
+                if (selectedImage) {
+                    selectedImage.style.display = 'block';
+                }
+            });
         });
-
-        // Show the image corresponding to the selected size
-        const selectedImage = document.querySelector(`.product-image[data-size="${selectedSize}"]`);
-        if (selectedImage) {
-            selectedImage.style.display = 'block';
-        }
-    });
-});
-
     </script>
+
+    <!-- Script to disable +/- buttons outside 1-99 range -->
     <script type="text/javascript">
-        // Disable +/- buttons outside 1-99 range
         function handleEnableDisable(itemId) {
             var currentValue = parseInt($(`#id_qty_${itemId}`).val());
             var minusDisabled = currentValue < 2;
@@ -386,27 +421,36 @@
             handleEnableDisable(itemId);
         });
     </script>
-    <script>
-        function submitReview() {
-            var rating = $("#rating-below").val(); // Add this line for debugging
-            console.log("Rating:", rating); // Add this line for debugging
-            var comment = $("#comment-below").val();
-            var productId = "{{ product.id }}";
 
-            // Perform AJAX request to submit the review
-            $.ajax({
-                url: `/reviews/ajax_add_review/${productId}/`,
-                type: "POST",
-                data: {
-                    rating: rating, // Make sure rating is included
-                    comment: comment,
-                    csrfmiddlewaretoken: "{{ csrf_token }}"
-                },
-                success: function (data) {
+    <!-- Script to submit a review via AJAX -->
+<script>
+    function submitReview() {
+        console.log("Submit Review button clicked!");
+        var rating = $("#rating-below").val();
+        console.log("Rating:", rating);
+        var comment = $("#comment-below").val();
+        var productId = "{{ product.id }}";
+
+        // Perform AJAX request to submit the review
+        $.ajax({
+            url: `/reviews/ajax_add_review/${productId}/`,
+            type: "POST",
+            data: {
+                rating: rating,
+                comment: comment,
+                csrfmiddlewaretoken: "{{ csrf_token }}"
+            },
+            success: function (data) {
+                // Check if the form is present in the data (indicating form errors)
+                if (data.form) {
+                    console.log("Form Errors:", data.form);
+                    // Display form errors to the user
+                    displayFormErrors(data.form);
+                } else {
                     // Update the UI with the new review
                     console.log("Received data:", data);
                     // Check if the average_rating is present in the data
-                    if ('average_rating' in data.context) {
+                    if (data.context && 'average_rating' in data.context) {
                         console.log("Average Rating:", data.context.average_rating);
                     } else {
                         console.log("Average Rating not found in data.context");
@@ -415,33 +459,56 @@
                     // Clear the form inputs
                     $("#rating-below").val(0);
                     $("#comment-below").val("");
-                },
-                error: function (error) {
-                    console.log("Error:", error);
                 }
-            });
-        }
-        $(document).ready(function () {
-            let selectedRating = 0;
-
-            $('.star-rating i').click(function () {
-                const rating = $(this).data('rating');
-                selectedRating = rating;
-                updateStars(selectedRating);
-            });
-
-            function updateStars(rating) {
-                $('.star-rating i').removeClass('checked');
-                $('.star-rating i').each(function () {
-                    if ($(this).data('rating') <= rating) {
-                        $(this).addClass('checked');
-                    }
-                });
-                $('#rating-below').val(rating); // Update the ID to match your HTML
+            },
+            error: function (error) {
+                console.log("Error:", error);
             }
         });
-    </script>
+    }
 
+    function displayFormErrors(formErrors) {
+        // Display form errors to the user (you can customize this based on your UI)
+        // For simplicity, let's log the errors to the console
+        console.log("Displaying form errors:");
+
+        // Loop through fields and log detailed error information
+        for (const fieldName in formErrors.fields) {
+            const fieldErrors = formErrors.fields[fieldName];
+            console.log(`Field: ${fieldName}`);
+            console.log(`Errors: ${fieldErrors}`);
+        }
+
+        // You can show these errors in your UI using appropriate elements
+    }
+
+    $(document).ready(function () {
+        // Add an event listener for the button click
+        $("#addReviewBtn").on("click", function () {
+            submitReview();
+        });
+
+        // Star rating functionality
+        let selectedRating = 0;
+
+        $('.star-rating i').click(function () {
+            const rating = $(this).data('rating');
+            selectedRating = rating;
+            updateStars(selectedRating);
+        });
+
+        function updateStars(rating) {
+            $('.star-rating i').removeClass('checked');
+            $('.star-rating i').each(function () {
+                if ($(this).data('rating') <= rating) {
+                    $(this).addClass('checked');
+                }
+            });
+            $('#rating-below').val(rating);
+        }
+    });
+
+</script>
     <script>
         $(document).ready(function () {
             // Function to fetch and update cart count on page load
@@ -459,61 +526,63 @@
                 });
             }
 
-        // Call the function on page load
-        updateCartCountOnLoad();
+            // Call the function on page load
+            updateCartCountOnLoad();
 
-        // Form submission handling
-        $('#addToCartForm').submit(function (e) {
-            e.preventDefault();
+            // Form submission handling for adding to cart
+            $('#addToCartForm').submit(function (e) {
+                e.preventDefault();
 
-            // Perform an AJAX POST request to add to the cart
-            $.ajax({
-                type: 'POST',
-                url: $(this).attr('action'),  // Use attr('action') instead of data('action')
-                data: $(this).serialize(),
-                dataType: 'json',
-                success: function (response) {
-                    console.log(response);
-                    if (response.success) {
-                        // Update the cart count in the navbar
-                        $('#cartCount').text(response.cart_count);
+                // Perform an AJAX POST request to add to the cart
+                $.ajax({
+                    type: 'POST',
+                    url: $(this).attr('action'),
+                    data: $(this).serialize(),
+                    dataType: 'json',
+                    success: function (response) {
+                        console.log(response);  // Add this line for debugging
+                        if (response.success) {
+                            // Update the cart count in the navbar
+                            $('#cartCount').text(response.cart_count);
+                        }
                     }
-                }
+                });
             });
+
+            // Handling wishlist interactions
+            $('.plus-wishlist').click(function () {
+                console.log('Plus Wishlist clicked');
+                var id = $(this).attr('data-pid').toString();
+                $.ajax({
+                    type: "GET",
+                    url: `/wishlist/pluswishlist/?prod_id=${id}`,
+                    success: function (data) {
+                        console.log('AJAX Success:', data);
+                        // Redirect with trailing slash
+                        window.location.href = `http://localhost:8000/products/${id}/`;
+                    }
+                });
+            });
+
+            $('.minus-wishlist').click(function () {
+                console.log('Minus Wishlist clicked');
+                var id = $(this).attr('data-pid').toString();
+                $.ajax({
+                    type: "GET",
+                    url: `/wishlist/minuswishlist/?prod_id=${id}`, // Include the namespace in the URL
+                    success: function (data) {
+                        console.log('AJAX Success:', data);
+                        // Redirect with trailing slash
+                        window.location.href = `http://localhost:8000/products/${id}/`;
+                    }
+                });
+            });
+
+            // Function to update the cart count
+            function updateCartCount(count) {
+                document.getElementById('cartCount').innerText = count;
+            }
         });
-    });
-
-$('.plus-wishlist').click(function () {
-    console.log('Plus Wishlist clicked');
-    var id = $(this).attr('data-pid').toString();
-    $.ajax({
-        type: "GET",
-        url: `/wishlist/pluswishlist/?prod_id=${id}`,
-        success: function (data) {
-            console.log('AJAX Success:', data);
-            // Redirect with trailing slash
-            window.location.href = `http://localhost:8000/products/${id}/`;
-        }
-    });
-});
-
-$('.minus-wishlist').click(function () {
-    console.log('Minus Wishlist clicked');
-    var id = $(this).attr('data-pid').toString();
-    $.ajax({
-        type: "GET",
-        url: `/wishlist/minuswishlist/?prod_id=${id}`, // Include the namespace in the URL
-        success: function (data) {
-            console.log('AJAX Success:', data);
-            // Redirect with trailing slash
-            window.location.href = `http://localhost:8000/products/${id}/`;
-        }
-    });
-});
-
-        function updateCartCount(count) {
-            document.getElementById('cartCount').innerText = count;
-        }
     </script>
 
-    {% endblock %}
+{% endblock %}

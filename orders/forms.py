@@ -1,7 +1,5 @@
-# forms.py
 from django import forms
 from .models import Order, OrderItem
-
 
 class OrderForm(forms.ModelForm):
     class Meta:
@@ -19,6 +17,7 @@ class OrderForm(forms.ModelForm):
             'total_paid',
             'billing_status',
             'status',
+            'delivery_option', 
         ]
         widgets = {
             'full_name': forms.TextInput(attrs={'class': 'form-control'}),
@@ -27,27 +26,51 @@ class OrderForm(forms.ModelForm):
             'address1': forms.TextInput(attrs={'class': 'form-control'}),
             'address2': forms.TextInput(attrs={'class': 'form-control'}),
             'city': forms.TextInput(attrs={'class': 'form-control'}),
-            'county_region_state': forms.TextInput(attrs={'class': 'form-control'}),
-            'country': forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
+            'county_region_state': forms.Select(attrs={'class': 'form-control'}),
+            'country': forms.HiddenInput(),  # Hide the 'country' field
             'zip_code': forms.TextInput(attrs={'class': 'form-control'}),
             'total_paid': forms.TextInput(attrs={'class': 'form-control'}),
             'billing_status': forms.CheckboxInput(),
             'status': forms.Select(attrs={'class': 'form-control'}),
+            'delivery_option': forms.HiddenInput(),  # Hide the 'delivery_option' field
         }
 
     def __init__(self, *args, **kwargs):
         super(OrderForm, self).__init__(*args, **kwargs)
+
+        # Set choices for county_region_state
+        self.fields['county_region_state'].choices = Order.GERMAN_STATES_CHOICES
+
+        # Set a default value for 'country' to 'Germany' and hide it
+        self.fields['country'].initial = 'Germany'
+        self.fields['country'].widget = forms.HiddenInput()
+
         # Disable the 'country' field for users not in Germany
         if self.instance and self.instance.country != 'Germany':
             self.fields['country'].widget.attrs['readonly'] = True
+
+        # Set a default value for 'delivery_option' to 'online' and hide it
+        self.fields['delivery_option'].initial = 'online'
+        self.fields['delivery_option'].widget = forms.HiddenInput()
 
     def clean_country(self):
         # Ensure that only Germany is allowed as the country
         country = self.cleaned_data.get('country')
         if country != 'Germany':
-            raise forms.ValidationError('Delivery is only available for users in Germany.')
-        return country
+            # Set the country to Germany if it's not already
+            self.cleaned_data['country'] = 'Germany'
+            # Log or notify about the attempt to change the country
+        return self.cleaned_data['country']
 
+    def clean_delivery_option(self):
+        # Ensure that only 'online' or 'pickup' are allowed as delivery options
+        delivery_option = self.cleaned_data.get('delivery_option')
+        valid_options = ['online', 'pickup']
+        if delivery_option not in valid_options:
+            # Set the delivery option to 'online' if it's not a valid option
+            self.cleaned_data['delivery_option'] = 'online'
+            # Log or notify about the attempt to change the delivery option
+        return self.cleaned_data['delivery_option']
 
 class OrderItemForm(forms.ModelForm):
     class Meta:

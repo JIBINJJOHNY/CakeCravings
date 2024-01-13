@@ -1,26 +1,72 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% comment %} Extra Title {% endcomment %}
 {% block extra_title %}Order Placed{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
+<style>
+    .order {
+        margin-top: 150px;
+        margin-bottom: 150px;
+    }
+
+    .row {
+        justify-content: center;
+        margin-top: 30px;
+    }
+
+    .card {
+        border: none;
+        text-align: center;
+        border-radius: 20px;
+        box-shadow: 0 4px 8px rgba(8, 1, 1, 0.1);
+    }
+
+    .title {
+        font-size: 45px;
+        margin-bottom: 35px;
+    }
+
+    .card-text {
+        color: #242425;
+        font-size: 20px;
+    }
+
+    .mt-5 {
+        margin-top: 5rem;
+    }
+
+    .mb-4 {
+        margin-bottom: 4rem;
+    }
+
+    .btn-primary {
+        background-color: #3c1e49;
+        border-color: #3c1e49;
+        font-weight: bold;
+    }
+
+    .btn-primary:hover {
+        background-color: #4a2858;
+        border-color: #4a2858;
+    }
+</style>
+
+<div class="order mt-6">
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card p-4">
-                <h1 class="mb-4">Order Placed Successfully</h1>
-                <p>Your order has been placed successfully. An email confirmation has been sent to you.</p>
+                <h2 class="title"> Order Placed Successfully</h2>
+                <h4>Your order has been placed successfully. An email confirmation has been sent to you. </h4>
 
                 <!-- You can add more details about the order here if needed -->
 
                 <div class="mt-4">
                     {% with user=request.user %}
                     <a href="{% url 'orders:user_orders' %}" class="btn btn-primary">
-                        <i class="fas fa-shopping-cart"></i> View My Orders
+                        <i class="fas fa-shopping-cart"> View Orders</i>
                     </a>
                     {% endwith %}
-
                 </div>
             </div>
         </div>

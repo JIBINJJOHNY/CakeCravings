@@ -1,9 +1,8 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.views import View
-from django.shortcuts import get_object_or_404
-from django.contrib.auth import logout  # Add logout import
+from django.contrib.auth import logout
 from .forms import ProfileForm
 from .models import Profile
 
@@ -26,12 +25,13 @@ class ProfileView(View):
             profile.town_or_city = form.cleaned_data['town_or_city']
             profile.street_address1 = form.cleaned_data['street_address1']
             profile.street_address2 = form.cleaned_data['street_address2']
-            profile.state = form.cleaned_data['state']  # Include state field
-            profile.is_primary_address = form.cleaned_data['is_primary_address']  # Include is_primary_address field
+            profile.state = form.cleaned_data['state']
+            profile.is_primary_address = form.cleaned_data['is_primary_address']
             profile.save()
             messages.success(request, "Congratulations! Profile saved successfully")
         else:
             messages.warning(request, 'Invalid input data')
+            print(form.errors)
 
         return render(request, 'profiles/profile.html', {'form': form})
 
@@ -61,7 +61,7 @@ class AddressUpdate(View):
             address.postcode = form.cleaned_data['postcode']
             address.country = form.cleaned_data['country']
             address.phone_number = form.cleaned_data['phone_number']
-            address.state = form.cleaned_data['state']  # Include state field
+            address.state = form.cleaned_data['state']
             address.is_primary_address = form.cleaned_data['is_primary_address']
             address.save()
             messages.success(request, "Your profile was successfully updated.")

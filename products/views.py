@@ -66,7 +66,7 @@ def all_products(request, category_slug=None):
 
     # Pagination
     page = request.GET.get('page', 1)
-    paginator = Paginator(products, 12)  # Show 12 products per page
+    paginator = Paginator(products, 9)  # Show 9 products per page
 
     try:
         products = paginator.page(page)

@@ -19,7 +19,7 @@ def cart_contents(request):
                 price_for_size = product.get_price_for_size(size)
 
                 total += quantity * price_for_size
-                print("total on line 22", total)
+                print(f"Product: {product.name}, Size: {size}, Quantity: {quantity}, Price for Size:{price_for_size}, Total: {total}")
                 product_count += quantity
                 cart_items.append({
                     'item_id': item_id,
@@ -33,7 +33,7 @@ def cart_contents(request):
             quantity = item_data
             if product.price is not None:  # Check if the price is not None
                 total += quantity * product.price
-                print("total on line 22", total)
+                print(f"Product: {product.name}, Quantity: {quantity}, Price: {product.price},Total: {total}")
                 product_count += quantity
                 cart_items.append({
                     'item_id': item_id,
@@ -45,18 +45,22 @@ def cart_contents(request):
     if total < settings.FREE_DELIVERY_THRESHOLD:
         if delivery_option == 'online':
             delivery = total * Decimal(settings.STANDARD_DELIVERY_PERCENTAGE / 100)
+            print(f"Delivery Option: Online, Delivery Cost: {delivery}")
         else:
             delivery = 0  # No delivery cost for 'pickup'
+            print("Delivery Option: Pickup, Delivery Cost: 0")
         free_delivery_delta = settings.FREE_DELIVERY_THRESHOLD - total
     else:
         delivery = 0
         free_delivery_delta = 0
 
     grand_total = delivery + total
+    print(f"Total: {total}, Delivery: {delivery}, Grand Total: {grand_total}")
+    product_count = sum(item['quantity'] for item in cart_items)
 
     context = {
         'cart_items': cart_items,
-        'cart_count': sum((item.get('quantity', 0) if isinstance(item, dict) else item) for item in cart.values()),
+        'cart_count': product_count,
         'total': total,
         'product_count': product_count,
         'delivery': delivery,

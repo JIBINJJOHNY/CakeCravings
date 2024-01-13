@@ -1,149 +1,144 @@
-/* jshint esversion: 8, jquery: true, scripturl: true */
-let stripePublicKey = stripe_public_key;
-let stripe = Stripe(stripePublicKey);
-let elem = document.getElementById('submit');
-clientsecret = elem.getAttribute('data-secret');
+document.addEventListener('DOMContentLoaded', function () {
+    let stripePublicKey = 'your_stripe_public_key';  // Replace with your actual Stripe public key
+    let stripe = Stripe(stripePublicKey);
+    let elem = document.getElementById('submit');
+    let clientsecret = elem.getAttribute('data-secret');
 
-// Set up Stripe.js and Elements to use in the checkout form
-let elements = stripe.elements();
-let style = {
-    base: {
-        color: "#000",
-        lineHeight: '2.4',
-        fontSize: '16px'
-    }
-};
+    // Set up Stripe.js and Elements to use in the checkout form
+    let elements = stripe.elements();
+    let style = {
+        base: {
+            color: "#000",
+            lineHeight: '2.4',
+            fontSize: '16px'
+        }
+    };
 
-let card = elements.create("card", {
-    style: style
-});
-card.mount("#card-element");
+    let card = elements.create("card", {
+        style: style
+    });
+    card.mount("#card-element");
 
-card.on('change', function (event) {
-    let displayError = document.getElementById('card-errors');
-    if (event.error) {
-        displayError.textContent = event.error.message;
-        $('#card-errors').addClass('alert alert-info');
-    } else {
-        displayError.textContent = '';
-        $('#card-errors').removeClass('alert alert-info');
-    }
-});
+    card.on('change', function (event) {
+        let displayError = document.getElementById('card-errors');
+        if (event.error) {
+            displayError.textContent = event.error.message;
+            $('#card-errors').addClass('alert alert-info');
+        } else {
+            displayError.textContent = '';
+            $('#card-errors').removeClass('alert alert-info');
+        }
+    });
 
-let form = document.getElementById('payment-form');
+    let form = document.getElementById('payment-form');
 
-form.addEventListener('submit', function (ev) {
-    ev.preventDefault();
-    // Disable the submit button to prevent repeated clicks
-    $('#submit').attr('disabled', true);
-    let customerName = document.getElementById("customer-name").value;
-    let customerEmail = document.getElementById("customer-email").value;
-    let customerPhone = document.getElementById("customer-phone").value;
-    let customerAddress = document.getElementById("customer-address").value;
-    let customerAddress2 = document.getElementById("customer-address-2").value;
-    let customerCountry = document.getElementById("customer-country").value;
-    let customerRegion = document.getElementById("customer-state").value;
-    let customerCity = document.getElementById("customer-city").value;
-    let postCode = document.getElementById("post-code").value;
-    // Warning message for the user to prevent refreshing the page,
-    // which will cause the payment to fail
-    let warning = `
-    <div class="col-12">
-      <div class="alert alert-danger" role="alert">
-        Your payment is being processed.
-        Please do not refresh the page or close this window!
-      </div>
-    </div>
-  `;
-    $('#card-errors').html(warning);
+    form.addEventListener('submit', function (ev) {
+        ev.preventDefault();
+        // Disable the submit button to prevent repeated clicks
+        $('#submit').attr('disabled', true);
+        let customerName = document.getElementById("customer-name").value;
+        let customerEmail = document.getElementById("customer-email").value;
+        let customerPhone = document.getElementById("customer-phone").value;
+        let customerAddress = document.getElementById("customer-address").value;
+        let customerAddress2 = document.getElementById("customer-address-2").value;
+        let customerCountry = document.getElementById("customer-country").value;
+        let customerRegion = document.getElementById("id_county_region_state").value;
+        let customerCity = document.getElementById("customer-city").value;
+        let postCode = document.getElementById("post-code").value;
+        
+        // Get the delivery option from the URL
+        let deliveryOption = getDeliveryOptionFromUrl(); // Add a function to get the delivery option from the URL
 
-    // Set up order details
-    let formData = new FormData();
-    formData.append('full_name', customerName);
-    formData.append('email', customerEmail);
-    formData.append('phone', customerPhone);
-    formData.append('address1', customerAddress);
-    formData.append('address2', customerAddress2);
-    formData.append('country', customerCountry);
-    formData.append('county_region_state', customerRegion);
-    formData.append('city', customerCity);
-    formData.append('zip_code', postCode);
-    formData.append('order_key', clientsecret);
-    formData.append('csrfmiddlewaretoken', CSRF_TOKEN);
-    formData.append('action', 'post');
+        // Warning message for the user to prevent refreshing the page,
+        // which will cause the payment to fail
+        let warning = `
+            <div class="col-12">
+                <div class="alert alert-danger" role="alert">
+                    Your payment is being processed.
+                    Please do not refresh the page or close this window!
+                </div>
+            </div>
+        `;
+        $('#card-errors').html(warning);
 
-    // Log order details to the console
-    console.log("Order Details:", formData);
+        // Set up order details
+        let formData = new FormData();
+        formData.append('full_name', customerName);
+        formData.append('email', customerEmail);
+        formData.append('phone', customerPhone);
+        formData.append('address1', customerAddress);
+        formData.append('address2', customerAddress2);
+        formData.append('country', customerCountry);
+        formData.append('county_region_state', customerRegion);
+        formData.append('city', customerCity);
+        formData.append('zip_code', postCode);
+        formData.append('order_key', clientsecret);
+        formData.append('delivery_option', deliveryOption); // Include the delivery option
+        formData.append('csrfmiddlewaretoken', CSRF_TOKEN);
+        formData.append('action', 'post');
 
-    // AJAX to handle order creation and AJAX payment
-$.ajax({
-    url: window.location.origin + '/orders/add_order/',
-    type: "POST",
-    data: formData,
-    processData: false,
-    contentType: false,
-    success: function (json) {
-        console.log("AJAX Request Successful", json);
+        // Log order details to the console
+        console.log("Order Details:", formData);
 
-        stripe.confirmCardPayment(clientsecret, {
-            payment_method: {
-                card: card,
-                billing_details: {
-                    address: {
-                        line1: customerAddress,
-                        line2: customerAddress2
-                    },
-                    name: customerName
-                },
-            }
-        }).then(function (result) {
-            if (result.error) {
-                // Log error details to the console
-                console.error("Payment Error:", result.error);
-                error = `
-                    <div class="col-12">
-                        <div class="alert alert-danger" role="alert">
-                            ${result.error.message}
-                            Please check your card details and try again!
-                        </div>
-                    </div>
-                `;
-                // Enable the submit button again
-                $('#submit').prop('disabled', false);
-                $('#card-errors').html(error);
-            } else {
-                if (result.paymentIntent.status === 'succeeded') {
-                    // Log success details to the console
-                    console.log("Payment Succeeded");
+        // AJAX to handle order creation and AJAX payment
+        $.ajax({
+            url: window.location.origin + '/orders/add_order/',
+            type: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (json) {
+                console.log("AJAX Request Successful", json);
 
-                    // After successful payment, redirect to the order confirmation page
-                    window.location.replace(window.location.origin + "/orders/order_confirmation/");
-
-                    // Send order confirmation email
-                    $.ajax({
-                        url: window.location.origin + '/orders/send_order_confirmation_email/',
-                        type: "POST",
-                        data: {
-                            'order_id': json.order_id,
-                            'csrfmiddlewaretoken': CSRF_TOKEN,
-                            'action': 'post'
+                stripe.confirmCardPayment(clientsecret, {
+                    payment_method: {
+                        card: card,
+                        billing_details: {
+                            address: {
+                                line1: customerAddress,
+                                line2: customerAddress2
+                            },
+                            name: customerName
                         },
-                        success: function (emailResponse) {
-                            console.log("Order Confirmation Email Sent", emailResponse);
-                        },
-                        error: function (xhr, errmsg, err) {
-                            console.error("Order Confirmation Email Error:", errmsg, err);
-                        },
-                    });
-                }
-                // Enable the submit button again
-                $('#submit').prop('disabled', false);
-            }
+                    }
+                }).then(function (result) {
+                    if (result.error) {
+                        // Log error details to the console
+                        console.error("Payment Error:", result.error);
+                        let error = `
+                            <div class="col-12">
+                                <div class="alert alert-danger" role="alert">
+                                    ${result.error.message}
+                                    Please check your card details and try again!
+                                </div>
+                            </div>
+                        `;
+                        // Enable the submit button again
+                        $('#submit').prop('disabled', false);
+                        $('#card-errors').html(error);
+                    } else {
+                        if (result.paymentIntent.status === 'succeeded') {
+                            // Log success details to the console
+                            console.log("Payment Succeeded");
+
+                            // After successful payment, redirect to the order confirmation page
+                            window.location.replace(window.location.origin + "/orders/order_confirmation/");
+                        }
+                        // Enable the submit button again
+                        $('#submit').prop('disabled', false);
+                    }
+                });
+            },
+            error: function (xhr, errmsg, err) {
+                // Log AJAX request error details to the console
+                console.error("AJAX Request Error:", errmsg, err);
+            },
         });
-    },
-    error: function (xhr, errmsg, err) {
-        // Log AJAX request error details to the console
-        console.error("AJAX Request Error:", errmsg, err);
-    },
-});
+    });
+
+    // Function to extract the delivery option from the URL
+    function getDeliveryOptionFromUrl() {
+        let urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get('delivery_option') || 'online';
+    }
 });

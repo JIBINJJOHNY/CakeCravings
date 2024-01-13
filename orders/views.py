@@ -22,10 +22,10 @@ from reviews.models import Review
 from decimal import Decimal
 from django.utils.html import strip_tags
 import logging
+from .forms import OrderForm 
 
 # Set up the logger
 logger = logging.getLogger(__name__)
-
 class AddOrder(View):
     """View for adding order AJAX."""
     def post(self, request, *args, **kwargs):
@@ -33,6 +33,23 @@ class AddOrder(View):
             if request.headers.get('x-requested-with') == 'XMLHttpRequest':
                 cart = cart_contents(request)
                 total = cart['grand_total']
+                delivery_option = request.POST.get('delivery_option', 'online')  # Get the delivery option
+                print(f"Delivery Option (AddOrder): {delivery_option}")  # Debug statement
+
+                # Create PaymentIntent
+                try:
+                    intent = stripe.PaymentIntent.create(
+                        amount=int(total * 100),  # Convert to cents
+                        currency='eur',
+                        metadata={'userid': request.user.id, 'delivery_option': delivery_option}
+                    )
+                except stripe.error.CardError as e:
+                    # Handle card error
+                    return JsonResponse({'success': False, 'message': str(e)})
+
+                # Retrieve delivery_option from metadata
+                delivery_option = intent.metadata.get('delivery_option', 'online')
+                print(f"Delivery Option (AddOrder): {delivery_option}")  # Debug statement
 
                 user = request.user
                 full_name = request.POST.get('full_name')
@@ -65,16 +82,23 @@ class AddOrder(View):
                         zip_code=zip_code,
                         order_key=order_key,
                         total_paid=total_paid,
+                        delivery_option=delivery_option,  # Set the delivery option
                     )
                     for cart_item in cart_items:
-                        # Assuming 'product' and 'quantity' are keys in your cart item
+                        # Assuming 'product', 'quantity', and 'size' are keys in your cart item
                         product = cart_item['product']
                         quantity = cart_item['quantity']
+                        selected_size = cart_item.get('size', 'S')  # Replace 'S' with the default size if not present
+
+                        # Get the price for the selected size
+                        price_for_size = product.get_price_for_size(selected_size)
 
                         OrderItem.objects.create(
                             order=order,
                             product=product,
                             quantity=quantity,
+                            size=selected_size,
+                            price=price_for_size,  # Set the price for the selected size
                         )
 
                     # Update the order total, delivery cost, and grand total
@@ -92,15 +116,16 @@ class AddOrder(View):
                     cart.clear()
                     request.session['cart'] = cart
 
-                    return JsonResponse({'success': True, 'message': 'Order added successfully.'})
-            return JsonResponse({'success': False, 'message': 'Invalid request.'})
+                    return JsonResponse({'success': True, 'message': 'Order added successfully'})
+            return JsonResponse({'success': False, 'message': 'Invalid request'})
         else:
-            return render(request, 'account/login.html')
-
-
+            return render(request, 'account/login.html')                             
 @login_required
 def basket_view(request):
     try:
+        # Print the raw GET parameters
+        print(f"Raw Request GET: {request.GET}")
+
         # Attempt to get the latest order for the user
         try:
             latest_order = Order.objects.filter(user=request.user).latest('created')
@@ -108,13 +133,26 @@ def basket_view(request):
             # If the order doesn't exist, create a new one
             latest_order = Order.objects.create(user=request.user)
 
+        # Inside the basket_view function
+        delivery_option = request.GET.get('delivery_option', 'online')
+        print(f"Delivery Option (basket_view): {delivery_option}")  # Debug statement
+
+        # Fetch other cart details from cart_contents
         cart = cart_contents(request)
 
+        # Update the cart with the latest delivery option
+        cart['delivery_option'] = delivery_option
+        print(f"Updated Cart (basket_view): {cart}")  # Debug statement
+
         # Check if the delivery option is 'pickup' and adjust the total accordingly
-        if cart['delivery_option'] == 'pickup':
-            total_final = cart['total']  # Use the total without delivery cost for 'pickup'
+        if 'delivery_option' in cart and cart['delivery_option'] == 'pickup':
+            total_final = cart.get('total', 0)  # Use the total without delivery cost for 'pickup'
+            delivery_cost = 0  # Set delivery cost to 0 for 'pickup'
         else:
-            total_final = cart['grand_total']  # Use the grand total for 'online'
+            total_final = cart.get('grand_total', 0)  # Use the grand total for 'online'
+            delivery_cost = cart.get('delivery', 0)  # Include delivery cost for 'online'
+
+        print(f"Total Final (basket_view): {total_final}")  # Debug statement
 
         total_sum = "{:.2f}".format(total_final)
         total = int(total_final * 100)
@@ -124,7 +162,7 @@ def basket_view(request):
         intent = stripe.PaymentIntent.create(
             amount=total,
             currency='eur',
-            metadata={'userid': request.user.id}
+            metadata={'userid': request.user.id, 'delivery_option': delivery_option}
         )
 
         # Fetch user information from the latest order
@@ -155,14 +193,18 @@ def basket_view(request):
             'primary_address': primary_address,
             'user_info': user_info,
             'total_sum': total_sum,
+            'delivery_cost': delivery_cost,
+            'delivery_option': delivery_option,  # Use the variable directly
             'client_secret': intent.client_secret,
             'stripe_public_key': stripe_public_key,
+            'form': OrderForm(),
         }
 
         return render(request, 'orders/payment.html', context)
     except Exception as e:
         logger.error(f"An error occurred in basket_view: {str(e)}")
         return HttpResponse("An error occurred.")
+
 class OrderConfirmation(View):
     """View for the order placed page."""
     def get(self, request, *args, **kwargs):
@@ -185,6 +227,7 @@ class OrdersView(View):
             return render(
                 request, 'account/login.html',
             )
+
 @method_decorator(login_required, name='dispatch')
 class OrderDetailsView(View):
     """View for displaying order details."""
@@ -203,6 +246,7 @@ class OrderDetailsView(View):
             print("DEBUG: Order not found")
             # Handle the case where the order is not found (redirect or show an error page)
             return render(request, 'orders/order_error.html')
+
 def get_or_create_order(request):
     """
     Retrieve or create an Order instance for the current user.
@@ -262,38 +306,37 @@ def payment_confirmation(client_secret):
         # Handle the error and redirect accordingly
         return redirect('orders:error')
 
+
 def send_payment_confirmation_email(customer_email, order_key, amount_received):
-  
     BASE_URL = settings.BASE_URL
-    # Format the amount with 2 decimal places
     formatted_amount = "{:.2f}".format(amount_received)
 
     subject = 'Payment Confirmation'
     order_detail_url = reverse('orders:order_details', args=[order_key])
-
-    # Construct the absolute URL to the logo
     logo_url = 'https://cakecravingss-93e2bca9bc4c.herokuapp.com' + settings.STATIC_URL + 'images/login_page.png'
-
-    # Additional marketing sentence
     marketing_sentence = "At Cake Cravings, we strive to make your moments sweet and memorable. Your order is being prepared with care and attention to detail."
 
-    # Get the order details and items
     order = Order.objects.get(order_key=order_key)
     order_items = order.order_item.all()
 
-    # Construct the list of ordered items
+    # Construct the list of ordered items with product names and sizes
     ordered_items_list = "<ul>"
     for item in order_items:
-        ordered_items_list += f"<li><strong>{item.quantity} x {item.product.name}</strong></li>"
+        product_name = item.product.name
+        product_size = item.size  # Use the 'size' attribute from the OrderItem model
+        # Check if the product has a size attribute
+        if item.size:
+            product_name = f"{product_name} ({product_size})"
+        ordered_items_list += f"<li><strong>{item.quantity} x {product_name}</strong></li>"
     ordered_items_list += "</ul>"
 
-    order_detail_link = f'{BASE_URL}{order_detail_url}'
 
+    order_detail_link = f'{BASE_URL}{order_detail_url}'
 
     # Construct the HTML content inline
     html_content = f"""
         <h1>Thank you for your order!</h1>
-        <p>Your payment of ${formatted_amount} has been received. Your order key is {order_key}.</p>
+        <p>Your payment of <strong>€{formatted_amount}</strong> has been received. Your order key is:<strong>{order_key}</strong>.</p>
         <p>{marketing_sentence}</p>
         <p>Your Order Details:</p>
         {ordered_items_list}

@@ -8,6 +8,25 @@ from datetime import date
 
 
 class Profile(models.Model):
+
+    GERMAN_STATES_CHOICES = (
+        ('BW', 'Baden-Württemberg'),
+        ('BY', 'Bavaria (Bayern)'),
+        ('BE', 'Berlin'),
+        ('BB', 'Brandenburg'),
+        ('HB', 'Bremen'),
+        ('HH', 'Hamburg'),
+        ('HE', 'Hesse (Hessen)'),
+        ('NI', 'Lower Saxony (Niedersachsen)'),
+        ('MV', 'Mecklenburg-Western Pomerania (Mecklenburg-Vorpommern)'),
+        ('NW', 'North Rhine-Westphalia (Nordrhein-Westfalen)'),
+        ('RP', 'Rhineland-Palatinate (Rheinland-Pfalz)'),
+        ('SL', 'Saarland'),
+        ('SN', 'Saxony (Sachsen)'),
+        ('ST', 'Saxony-Anhalt (Sachsen-Anhalt)'),
+        ('SH', 'Schleswig-Holstein'),
+        ('TH', 'Thuringia (Thüringen)'),
+    )
     user = models.OneToOneField(
         User,
         on_delete=models.CASCADE,
@@ -57,11 +76,12 @@ class Profile(models.Model):
         help_text='Format: not required'
     )
     state = models.CharField(
-        max_length=80,
-        null=True,
+        max_length=2,
+        choices=GERMAN_STATES_CHOICES,
         blank=True,
+        null=True,
         verbose_name='State',
-        help_text='Format: not required'
+        help_text='German state',
     )
     country = CountryField(
         blank_label='Country *',
