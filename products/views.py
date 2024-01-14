@@ -101,7 +101,6 @@ def all_products(request, category_slug=None):
     }
     return render(request, 'products/products.html', context)
 
-
 def product_detail(request, product_id):
     print(f"Product ID: {product_id}")
     product = get_object_or_404(Product, pk=product_id)
@@ -124,8 +123,12 @@ def product_detail(request, product_id):
     # Declare the review_form variable outside the if statement
     review_form = None
     # Calculate the cart count
-    cart_count = sum((item.get('quantity', 0) if isinstance(item, dict) else item) for item in request.session.get('cart', {}).values())
-
+    # Calculate the cart count with better error handling
+    cart_count = sum(
+        item.get('quantity', 0) if isinstance(item, dict) else int(item) if isinstance(item, int) else 0
+        for item in request.session.get('cart', {}).values()
+        if isinstance(item, (dict, int))
+    )
     if request.method == 'POST':
         # Check if the user has already submitted a review
         if not user_review_exists:

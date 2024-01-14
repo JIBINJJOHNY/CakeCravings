@@ -2,16 +2,23 @@ from decimal import Decimal
 from django.conf import settings
 from django.shortcuts import get_object_or_404
 from products.models import Product
+from django.http import Http404
 
 def cart_contents(request):
     cart_items = []
     total = 0
     product_count = 0
     cart = request.session.get('cart', {})
-    delivery_option = request.GET.get('delivery_option', 'online')  # Get delivery option from the query parameters
+    delivery_option = request.GET.get('delivery_option', 'online')
 
-    # Inside the for loop where you calculate the total
     for item_id, item_data in cart.items():
+        try:
+            # Attempt to convert the item_id to an integer
+            item_id = int(item_id)
+        except ValueError:
+            # Handle the case where item_id is not a valid integer
+            raise Http404("Invalid product ID")
+
         product = get_object_or_404(Product, pk=item_id)
 
         if isinstance(item_data, dict) and 'items_by_size' in item_data:
@@ -28,9 +35,8 @@ def cart_contents(request):
                     'price_for_size': price_for_size,
                 })
         else:
-            # Handle items without sizes
             quantity = item_data
-            if product.price is not None:  # Check if the price is not None
+            if product.price is not None:
                 total += quantity * product.price
                 product_count += quantity
                 cart_items.append({

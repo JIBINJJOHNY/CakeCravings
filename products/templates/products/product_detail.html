@@ -424,48 +424,55 @@
 
     <!-- Script to submit a review via AJAX -->
 <script>
-    function submitReview() {
-        console.log("Submit Review button clicked!");
-        var rating = $("#rating-below").val();
-        console.log("Rating:", rating);
-        var comment = $("#comment-below").val();
-        var productId = "{{ product.id }}";
+       function submitReview() {
+            console.log("Submit Review button clicked!");
+            var rating = $("#rating-below").val();
+            console.log("Rating:", rating);
+            var comment = $("#comment-below").val();
+            var productId = "{{ product.id }}";
 
-        // Perform AJAX request to submit the review
-        $.ajax({
-            url: `/reviews/ajax_add_review/${productId}/`,
-            type: "POST",
-            data: {
-                rating: rating,
-                comment: comment,
-                csrfmiddlewaretoken: "{{ csrf_token }}"
-            },
-            success: function (data) {
-                // Check if the form is present in the data (indicating form errors)
-                if (data.form) {
-                    console.log("Form Errors:", data.form);
-                    // Display form errors to the user
-                    displayFormErrors(data.form);
-                } else {
-                    // Update the UI with the new review
-                    console.log("Received data:", data);
-                    // Check if the average_rating is present in the data
-                    if (data.context && 'average_rating' in data.context) {
-                        console.log("Average Rating:", data.context.average_rating);
+            // Perform AJAX request to submit the review
+            $.ajax({
+                url: `/reviews/ajax_add_review/${productId}/`,
+                type: "POST",
+                data: {
+                    rating: rating,
+                    comment: comment,
+                    csrfmiddlewaretoken: "{{ csrf_token }}"
+                },
+                success: function (data) {
+                    // Check if the form is present in the data (indicating form errors)
+                    if (data.form) {
+                        console.log("Form Errors:", data.form);
+                        // Display form errors to the user
+                        displayFormErrors(data.form);
                     } else {
-                        console.log("Average Rating not found in data.context");
-                    }
+                        // Update the UI with the new review
+                        console.log("Received data:", data);
+                        // Check if the average_rating is present in the data
+                        if (data.context && 'average_rating' in data.context) {
+                            console.log("Average Rating:", data.context.average_rating);
+                        } else {
+                            console.log("Average Rating not found in data.context");
+                        }
 
-                    // Clear the form inputs
-                    $("#rating-below").val(0);
-                    $("#comment-below").val("");
+                        // Clear the form inputs
+                        $("#rating-below").val(0);
+                        $("#comment-below").val("");
+
+                        // Check if the review submission was unsuccessful due to a duplicate entry
+                        if (data.bool === false && data.error === 'You have already submitted a review for this product.') {
+                            // Display an alert to the user
+                            alert(data.error);
+                        }
+                    }
+                },
+                error: function (error) {
+                    console.log("Error:", error);
                 }
-            },
-            error: function (error) {
-                console.log("Error:", error);
-            }
-        });
-    }
+            });
+        }
+
 
     function displayFormErrors(formErrors) {
         // Display form errors to the user (you can customize this based on your UI)
@@ -478,8 +485,6 @@
             console.log(`Field: ${fieldName}`);
             console.log(`Errors: ${fieldErrors}`);
         }
-
-        // You can show these errors in your UI using appropriate elements
     }
 
     $(document).ready(function () {
@@ -507,7 +512,6 @@
             $('#rating-below').val(rating);
         }
     });
-
 </script>
     <script>
         $(document).ready(function () {
@@ -549,34 +553,34 @@
                 });
             });
 
-            // Handling wishlist interactions
             $('.plus-wishlist').click(function () {
-                console.log('Plus Wishlist clicked');
-                var id = $(this).attr('data-pid').toString();
-                $.ajax({
-                    type: "GET",
-                    url: `/wishlist/pluswishlist/?prod_id=${id}`,
-                    success: function (data) {
-                        console.log('AJAX Success:', data);
-                        // Redirect with trailing slash
-                        window.location.href = `http://localhost:8000/products/${id}/`;
-                    }
-                });
+            console.log('Plus Wishlist clicked');
+            var id = $(this).attr('data-pid').toString();
+            $.ajax({
+                type: "GET",
+                url: `/wishlist/pluswishlist/?prod_id=${id}`,
+                success: function (data) {
+                    console.log('AJAX Success:', data);
+                    // Redirect to the returned URL
+                    window.location.href = data.redirect_url;
+                }
             });
+        });
 
-            $('.minus-wishlist').click(function () {
-                console.log('Minus Wishlist clicked');
-                var id = $(this).attr('data-pid').toString();
-                $.ajax({
-                    type: "GET",
-                    url: `/wishlist/minuswishlist/?prod_id=${id}`, // Include the namespace in the URL
-                    success: function (data) {
-                        console.log('AJAX Success:', data);
-                        // Redirect with trailing slash
-                        window.location.href = `http://localhost:8000/products/${id}/`;
-                    }
-                });
+        $('.minus-wishlist').click(function () {
+            console.log('Minus Wishlist clicked');
+            var id = $(this).attr('data-pid').toString();
+            $.ajax({
+                type: "GET",
+                url: `/wishlist/minuswishlist/?prod_id=${id}`,
+                success: function (data) {
+                    console.log('AJAX Success:', data);
+                    // Redirect to the returned URL
+                    window.location.href = data.redirect_url;
+                }
             });
+        });
+
 
             // Function to update the cart count
             function updateCartCount(count) {

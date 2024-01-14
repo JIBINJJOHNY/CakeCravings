@@ -8,12 +8,17 @@ from products.models import Product
 from django.contrib.auth import get_user
 from django.contrib.auth.decorators import login_required
 
-
 @require_POST
 @login_required
 def ajax_add_review(request, pid):
     try:
         product = get_object_or_404(Product, pk=pid)
+
+        # Check if the user has already submitted a review for this product
+        existing_review = Review.objects.filter(user=request.user, product=product).first()
+        if existing_review:
+            # Handle the case where the user has already submitted a review
+            return JsonResponse({'bool': False, 'error': 'You have already submitted a review for this product.'})
 
         rating = int(request.POST.get('rating', 0))
 
@@ -42,7 +47,6 @@ def ajax_add_review(request, pid):
         })
     except Exception as e:
         return JsonResponse({'bool': False, 'error': str(e)})
-
 
 def product_reviews(request, product_id):
     product = get_object_or_404(Product, pk=product_id)

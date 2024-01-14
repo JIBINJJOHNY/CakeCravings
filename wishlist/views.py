@@ -8,6 +8,8 @@ from products.models import Product
 from django.core import serializers
 from django.template.loader import render_to_string
 from django.http import HttpResponse
+from django.urls import reverse
+
 
 
 def view_wishlist(request):
@@ -24,42 +26,44 @@ def view_wishlist(request):
 
     return render(request, 'wishlist/wishlist.html', context)
 
-
 @login_required
 def plus_wishlist(request):
     if request.method == 'GET':
-        print('Plus Wishlist view called')
         prod_id = request.GET['prod_id']
-        print(f'Product ID: {prod_id}')
         product = get_object_or_404(Product, id=prod_id)
         user = request.user
 
-        # Use products instead of product
         wishlist, created = Wishlist.objects.get_or_create(user=user)
         wishlist.add_to_wishlist(product)
 
+        # Get the URL for the product detail page
+        product_url = reverse('product_detail', args=[prod_id])
+
+        # Return the URL in the JSON response
         data = {
             'message': 'Wishlist Added Successfully',
+            'redirect_url': product_url,
         }
         return JsonResponse(data)
 
-
+@login_required
 def minus_wishlist(request):
     if request.method == 'GET':
-        print('Minus Wishlist view called')
         prod_id = request.GET['prod_id']
         product = Product.objects.get(id=prod_id)
         user = request.user
 
-        # Retrieve the user's wishlist
         wishlist, created = Wishlist.objects.get_or_create(user=user)
-
-        # Remove the product from the wishlist
         removed = wishlist.remove_from_wishlist(product)
 
+        # Get the URL for the product detail page
+        product_url = reverse('product_detail', args=[prod_id])
+
+        # Return the URL in the JSON response
         data = {
             'message': 'Wishlist Remove Successfully',
-            'removed': removed,  # Add this to indicate whether the removal was successful
+            'removed': removed,
+            'redirect_url': product_url,
         }
         return JsonResponse(data)
 
