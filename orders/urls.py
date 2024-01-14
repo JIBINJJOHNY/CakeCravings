@@ -1,6 +1,7 @@
 from django.urls import path
 from .views import AddOrder, basket_view, OrderConfirmation, OrdersView, OrderDetailsView, stripe_webhook, ErrorView
 
+
 app_name = 'orders'
 
 urlpatterns = [

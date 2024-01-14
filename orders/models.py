@@ -108,7 +108,7 @@ class Order(models.Model):
 
         for item in order_items:
             item_total = item.get_total()
-            
+
             # If the item has a size, consider it for the order total calculation
             if item.size and item.size != 'None':
                 order_total += item_total
@@ -116,11 +116,13 @@ class Order(models.Model):
         # Use 0 if the order total is None
         self.order_total = order_total if order_total is not None else Decimal('0.00')
 
+        # Calculate the delivery cost separately
         if self.order_total < settings.FREE_DELIVERY_THRESHOLD and self.delivery_option == 'online':
             self.delivery_cost = self.order_total * (settings.STANDARD_DELIVERY_PERCENTAGE / Decimal('100.0'))
         else:
             self.delivery_cost = Decimal('0.00')
 
+        # Calculate the grand total by adding order total and delivery cost
         self.grand_total = self.order_total + self.delivery_cost
         self.save()
 

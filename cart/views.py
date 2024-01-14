@@ -27,8 +27,6 @@ def add_to_cart(request, item_id):
 
     cart = request.session.get('cart', {})
 
-    print(f"Initial Cart: {cart}")
-
     if size:
         if item_id in cart:
             if 'items_by_size' in cart[item_id] and size in cart[item_id]['items_by_size']:
@@ -47,8 +45,6 @@ def add_to_cart(request, item_id):
         else:
             cart[item_id] = quantity
             messages.success(request, f'Added {product.name} to your cart')
-
-    print(f"Updated Cart: {cart}")
 
     # Explicitly assign the modified cart back to the session
     request.session['cart'] = cart

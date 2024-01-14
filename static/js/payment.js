@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', function () {
-    let stripePublicKey = 'your_stripe_public_key';  // Replace with your actual Stripe public key
+    let stripePublicKey = stripe_public_key;
     let stripe = Stripe(stripePublicKey);
     let elem = document.getElementById('submit');
-    let clientsecret = elem.getAttribute('data-secret');
+    clientsecret = elem.getAttribute('data-secret');
 
     // Set up Stripe.js and Elements to use in the checkout form
     let elements = stripe.elements();
@@ -45,20 +45,16 @@ document.addEventListener('DOMContentLoaded', function () {
         let customerRegion = document.getElementById("id_county_region_state").value;
         let customerCity = document.getElementById("customer-city").value;
         let postCode = document.getElementById("post-code").value;
-        
-        // Get the delivery option from the URL
-        let deliveryOption = getDeliveryOptionFromUrl(); // Add a function to get the delivery option from the URL
-
         // Warning message for the user to prevent refreshing the page,
         // which will cause the payment to fail
         let warning = `
-            <div class="col-12">
-                <div class="alert alert-danger" role="alert">
-                    Your payment is being processed.
-                    Please do not refresh the page or close this window!
-                </div>
-            </div>
-        `;
+        <div class="col-12">
+          <div class="alert alert-danger" role="alert">
+            Your payment is being processed.
+            Please do not refresh the page or close this window!
+          </div>
+        </div>
+      `;
         $('#card-errors').html(warning);
 
         // Set up order details
@@ -73,7 +69,7 @@ document.addEventListener('DOMContentLoaded', function () {
         formData.append('city', customerCity);
         formData.append('zip_code', postCode);
         formData.append('order_key', clientsecret);
-        formData.append('delivery_option', deliveryOption); // Include the delivery option
+        formData.append('delivery_option', document.getElementById('delivery-option').value); 
         formData.append('csrfmiddlewaretoken', CSRF_TOKEN);
         formData.append('action', 'post');
 
@@ -105,7 +101,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     if (result.error) {
                         // Log error details to the console
                         console.error("Payment Error:", result.error);
-                        let error = `
+                        error = `
                             <div class="col-12">
                                 <div class="alert alert-danger" role="alert">
                                     ${result.error.message}
@@ -123,6 +119,23 @@ document.addEventListener('DOMContentLoaded', function () {
 
                             // After successful payment, redirect to the order confirmation page
                             window.location.replace(window.location.origin + "/orders/order_confirmation/");
+
+                            // Send order confirmation email
+                            $.ajax({
+                                url: window.location.origin + '/orders/send_order_confirmation_email/',
+                                type: "POST",
+                                data: {
+                                    'order_id': json.order_id,
+                                    'csrfmiddlewaretoken': CSRF_TOKEN,
+                                    'action': 'post'
+                                },
+                                success: function (emailResponse) {
+                                    console.log("Order Confirmation Email Sent", emailResponse);
+                                },
+                                error: function (xhr, errmsg, err) {
+                                    console.error("Order Confirmation Email Error:", errmsg, err);
+                                },
+                            });
                         }
                         // Enable the submit button again
                         $('#submit').prop('disabled', false);
@@ -135,10 +148,4 @@ document.addEventListener('DOMContentLoaded', function () {
             },
         });
     });
-
-    // Function to extract the delivery option from the URL
-    function getDeliveryOptionFromUrl() {
-        let urlParams = new URLSearchParams(window.location.search);
-        return urlParams.get('delivery_option') || 'online';
-    }
 });

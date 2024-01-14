@@ -72,6 +72,9 @@
         /* Darker blue on hover */
         border-color: #0056b3;
     }
+    #delivery-option {
+    display: none;
+    }
 </style>
 {% endblock %}
 
@@ -107,7 +110,6 @@
                                             Valid full name is required.
                                         </div>
                                     </div>
-                                    
                                 </div>
                                 <div class="col-12">
                                     <label for="customer-email" class="form-label">Email <span
@@ -124,7 +126,7 @@
                                     <div class="invalid-feedback">
                                         Please enter a valid phone number.
                                     </div>
-                                </div>                                
+                                </div>
                                 <div class="col-12">
                                     <label for="customer-address" class="form-label">Address</label>
                                     <input type="text" value="{% if my_profile.street_address1 %}{{ my_profile.street_address1 }}{% endif %}" class="form-control" id="customer-address" placeholder="1234 Main St" required>
@@ -146,14 +148,14 @@
                                     <div class="invalid-feedback">
                                         Please select a valid country.
                                     </div>
-                                </div>  
+                                </div>
                                 <div class="col-12">
                                     <label for="{{ form.county_region_state.id_for_label }}" class="form-label">State</label>
                                     {{ form.county_region_state }}
                                     <div class="invalid-feedback">
                                         Please provide a valid state.
                                     </div>
-                                </div>                         
+                                </div>
                                 <div class="col-12">
                                     <label for="customer-city" class="form-label">City</label>
                                     <input type="text" value="{% if my_profile.town_or_city %}{{ my_profile.town_or_city }}{% endif %}" class="form-control" id="customer-city" placeholder="City" required>
@@ -168,6 +170,10 @@
                                         Zip code required.
                                     </div>
                                 </div>
+                                <select id="delivery-option" name="delivery_option">
+                                    <option value="pickup" {% if request.GET.delivery_option == 'pickup' %}selected{% endif %}>Pickup</option>
+                                    <option value="online" {% if request.GET.delivery_option == 'online' %}selected{% endif %}>Online</option>
+                                </select>
                                 <hr class="my-4">
                                 <h4 class="mb-3">Payment</h4>
                                 <label for="card-element">Credit or debit card</label>
@@ -195,24 +201,6 @@
 {% endblock %}
 
 {% block postloadjs_extra %}
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    let countryField = document.getElementById("customer-country");
-
-    // Save the initial value of the country
-    let initialCountryValue = countryField.value;
-
-    countryField.addEventListener('change', function () {
-        if (countryField.value !== 'Germany') {
-            // Reset the country to its initial value (Germany)
-            countryField.value = initialCountryValue;
-            
-            // Show an alert to inform the user
-            alert('Delivery is only available for users in Germany. Country cannot be changed.');
-        }
-    });
-});
-</script>
 <script>
     let CSRF_TOKEN = '{{ csrf_token }}';
     let stripe_public_key = '{{ stripe_public_key }}';

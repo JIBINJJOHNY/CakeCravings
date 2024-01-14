@@ -26,6 +26,7 @@ from .forms import OrderForm
 
 # Set up the logger
 logger = logging.getLogger(__name__)
+
 class AddOrder(View):
     """View for adding order AJAX."""
     def post(self, request, *args, **kwargs):
@@ -34,7 +35,7 @@ class AddOrder(View):
                 cart = cart_contents(request)
                 total = cart['grand_total']
                 delivery_option = request.POST.get('delivery_option', 'online')  # Get the delivery option
-                print(f"Delivery Option (AddOrder): {delivery_option}")  # Debug statement
+                print(f"Delivery Option (AddOrder - Received from Cart): {delivery_option}")  # Debug statement
 
                 # Create PaymentIntent
                 try:
@@ -48,8 +49,9 @@ class AddOrder(View):
                     return JsonResponse({'success': False, 'message': str(e)})
 
                 # Retrieve delivery_option from metadata
-                delivery_option = intent.metadata.get('delivery_option', 'online')
-                print(f"Delivery Option (AddOrder): {delivery_option}")  # Debug statement
+                print(request.POST)
+                delivery_option = request.POST.get('delivery_option', 'online')
+                print(f"Delivery Option (AddOrder - After PaymentIntent): {delivery_option}")  # Debug statement
 
                 user = request.user
                 full_name = request.POST.get('full_name')
@@ -63,7 +65,21 @@ class AddOrder(View):
                 zip_code = request.POST.get('zip_code')
                 order_key = request.POST.get('order_key')
 
-                total_paid = str(total)
+                # Calculate the total amount without delivery cost
+                total_amount = cart['total']
+
+                # Calculate the delivery cost separately
+                delivery_cost = total - total_amount
+
+                # Determine the delivery option
+                delivery_option = request.POST.get('delivery_option', 'online')
+
+                # Include delivery cost in total_paid for online delivery
+                if delivery_option == 'online':
+                    total_paid = str(total_amount + delivery_cost)
+                else:
+                    total_paid = str(total_amount)
+
                 cart_items = cart['cart_items']
 
                 if Order.objects.filter(order_key=order_key).exists():
@@ -109,17 +125,16 @@ class AddOrder(View):
                     order.save()
 
                     # Send confirmation email
-                    send_payment_confirmation_email(order.email, order_key, total)
+                    send_payment_confirmation_email(order.email, order_key, total_paid)
 
                     # Clear the cart only if the payment was successful
-                    cart = request.session.get('cart', {})
-                    cart.clear()
-                    request.session['cart'] = cart
-
+                    request.session['cart'] = {}
                     return JsonResponse({'success': True, 'message': 'Order added successfully'})
             return JsonResponse({'success': False, 'message': 'Invalid request'})
         else:
-            return render(request, 'account/login.html')                             
+            return render(request, 'account/login.html')
+
+
 @login_required
 def basket_view(request):
     try:
@@ -295,9 +310,12 @@ def payment_confirmation(client_secret):
         payment_intent = stripe.PaymentIntent.retrieve(client_secret)
         order_key = payment_intent.metadata.order_key
         order = Order.objects.get(order_key=order_key)
-        
+
+        # Ensure amount_received is a float
+        amount_received = float(payment_intent.amount_received) / 100
+
         # Send payment confirmation email
-        send_payment_confirmation_email(order.email, order_key, payment_intent.amount_received / 100)
+        send_payment_confirmation_email(order.email, order_key, amount_received)
 
         # Redirect to the order confirmation page
         return redirect('orders:order_confirmation')
@@ -306,9 +324,12 @@ def payment_confirmation(client_secret):
         # Handle the error and redirect accordingly
         return redirect('orders:error')
 
-
 def send_payment_confirmation_email(customer_email, order_key, amount_received):
     BASE_URL = settings.BASE_URL
+    
+    # Ensure amount_received is a float
+    amount_received = float(amount_received)
+
     formatted_amount = "{:.2f}".format(amount_received)
 
     subject = 'Payment Confirmation'
@@ -330,19 +351,18 @@ def send_payment_confirmation_email(customer_email, order_key, amount_received):
         ordered_items_list += f"<li><strong>{item.quantity} x {product_name}</strong></li>"
     ordered_items_list += "</ul>"
 
-
     order_detail_link = f'{BASE_URL}{order_detail_url}'
 
     # Construct the HTML content inline
-    html_content = f"""
+    html_content = """
         <h1>Thank you for your order!</h1>
-        <p>Your payment of <strong>€{formatted_amount}</strong> has been received. Your order key is:<strong>{order_key}</strong>.</p>
-        <p>{marketing_sentence}</p>
+        <p>Your payment of <strong>€{}</strong> has been received. Your order key is:<strong>{}</strong>.</p>
+        <p>{}</p>
         <p>Your Order Details:</p>
-        {ordered_items_list}
-        <p>Click <a href="{order_detail_link}">here</a> to view your order details.</p>
-        <img src="{logo_url}" alt="Bakery Logo" width="100" height="50">
-    """
+        {}
+        <p>Click <a href="{}">here</a> to view your order details.</p>
+        <img src="{}" alt="Bakery Logo" width="100" height="50">
+    """.format(formatted_amount, order_key, marketing_sentence, ordered_items_list, order_detail_link, logo_url)
 
     # Create an EmailMultiAlternatives instance
     msg = EmailMultiAlternatives(subject, strip_tags(html_content), 'jibinjjohny11@gmail.com', [customer_email])
