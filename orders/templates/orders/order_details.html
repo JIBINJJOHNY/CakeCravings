@@ -14,7 +14,8 @@
             <p class="card-text">
                 <strong>Order Date:</strong> {{ order.created }}<br>
                 <strong>Order Total:</strong> {{ order.total_paid }}<br>
-                <strong>Status:</strong> {{ order.status }}
+                <strong>Status:</strong> <span class="status {{ order.status|lower }}">{{ order.status }}</span><br>
+                <strong>Delivery Option:</strong> {{ order.get_delivery_option_display }}
             </p>
         </div>
     </div>
@@ -54,6 +55,32 @@
             </p>
         </div>
     </div>
-    <!-- Add more sections for additional information -->
 </div>
+<style>
+    /* Add this to your CSS file or style section */
+.status {
+    font-weight: bold;
+}
+
+.status.pending {
+    color: orange; /* Set your preferred color for the "Pending" status */
+}
+
+.status.processing {
+    color: blue; /* Set your preferred color for the "Processing" status */
+}
+
+.status.shipped {
+    color: green; /* Set your preferred color for the "Shipped" status */
+}
+
+.status.delivered {
+    color: #008000; /* Set your preferred color for the "Delivered" status */
+}
+
+.status.ready-for-pickup {
+    color: #663399; /* Set your preferred color for the "Ready For Pickup" status */
+}
+
+</style>
 {% endblock %}

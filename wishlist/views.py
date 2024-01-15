@@ -9,6 +9,7 @@ from django.core import serializers
 from django.template.loader import render_to_string
 from django.http import HttpResponse
 from django.urls import reverse
+from django.contrib import messages
 
 
 
@@ -29,19 +30,21 @@ def view_wishlist(request):
 @login_required
 def plus_wishlist(request):
     if request.method == 'GET':
-        prod_id = request.GET['prod_id']
+        prod_id = request.GET.get('prod_id')
         product = get_object_or_404(Product, id=prod_id)
         user = request.user
 
         wishlist, created = Wishlist.objects.get_or_create(user=user)
         wishlist.add_to_wishlist(product)
 
+        # Add a success message
+        messages.success(request, 'Product added to wishlist successfully.')
+
         # Get the URL for the product detail page
         product_url = reverse('product_detail', args=[prod_id])
 
         # Return the URL in the JSON response
         data = {
-            'message': 'Wishlist Added Successfully',
             'redirect_url': product_url,
         }
         return JsonResponse(data)
