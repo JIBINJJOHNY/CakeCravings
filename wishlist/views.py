@@ -45,9 +45,11 @@ def plus_wishlist(request):
 
         # Return the URL in the JSON response
         data = {
+            'success': True,
             'redirect_url': product_url,
         }
         return JsonResponse(data)
+
 
 @login_required
 def minus_wishlist(request):
