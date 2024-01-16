@@ -87,3 +87,8 @@ class OrderItemForm(forms.ModelForm):
             'quantity': forms.TextInput(attrs={'class': 'form-control'}),
             'size': forms.Select(attrs={'class': 'form-control'}),
         }
+
+class UpdateOrderStatusForm(forms.ModelForm):
+    class Meta:
+        model = Order
+        fields = ['status', 'delivery_option']     

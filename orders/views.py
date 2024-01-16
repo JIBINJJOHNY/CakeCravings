@@ -23,7 +23,9 @@ from decimal import Decimal
 from django.utils.html import strip_tags
 import logging
 from .forms import OrderForm 
-
+from django.contrib.auth.decorators import user_passes_test
+from .forms import UpdateOrderStatusForm 
+from django.views.decorators.http import require_POST
 # Set up the logger
 logger = logging.getLogger(__name__)
 
@@ -134,13 +136,9 @@ class AddOrder(View):
         else:
             return render(request, 'account/login.html')
 
-
 @login_required
 def basket_view(request):
     try:
-        # Print the raw GET parameters
-        print(f"Raw Request GET: {request.GET}")
-
         # Attempt to get the latest order for the user
         try:
             latest_order = Order.objects.filter(user=request.user).latest('created')
@@ -150,14 +148,12 @@ def basket_view(request):
 
         # Inside the basket_view function
         delivery_option = request.GET.get('delivery_option', 'online')
-        print(f"Delivery Option (basket_view): {delivery_option}")  # Debug statement
 
         # Fetch other cart details from cart_contents
         cart = cart_contents(request)
 
         # Update the cart with the latest delivery option
         cart['delivery_option'] = delivery_option
-        print(f"Updated Cart (basket_view): {cart}")  # Debug statement
 
         # Check if the delivery option is 'pickup' and adjust the total accordingly
         if 'delivery_option' in cart and cart['delivery_option'] == 'pickup':
@@ -167,7 +163,9 @@ def basket_view(request):
             total_final = cart.get('grand_total', 0)  # Use the grand total for 'online'
             delivery_cost = cart.get('delivery', 0)  # Include delivery cost for 'online'
 
-        print(f"Total Final (basket_view): {total_final}")  # Debug statement
+        # Apply any discount logic here
+        discount_amount = cart.get('discount', 0)
+        total_final -= discount_amount
 
         total_sum = "{:.2f}".format(total_final)
         total = int(total_final * 100)

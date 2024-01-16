@@ -9,10 +9,11 @@
     </div>
 </div>
 {% endblock %}
+
 {% block content %}
 <div class="container mb-8 mt-4">
     <div class="row mt-4">
-        <div class="col  justify-cod-flex">
+        <div class="col justify-cod-flex">
             <div class="custom-banner">
                 <strong class="custom-banner-text">Great News!</strong>
                 <span class="custom-banner-text">You qualify for free delivery on purchases over<strong> €60.</strong></span>
@@ -56,13 +57,11 @@
                         </td>
                         <td class="py-3">
                             <p class="my-0"><strong>{{ item.product.name }}</strong></p>
-                            <p class="my-0"><strong>Size:
-                                </strong>{% if item.product.has_sizes %}{{ item.size|upper }}{% else %}N/A{% endif %}
-                            </p>
+                            <p class="my-0"><strong>Size:</strong> {% if item.product.has_sizes %}{{ item.size|upper }}{% else %}N/A{% endif %}</p>
                         </td>
                         <td class="py-3">
                             {% if item.product.discounted_price %}
-                                <p class="my-0" style="color: red;" data-product-price="{{ item.product.price }}">
+                                <p class="my-0" style="color: red;" data-product-price="{{ item.product.discounted_price }}">
                                     €{{ item.product.discounted_price }}
                                 </p>
                                 <p style="text-decoration: line-through;">€{{ item.price_for_size|default:item.product.price }}</p>
@@ -87,7 +86,8 @@
                                         </div>
                                         <input class="form-control form-control-sm qty_input" type="number"
                                             name="quantity" value="{{ item.quantity }}" min="1" max="99"
-                                            data-item_id="{{ item.item_id }}" id="id_qty_{{ item.item_id }}">
+                                            data-item_id="{{ item.item_id }}" id="id_qty_{{ item.item_id }}"
+                                            data-product_price="{{ item.product.discounted_price|default:item.product.price }}">
                                         <div class="input-group-append">
                                             <button class="increment-qty btn btn-sm btn-black rounded-0"
                                                 data-item_id="{{ item.item_id }}" id="increment-qty_{{ item.item_id }}">
@@ -102,47 +102,46 @@
                                     </div>
                                 </div>
                             </form>
-                            <a class="update-link text-info"><small><i
-                                        class="fa-solid fa-arrows-rotate"></i></small></a>
-                            <a class="remove-item text-danger float-right" id="remove_{{ item.item_id }}"
-                                data-product_size="{{ item.size }}"><small><i
-                                        class="fa-solid fa-trash-can"></i></small></a>
+                            <a class="update-link text-info"><small><i class="fa-solid fa-arrows-rotate"></i></small></a>
+                            <a class="remove-item text-danger float-right" id="remove_{{ item.item_id }}" data-product_size="{{ item.size }}">
+                                <small><i class="fa-solid fa-trash-can"></i></small>
+                            </a>
                         </td>
                         <td class="py-3">
-                            {% if item.product.discounted_price %}
-                            <p class="my-0" data-product-price="{{ item.product.price }}">
-                                €{{ item.product.discounted_price }}
+                            <p class="my-0" id="subtotal_{{ item.item_id }}">
+                                {% if item.product.discounted_price %}
+                                    €{{ item.product.discounted_price|calc_subtotal:item.quantity }}
+                                {% else %}
+                                    €{{ item.price_for_size|default:item.product.price|calc_subtotal:item.quantity }}
+                                {% endif %}
                             </p>
-                            {% else %}
-                                <p class="my-0">€{{ item.price_for_size|default:item.product.price|calc_subtotal:item.quantity }}</p>
-                            {% endif %}
                         </td>
-                        
                     </tr>
                     {% endfor %}
-                    <td colspan="5" class="text-right">
-                        <h6>Delivery:
-                            <select id="delivery-option" name="delivery_option" onchange="updateDeliveryOption()">
-                                <option value="online" {% if delivery_option == 'online' %}selected{% endif %}>Online Delivery</option>
-                                <option value="pickup" {% if delivery_option == 'pickup' %}selected{% endif %}>Pickup</option>
-                            </select>
-                        </h6>
-                    </td>
-                    <td colspan="5" class="pt-5 text-right">
-                        <h6><strong>Cart Total: €{{ total|floatformat:2 }}</strong></h6>
-                        <h6>Delivery: €{{ delivery|floatformat:2 }}</h6>
-                        <h4 id="grand-total" class="mt-4"><strong>Grand Total: €{{ total|add:delivery|floatformat:2 }}</strong></h4>
-                        {% if free_delivery_delta > 0 %}
-                        <p class="mb-1 text-danger">
-                            You could get free delivery by spending just <strong>€{{ free_delivery_delta }}</strong>
-                            more!
-                        </p>
-                        {% endif %}
-                    </td>
+                    <tr>
+                        <td colspan="5" class="text-right">
+                            <h6>Delivery:
+                                <select id="delivery-option" name="delivery_option" onchange="updateDeliveryOption()">
+                                    <option value="online" {% if delivery_option == 'online' %}selected{% endif %}>Online Delivery</option>
+                                    <option value="pickup" {% if delivery_option == 'pickup' %}selected{% endif %}>Pickup</option>
+                                </select>
+                            </h6>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" class="pt-5 text-right">
+                            <h6><strong>Cart Total: €<span id="cart-total">{{ total|floatformat:2 }}</span></strong></h6>
+                            <h6>Delivery: €{{ delivery|floatformat:2 }}</h6>
+                            <h4 id="grand-total" class="mt-4"><strong>Grand Total: €{{ total|add:delivery|floatformat:2 }}</strong></h4>
+                            {% if free_delivery_delta > 0 %}
+                            <p class="mb-1 text-danger">
+                                You could get free delivery by spending just <strong>€{{ free_delivery_delta }}</strong> more!
+                            </p>
+                            {% endif %}
+                        </td>
                     </tr>
                     <tr>
                         <td colspan="5" class="text-right">
-                            
                             <a href="{% url 'all_products' %}" class="btn btn-outline-secondary">
                                 <span class="icon">
                                     <i class="fas fa-chevron-left"></i>
@@ -183,13 +182,70 @@
         var newUrl = currentUrl + separator + 'delivery_option=' + deliveryOption;
         window.location.href = newUrl;
     }
-    // Update quantity on click
+
+    function handleEnableDisable(itemId) {
+        var currentValue = parseInt($(`#id_qty_${itemId}`).val());
+        var minusDisabled = currentValue < 2;
+        var plusDisabled = currentValue > 98;
+        $(`#decrement-qty_${itemId}`).prop('disabled', minusDisabled);
+        $(`#increment-qty_${itemId}`).prop('disabled', plusDisabled);
+    }
+
+    function updateGrandTotal() {
+        var total = 0;
+
+        $('.qty_input').each(function () {
+            var itemId = $(this).data('item_id');
+            var quantity = parseInt($(this).val());
+            var price = parseFloat($(`#id_qty_${itemId}`).data('product_price'));
+
+            $(`#subtotal_${itemId}`).text('€' + (quantity * price).toFixed(2));
+
+            total += quantity * price;
+        });
+
+        var delivery = parseFloat("{{ delivery|floatformat:2 }}");
+        var grandTotal = total + delivery;
+
+        $('#cart-total').text(total.toFixed(2));
+        $('#grand-total').text('Grand Total: €' + grandTotal.toFixed(2));
+    }
+
+    $(document).ready(function () {
+        updateGrandTotal();
+    });
+
+    $('.qty_input').change(function () {
+        var itemId = $(this).data('item_id');
+        handleEnableDisable(itemId);
+        updateGrandTotal();
+    });
+
+    $('.increment-qty').click(function (e) {
+        e.preventDefault();
+        var closestInput = $(this).closest('.input-group').find('.qty_input')[0];
+        var currentValue = parseInt($(closestInput).val());
+        $(closestInput).val(currentValue + 1);
+        var itemId = $(this).data('item_id');
+        handleEnableDisable(itemId);
+        updateGrandTotal();
+    });
+
+    $('.decrement-qty').click(function (e) {
+        e.preventDefault();
+        var closestInput = $(this).closest('.input-group').find('.qty_input')[0];
+        var currentValue = parseInt($(closestInput).val());
+        $(closestInput).val(currentValue - 1);
+        var itemId = $(this).data('item_id');
+        handleEnableDisable(itemId);
+        updateGrandTotal();
+    });
+
     $('.update-link').click(function (e) {
         var form = $(this).prev('.update-form');
         form.submit();
-    })
+    });
 
-    // Remove item and reload on click
     $('.remove-item').click(function (e) {
         var csrfToken = "{{ csrf_token }}";
         var itemId = $(this).attr('id').split('remove_')[1];
@@ -204,62 +260,6 @@
             .done(function () {
                 location.reload();
             });
-    })
-
-    // Disable +/- buttons outside 1-99 range
-    function handleEnableDisable(itemId) {
-        var currentValue = parseInt($(`#id_qty_${itemId}`).val());
-        var minusDisabled = currentValue < 2;
-        var plusDisabled = currentValue > 98;
-        $(`#decrement-qty_${itemId}`).prop('disabled', minusDisabled);
-        $(`#increment-qty_${itemId}`).prop('disabled', plusDisabled);
-    }
-
-    // Ensure proper enabling/disabling of all inputs on page load
-    var allQtyInputs = $('.qty_input');
-    for (var i = 0; i < allQtyInputs.length; i++) {
-        var itemId = $(allQtyInputs[i]).data('item_id');
-        handleEnableDisable(itemId);
-    }
-
-    // Check enable/disable every time the input is changed
-    $('.qty_input').change(function () {
-        var itemId = $(this).data('item_id');
-        handleEnableDisable(itemId);
-    });
-
-    // Increment quantity
-    $('.increment-qty').click(function (e) {
-        e.preventDefault();
-        var closestInput = $(this).closest('.input-group').find('.qty_input')[0];
-        var currentValue = parseInt($(closestInput).val());
-        $(closestInput).val(currentValue + 1);
-        var itemId = $(this).data('item_id');
-        handleEnableDisable(itemId);
-    });
-
-    // Decrement quantity
-    $('.decrement-qty').click(function (e) {
-        e.preventDefault();
-        var closestInput = $(this).closest('.input-group').find('.qty_input')[0];
-        var currentValue = parseInt($(closestInput).val());
-        $(closestInput).val(currentValue - 1);
-        var itemId = $(this).data('item_id');
-        handleEnableDisable(itemId);
-    });
-      // Add the following code for updating the grand total
-      function updateGrandTotal() {
-        var total = parseFloat("{{ total|floatformat:2 }}");
-        var delivery = parseFloat("{{ delivery|floatformat:2 }}");
-        var grandTotal = total + delivery;
-
-        // Update the DOM element that displays the grand total
-        $('#grand-total').text('Grand Total: €' + grandTotal.toFixed(2));
-    }
-
-    // Call the updateGrandTotal function when the page loads
-    $(document).ready(function () {
-        updateGrandTotal();
     });
 
 </script>

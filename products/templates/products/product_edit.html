@@ -3,7 +3,7 @@
 
 {% block content %}
 <div class="container mt-5">
-    <h2>Edit Product: {{ product.name }}</h2>
+    <h1>Edit Product: {{ product.name }}</h1>
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form|crispy }}

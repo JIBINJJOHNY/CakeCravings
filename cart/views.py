@@ -72,8 +72,16 @@ def add_to_cart(request, item_id):
 
     print(f"Cart Count: {cart_count}")
 
-    return JsonResponse({'success': True, 'cart_count': cart_count})
+    # Include messages in the JsonResponse data
+    messages_list = [{'message': str(message), 'tag': message.tags} for message in messages.get_messages(request)]
+    response_data = {
+        'success': True,
+        'cart_count': cart_count,
+        'messages': messages_list,
+        'total': float(product.discounted_price) * quantity if product.discounted_price else float(product.price) * quantity,
+    }
 
+    return JsonResponse(response_data)
 
 def get_cart_count(request):
     context = cart_contents(request)
