@@ -31,6 +31,7 @@ from profiles.models import Profile
 # Set up the logger
 logger = logging.getLogger(__name__)
 
+
 class AddOrder(View):
     """View for adding order AJAX."""
     def post(self, request, *args, **kwargs):
@@ -111,7 +112,7 @@ class AddOrder(View):
                         selected_size = cart_item.get('size', 'S')  # Replace 'S' with the default size if not present
 
                         # Get the price for the selected size
-                        price_for_size = product.get_price_for_size(selected_size)
+                        price_for_size = product.get_discounted_price_for_size(selected_size)
 
                         OrderItem.objects.create(
                             order=order,
@@ -137,6 +138,7 @@ class AddOrder(View):
             return JsonResponse({'success': False, 'message': 'Invalid request'})
         else:
             return render(request, 'account/login.html')
+
 
 @login_required
 def basket_view(request):
@@ -223,7 +225,6 @@ def basket_view(request):
     except Exception as e:
         logger.error(f"An error occurred in basket_view: {str(e)}")
         return HttpResponse("An error occurred.")
-
 
 
 class OrderConfirmation(View):

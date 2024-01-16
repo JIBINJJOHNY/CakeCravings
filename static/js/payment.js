@@ -101,6 +101,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     if (result.error) {
                         // Log error details to the console
                         console.error("Payment Error:", result.error);
+                        console.log(result.error); 
                         error = `
                             <div class="col-12">
                                 <div class="alert alert-danger" role="alert">
@@ -145,6 +146,7 @@ document.addEventListener('DOMContentLoaded', function () {
             error: function (xhr, errmsg, err) {
                 // Log AJAX request error details to the console
                 console.error("AJAX Request Error:", errmsg, err);
+                console.log(xhr.responseText); 
             },
         });
     });

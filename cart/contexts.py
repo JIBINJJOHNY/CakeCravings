@@ -3,7 +3,6 @@ from django.conf import settings
 from django.shortcuts import get_object_or_404
 from products.models import Product
 from django.http import Http404
-from profiles.models import Profile  # Make sure to import the Profile model
 
 def cart_contents(request):
     cart_items = []
@@ -11,18 +10,6 @@ def cart_contents(request):
     product_count = 0
     cart = request.session.get('cart', {})
     delivery_option = request.GET.get('delivery_option', 'online')
-
-    # Initialize my_profile and primary_address
-    my_profile = None
-    primary_address = None
-
-    # Check if the user is authenticated before trying to fetch the profile
-    if request.user.is_authenticated:
-        try:
-            my_profile = Profile.objects.get(user=request.user)
-            primary_address = my_profile if my_profile.is_primary_address else None
-        except Profile.DoesNotExist:
-            pass
 
     for item_id, item_data in cart.items():
         try:
@@ -36,26 +23,31 @@ def cart_contents(request):
 
         if isinstance(item_data, dict) and 'items_by_size' in item_data:
             for size, quantity in item_data['items_by_size'].items():
-                price_for_size = product.get_price_for_size(size)
+                price_for_size = product.get_discounted_price_for_size(size)
+                discounted_price_for_size = price_for_size 
 
-                total += quantity * price_for_size
+
+                total += quantity * discounted_price_for_size
                 product_count += quantity
                 cart_items.append({
                     'item_id': item_id,
                     'quantity': quantity,
                     'product': product,
                     'size': size,
-                    'price_for_size': price_for_size,
+                    'price_for_size': discounted_price_for_size,
                 })
         else:
             quantity = item_data
             if product.price is not None:
-                total += quantity * product.price
+                discounted_price = product.get_discounted_price()
+
+                total += quantity * discounted_price
                 product_count += quantity
                 cart_items.append({
                     'item_id': item_id,
                     'quantity': quantity,
                     'product': product,
+                    'price_for_size': discounted_price,
                 })
 
     # Adjust delivery cost based on the selected delivery option
@@ -82,7 +74,6 @@ def cart_contents(request):
         'free_delivery_threshold': settings.FREE_DELIVERY_THRESHOLD,
         'grand_total': grand_total,
         'delivery_option': delivery_option,
-        'my_profile': my_profile,
     }
 
     return context

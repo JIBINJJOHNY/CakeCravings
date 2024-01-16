@@ -168,18 +168,29 @@ class Product(models.Model):
         self.price = calculated_price
         super().save(*args, **kwargs)
 
-    def get_price_for_size(self, size):
+    def get_discounted_price_for_size(self, size):
         """
-        Get the price for the specified size.
-        If the size is not available, return the default price.
+        Get the discounted price for the specified size.
+        If the size is not available, return the default discounted price.
         """
         category_prices = self.DEFAULT_PRICES.get(self.category.name.lower(), {})
-        default_price = category_prices.get(size, self.price)
+        default_discounted_price = category_prices.get(size, self.price)
 
-        print(f"Category: {self.category.name}, Size: {size}, Default Price: {default_price}")
+        if self.discount_price and self.discount_price.is_valid():
+            discount_amount = (self.discount_price.percentage / Decimal(100)) * default_discounted_price
+            return default_discounted_price - discount_amount
+        else:
+            return default_discounted_price
 
-        return default_price
-
+    def get_discounted_price(self):
+        """
+        Get the default discounted price for the product.
+        If the product has sizes, use the discounted price for the default size.
+        """
+        if self.has_sizes:
+            return self.get_discounted_price_for_size(self.size)
+        else:
+            return self.discounted_price if self.discounted_price is not None else self.price
 
 class ProductImage(models.Model):
     product = models.ForeignKey(

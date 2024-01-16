@@ -183,14 +183,23 @@
                                 <hr class="my-4">
                                 <button id="submit" class="btn btn-info w-100 fw-bold" data-secret="{{ client_secret }}">
                                     {% if delivery_option == 'pickup' %}
-                                        Pay €{{ total_sum }} (Pickup)
+                                    Pay €{{ total_sum }} (Pickup)
+                                {% else %}
+                                    {% if discount_amount > 0 %}
+                                        Pay €{{ total_sum }} (Delivery) - Discount: €{{ discount_amount }}
                                     {% else %}
-                                        {% if discount_amount > 0 %}
-                                            Pay €{{ total_sum }} (Delivery) - Discount: €{{ discount_amount }}
-                                        {% else %}
-                                            Pay €{{ total_sum }} (Delivery)
-                                        {% endif %}
-                                    {% endif %}                              
+                                        Pay €{{ total_sum }} (Delivery)
+                                    {% endif %}
+                                
+                                    {% if discounted_prices %}
+                                        <ul>
+                                            {% for item_id, discounted_price in discounted_prices.items %}
+                                                <li>Item {{ item_id }} - Discounted Price: €{{ discounted_price }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% endif %}
+                                {% endif %}
+                                
                                 </button>                                                                                              
                             </form>
                             <!-- Error messages in this element -->
