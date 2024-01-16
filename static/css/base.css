@@ -609,7 +609,17 @@ h6 span button:hover {
     margin-bottom: 10px;
     align-items: center;
 }
+/* Add this CSS to your stylesheet */
+.related-product-card {
+    height: 400px; /* Adjust the height as needed */
+    width: 100%; /* This ensures that the width is 100% of the parent container */
+}
 
+/* Optionally, you can add styles to control the image size within the card */
+.related-product-card img {
+    max-height: 200px; /* Adjust the max-height for the image */
+    width: 100%; /* This ensures that the image width is 100% of the card body */
+}
 /* Hover effect */
 .feature:hover {
     transform: scale(1.1);

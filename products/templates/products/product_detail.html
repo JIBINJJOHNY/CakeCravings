@@ -200,7 +200,7 @@
         <div class="row">
             {% for related_product in related_products %}
             <div class="col-md-3">
-                <div class="card">
+                <div class="card related-product-card">
                     <img src="{% if related_product.images.first.image_url %}{{ related_product.images.first.image_url }}{% else %}{% static 'images/default_image.png' %}{% endif %}"
                         alt="{{ related_product.name }}" class="card-img-top">
                     <div class="card-body">
@@ -221,7 +221,6 @@
             {% endfor %}
         </div>
     </div>
-
     <!--  Review  -->
     <div class="container mt-4">
         <div class="row">
