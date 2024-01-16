@@ -3,6 +3,7 @@ from django.conf import settings
 from django.shortcuts import get_object_or_404
 from products.models import Product
 from django.http import Http404
+from profiles.models import Profile  # Make sure to import the Profile model
 
 def cart_contents(request):
     cart_items = []
@@ -10,6 +11,18 @@ def cart_contents(request):
     product_count = 0
     cart = request.session.get('cart', {})
     delivery_option = request.GET.get('delivery_option', 'online')
+
+    # Initialize my_profile and primary_address
+    my_profile = None
+    primary_address = None
+
+    # Check if the user is authenticated before trying to fetch the profile
+    if request.user.is_authenticated:
+        try:
+            my_profile = Profile.objects.get(user=request.user)
+            primary_address = my_profile if my_profile.is_primary_address else None
+        except Profile.DoesNotExist:
+            pass
 
     for item_id, item_data in cart.items():
         try:
@@ -69,6 +82,7 @@ def cart_contents(request):
         'free_delivery_threshold': settings.FREE_DELIVERY_THRESHOLD,
         'grand_total': grand_total,
         'delivery_option': delivery_option,
+        'my_profile': my_profile,
     }
 
     return context

@@ -24,8 +24,10 @@ from django.utils.html import strip_tags
 import logging
 from .forms import OrderForm 
 from django.contrib.auth.decorators import user_passes_test
-from .forms import UpdateOrderStatusForm 
 from django.views.decorators.http import require_POST
+from profiles.models import Profile 
+
+
 # Set up the logger
 logger = logging.getLogger(__name__)
 
@@ -151,9 +153,21 @@ def basket_view(request):
 
         # Fetch other cart details from cart_contents
         cart = cart_contents(request)
+        print(f"Cart Contents: {cart}")
 
         # Update the cart with the latest delivery option
         cart['delivery_option'] = delivery_option
+
+        # Initialize my_profile and primary_address
+        my_profile = None
+        primary_address = None
+
+        # Check if the user has a profile
+        try:
+            my_profile = Profile.objects.get(user=request.user)
+            primary_address = my_profile if my_profile.is_primary_address else None
+        except Profile.DoesNotExist:
+            pass
 
         # Check if the delivery option is 'pickup' and adjust the total accordingly
         if 'delivery_option' in cart and cart['delivery_option'] == 'pickup':
@@ -165,6 +179,7 @@ def basket_view(request):
 
         # Apply any discount logic here
         discount_amount = cart.get('discount', 0)
+        print(f"Discount Amount: {discount_amount}")
         total_final -= discount_amount
 
         total_sum = "{:.2f}".format(total_final)
@@ -191,16 +206,6 @@ def basket_view(request):
             'zip_code': latest_order.zip_code,
         }
 
-        # Fetch the primary address from the user's profile
-        primary_address = None
-        my_profile = None  # Initialize my_profile variable
-
-        try:
-            my_profile = Profile.objects.get(user=request.user)
-            primary_address = my_profile if my_profile.is_primary_address else None
-        except Profile.DoesNotExist:
-            pass
-
         context = {
             'my_profile': my_profile,
             'primary_address': primary_address,
@@ -211,12 +216,15 @@ def basket_view(request):
             'client_secret': intent.client_secret,
             'stripe_public_key': stripe_public_key,
             'form': OrderForm(),
+            'discount_amount': discount_amount,  # Include discount amount in context
         }
 
         return render(request, 'orders/payment.html', context)
     except Exception as e:
         logger.error(f"An error occurred in basket_view: {str(e)}")
         return HttpResponse("An error occurred.")
+
+
 
 class OrderConfirmation(View):
     """View for the order placed page."""

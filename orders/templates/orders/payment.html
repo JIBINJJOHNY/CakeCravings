@@ -185,9 +185,13 @@
                                     {% if delivery_option == 'pickup' %}
                                         Pay €{{ total_sum }} (Pickup)
                                     {% else %}
-                                        Pay €{{ total_sum }} (Delivery)
-                                    {% endif %}
-                                </button>
+                                        {% if discount_amount > 0 %}
+                                            Pay €{{ total_sum }} (Delivery) - Discount: €{{ discount_amount }}
+                                        {% else %}
+                                            Pay €{{ total_sum }} (Delivery)
+                                        {% endif %}
+                                    {% endif %}                              
+                                </button>                                                                                              
                             </form>
                             <!-- Error messages in this element -->
                             <div id="card-errors" class="alert-danger" role="alert"></div>
