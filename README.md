@@ -576,8 +576,7 @@ The app and associated resources were deployed as follows:
 Please refer to the [DEPLOYMENT.md](DEPLOYMENT.md) file for all deployment and payment-related documentation.
 
 ---
-
-## Credits
+U
 
 ## Credits
 
@@ -637,7 +636,7 @@ Please refer to the [DEPLOYMENT.md](DEPLOYMENT.md) file for all deployment and p
 
 - [Nilesh Technology](https://github.com/TravelTimN) was a great support for development of this project .
 - [Iuliia Konovalova](https://github.com/IuliiaKonovalova) my mentor has been a great supporter, guiding me through the development of the project and helping me to learn a lot of new things by challenging me to do something new.
-- [Code Institute](https://codeinstitute.net/de/)  tutors and Slack community members for their support and help.
+- [Code Institute](https://codeinstitute.net/de/)  tutors for their support and help.
 
 
 
