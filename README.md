@@ -623,8 +623,14 @@ Please refer to the [DEPLOYMENT.md](DEPLOYMENT.md) file for all deployment and p
 - [Choclate chip cookies](https://crumbncrust.com/products/chocolate-chip-cookies)
 - [Choclate chip cookies](https://www.shugarysweets.com/perfect-chocolate-chip-cookies/)
 - [Choclate chip cookies](https://www.gosoftstuff.com/shop/fsc1200-2-5oz-chocolate-chip-cookie-dough-clean-33460)
-
-
+- [Pastel Blue Spring Cake](https://www.tremari.ca/products/pastel-blue-spring-cake)
+- [Pink white chocolate chip cookies](https://jessiebakestreats.com/web-stories/pink-white-chocolate-chip-cookies/)
+- [Funfetti Cake](https://in.pinterest.com/pin/570620215298484445/)
+- [Ricotta Cookies](https://www.upstateramblings.com/ricotta-cookies/)
+- [Banana Cupcake](https://tornadoughalli.com/banana-cupcakes/)
+- [Choclate Cupcake](https://www.pinterest.de/pin/44402746315543652/)
+- [Choclate Cake](https://cookidoo.de/recipes/recipe/de-DE/r144267)
+- [Funfetti Cookies](https://www.rachelcooks.com/patriotic-funfetti-cookies/)
 
 
 ## Acknowledgments
