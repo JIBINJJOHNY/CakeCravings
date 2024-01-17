@@ -84,10 +84,10 @@
                                                 </span>
                                             </button>
                                         </div>
-                                        <input class="form-control form-control-sm qty_input" type="number"
+                                            <input class="form-control form-control-sm qty_input" type="number"
                                             name="quantity" value="{{ item.quantity }}" min="1" max="99"
                                             data-item_id="{{ item.item_id }}" id="id_qty_{{ item.item_id }}"
-                                            data-product_price="{{ item.product.discounted_price|default:item.product.price }}">
+                                            data-price_for_size="{{ item.price_for_size }}">
                                         <div class="input-group-append">
                                             <button class="increment-qty btn btn-sm btn-black rounded-0"
                                                 data-item_id="{{ item.item_id }}" id="increment-qty_{{ item.item_id }}">
@@ -108,7 +108,7 @@
                             </a>
                         </td>
                         <td class="py-3">
-                            <p class="my-0" id="subtotal_{{ item.item_id }}">
+                            <p class="my-0 subtotal" data-item_id="{{ item.item_id }}">
                                 {% if item.product.discounted_price %}
                                     €{{ item.product.discounted_price|calc_subtotal:item.quantity }}
                                 {% else %}
@@ -197,11 +197,9 @@
         $('.qty_input').each(function () {
             var itemId = $(this).data('item_id');
             var quantity = parseInt($(this).val());
-            var price = parseFloat($(`#id_qty_${itemId}`).data('product_price'));
+            var price_for_size = parseFloat($(this).data('price_for_size'));
 
-            $(`#subtotal_${itemId}`).text('€' + (quantity * price).toFixed(2));
-
-            total += quantity * price;
+            total += quantity * price_for_size;
         });
 
         var delivery = parseFloat("{{ delivery|floatformat:2 }}");
@@ -210,6 +208,7 @@
         $('#cart-total').text(total.toFixed(2));
         $('#grand-total').text('Grand Total: €' + grandTotal.toFixed(2));
     }
+
 
     $(document).ready(function () {
         updateGrandTotal();
@@ -264,3 +263,4 @@
 
 </script>
 {% endblock %}
+

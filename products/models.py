@@ -145,20 +145,13 @@ class Product(models.Model):
 
     def save(self, *args, **kwargs):
         print(f"Saving product: {self.name}")
+        print(f"Category: {self.category.name}, Size: {self.size}")
         self.slug = slugify(self.name, allow_unicode=True)
 
-        # Initialize category_prices with an empty dictionary
-        category_prices = {}
+        category_prices = self.DEFAULT_PRICES.get(self.category.name.lower(), {})
+        calculated_price = category_prices.get(self.size, self.price)
+        print(f"Calculated Price: {calculated_price}")
 
-        # Only adjust price based on size if the category is present in DEFAULT_PRICES
-        if self.category.name.lower() in self.DEFAULT_PRICES and self.size:
-            category_prices = self.DEFAULT_PRICES[self.category.name.lower()]
-            calculated_price = category_prices.get(self.size, self.price)
-            print(f"Category: {self.category.name}, Size: {self.size}, Price: {calculated_price}")
-        else:
-            calculated_price = self.price
-
-        # Check if a discount is applicable
         if self.discount_price and self.discount_price.is_valid():
             discount_amount = (self.discount_price.percentage / Decimal(100)) * calculated_price
             self.discounted_price = calculated_price - discount_amount
@@ -168,11 +161,9 @@ class Product(models.Model):
         self.price = calculated_price
         super().save(*args, **kwargs)
 
+
     def get_discounted_price_for_size(self, size):
-        """
-        Get the discounted price for the specified size.
-        If the size is not available, return the default discounted price.
-        """
+        print(f"Size: {size}")
         category_prices = self.DEFAULT_PRICES.get(self.category.name.lower(), {})
         default_discounted_price = category_prices.get(size, self.price)
 
@@ -181,6 +172,7 @@ class Product(models.Model):
             return default_discounted_price - discount_amount
         else:
             return default_discounted_price
+
 
     def get_discounted_price(self):
         """
