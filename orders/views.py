@@ -26,7 +26,7 @@ from .forms import OrderForm
 from django.contrib.auth.decorators import user_passes_test
 from django.views.decorators.http import require_POST
 from profiles.models import Profile 
-
+from django.template.loader import render_to_string
 
 # Set up the logger
 logger = logging.getLogger(__name__)
@@ -331,6 +331,7 @@ def payment_confirmation(client_secret):
         # Handle the error and redirect accordingly
         return redirect('orders:error')
 
+
 def send_payment_confirmation_email(customer_email, order_key, amount_received):
     BASE_URL = settings.BASE_URL
     
@@ -342,7 +343,7 @@ def send_payment_confirmation_email(customer_email, order_key, amount_received):
     subject = 'Payment Confirmation'
     order_detail_url = reverse('orders:order_details', args=[order_key])
     logo_url = 'https://cakecravingss-93e2bca9bc4c.herokuapp.com' + settings.STATIC_URL + 'images/login_page.png'
-    marketing_sentence = "At Cake Cravings, we strive to make your moments sweet and memorable. Your order is being prepared with care and attention to detail."
+    marketing_sentence = "At Cake Cravings, we strive to make your moments sweet and memorable."
 
     order = Order.objects.get(order_key=order_key)
     order_items = order.order_item.all()
@@ -351,8 +352,7 @@ def send_payment_confirmation_email(customer_email, order_key, amount_received):
     ordered_items_list = "<ul>"
     for item in order_items:
         product_name = item.product.name
-        product_size = item.size  # Use the 'size' attribute from the OrderItem model
-        # Check if the product has a size attribute
+        product_size = item.size
         if item.size:
             product_name = f"{product_name} ({product_size})"
         ordered_items_list += f"<li><strong>{item.quantity} x {product_name}</strong></li>"
@@ -360,16 +360,16 @@ def send_payment_confirmation_email(customer_email, order_key, amount_received):
 
     order_detail_link = f'{BASE_URL}{order_detail_url}'
 
-    # Construct the HTML content inline
+    # Replace order_key with order_id in the HTML content
     html_content = """
         <h1>Thank you for your order!</h1>
-        <p>Your payment of <strong>€{}</strong> has been received. Your order key is:<strong>{}</strong>.</p>
+        <p>Your payment of <strong>€{}</strong> has been received. Your order ID is:<strong>{}</strong>.</p>
         <p>{}</p>
         <p>Your Order Details:</p>
         {}
         <p>Click <a href="{}">here</a> to view your order details.</p>
         <img src="{}" alt="Bakery Logo" width="100" height="50">
-    """.format(formatted_amount, order_key, marketing_sentence, ordered_items_list, order_detail_link, logo_url)
+    """.format(formatted_amount, order.order_id, marketing_sentence, ordered_items_list, order_detail_link, logo_url)
 
     # Create an EmailMultiAlternatives instance
     msg = EmailMultiAlternatives(subject, strip_tags(html_content), 'jibinjjohny11@gmail.com', [customer_email])
