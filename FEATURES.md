@@ -121,6 +121,23 @@
 - payment page there is a pay button in pay button user can see payment amount and delivery option they select in cart page.
 - If the payment successfull user will get confirmation email. 
 ![Email Confirmation](documentation/email.png)
-- then redirect to user order page 
+- then redirect to user order confirmation page
+
+### Order confirmation page
+![Order confirmation page](documentation/order_confiramtion.png)
+- After payment user will redirect to this page here we can click order button it will redirect to user order page.
 
 ### User Order Page
+![User Order page](documentation/user_order.png)
+- user can see there orders each order cards have order detail button if click that button it will redirect to order detail page.
+![ Order detail page](documentation/order_detail.png)
+- here user can see all information about order.
+
+### Footer
+
+![Footer](documentation/footer.png)
+- contains short discription of cake cravings
+- social media links facebook,instagram,twitter,youtube.Each icons redirect to corresponding social media page.
+- subscription email id section users can subscribe by writing emai id and click subscribe button. 
+- next users can see address,email id,phone number and fax
+- next opening hours of the shop users can visit the shop during that time.
