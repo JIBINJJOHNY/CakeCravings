@@ -11,12 +11,13 @@ from django.db.models import Avg
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.views.generic import ListView
-from .forms import ProductForm, ProductImageForm
+from .forms import ProductForm,ProductImageForm,AddTagForm,AddDiscountForm 
 from reviews.forms import ReviewForm
 from reviews.models import Review
-from .models import Product, Category
+from .models import Product, Category,Tag,Discount
 from wishlist.models import Wishlist
-
+from django.views import View
+from django.http import HttpResponseBadRequest
 
 def is_manager(user):
     return user.is_authenticated and user.profile.role == 'manager'
@@ -223,3 +224,66 @@ def delete_product(request, product_id):
     product.delete()
     messages.success(request, 'Product deleted!')
     return redirect(reverse('product_list'))
+
+@user_passes_test(is_manager)
+def add_tag(request):
+    if request.method == 'POST':
+        form = AddTagForm(request.POST)
+        if form.is_valid():
+            tag_name = form.cleaned_data['tag_name'].strip()
+            is_active = form.cleaned_data['is_active']  # Retrieve is_active value from the form
+
+            if tag_name:
+                tag, created = Tag.objects.get_or_create(name=tag_name, defaults={'is_active': is_active})
+                if created:
+                    messages.success(request, 'Tag added successfully.')
+                else:
+                    messages.warning(request, 'Tag already exists.')
+
+                # Redirect to the referring page or the default 'product_list'
+                referring_page = request.META.get('HTTP_REFERER', None)
+                return redirect(referring_page) if referring_page else redirect('product_list')
+            else:
+                messages.warning(request, 'Tag name cannot be empty.')
+                return HttpResponseBadRequest('Tag name cannot be empty.')
+    else:
+        form = AddTagForm()
+
+    tags = Tag.get_active_tags()
+    return render(request, 'products/tag.html', {'tags': tags, 'form': form})
+
+@user_passes_test(is_manager)
+def remove_tag(request, tag_id):
+    tag = get_object_or_404(Tag, id=tag_id)
+    tag.delete()
+    messages.success(request, 'Tag removed successfully.')
+
+    # Redirect to the referring page or the default 'product_list'
+    referring_page = request.META.get('HTTP_REFERER', None)
+    return redirect(referring_page) if referring_page else redirect('product_list')
+
+@user_passes_test(is_manager)
+def add_discount(request):
+    if request.method == 'POST':
+        form = AddDiscountForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Discount added successfully.')
+        else:
+            messages.error(request, 'Invalid form data. Please check and try again.')
+        return redirect(request.path)  # Redirect to the same page
+
+    discounts = Discount.objects.all()  # Retrieve all existing discounts
+    return render(request, 'products/discount.html', {'form': AddDiscountForm(), 'discounts': discounts})
+
+@user_passes_test(is_manager)
+def remove_discount(request, discount_id):
+    if request.method == 'POST':
+        discount = get_object_or_404(Discount, id=discount_id)
+        discount.delete()
+        messages.success(request, 'Discount removed successfully.')
+        return redirect(request.path)  # Redirect to the same page
+
+    # If the request method is not POST, render the modal with the existing discounts
+    discounts = Discount.objects.all()  # Modify this query based on your needs
+    return render(request, 'products/discount.html', {'discounts': discounts})
