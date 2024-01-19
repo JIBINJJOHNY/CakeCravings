@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', function () {
         let customerAddress = document.getElementById("customer-address").value;
         let customerAddress2 = document.getElementById("customer-address-2").value;
         let customerCountry = document.getElementById("customer-country").value;
-        let customerRegion = document.getElementById("id_county_region_state").value;
+        let customerRegion = document.getElementById("customer-region").value;
         let customerCity = document.getElementById("customer-city").value;
         let postCode = document.getElementById("post-code").value;
         // Warning message for the user to prevent refreshing the page,
@@ -120,23 +120,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
                             // After successful payment, redirect to the order confirmation page
                             window.location.replace(window.location.origin + "/orders/order_confirmation/");
-
-                            // Send order confirmation email
-                            $.ajax({
-                                url: window.location.origin + '/orders/send_order_confirmation_email/',
-                                type: "POST",
-                                data: {
-                                    'order_id': json.order_id,
-                                    'csrfmiddlewaretoken': CSRF_TOKEN,
-                                    'action': 'post'
-                                },
-                                success: function (emailResponse) {
-                                    console.log("Order Confirmation Email Sent", emailResponse);
-                                },
-                                error: function (xhr, errmsg, err) {
-                                    console.error("Order Confirmation Email Error:", errmsg, err);
-                                },
-                            });
                         }
                         // Enable the submit button again
                         $('#submit').prop('disabled', false);

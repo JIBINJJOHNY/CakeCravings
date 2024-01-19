@@ -150,12 +150,13 @@
                                     </div>
                                 </div>
                                 <div class="col-12">
-                                    <label for="{{ form.county_region_state.id_for_label }}" class="form-label">State</label>
+                                    <label for="{{ form.county_region_state.id_for_label }}" id="customer-region" class="form-label">State</label>
                                     {{ form.county_region_state }}
                                     <div class="invalid-feedback">
                                         Please provide a valid state.
                                     </div>
                                 </div>
+                                
                                 <div class="col-12">
                                     <label for="customer-city" class="form-label">City</label>
                                     <input type="text" value="{% if my_profile.town_or_city %}{{ my_profile.town_or_city }}{% endif %}" class="form-control" id="customer-city" placeholder="City" required>
