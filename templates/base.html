@@ -99,7 +99,7 @@
                         <a class="nav-link" href="{% url 'home' %}#contact">Contact</a>
                     </li>
                     {% if user.is_authenticated %}
-                    {% if user.profile.role == 'admin' or user.profile.role == 'manager' %}
+                    {% if user.profile.role == 'manager' %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'product_list' %}">Product list</a>
                         </li>
