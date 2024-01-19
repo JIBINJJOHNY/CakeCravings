@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import AddOrder, basket_view, OrderConfirmation, OrdersView, OrderDetailsView, stripe_webhook, ErrorView
+from .views import AddOrder, basket_view, OrderConfirmation, OrdersView, OrderDetailsView, stripe_webhook, ErrorView,OrderListView, OrderStatusUpdateView
 
 
 app_name = 'orders'
@@ -12,5 +12,8 @@ urlpatterns = [
     path('user_orders/', OrdersView.as_view(), name='user_orders'),
     path('order_details/<str:order_number>/', OrderDetailsView.as_view(), name='order_details'), 
     path('stripe_webhook/', stripe_webhook, name='stripe_webhook'),
+    path('orders/', OrderListView.as_view(), name='order-list'),
+    path('orders/<int:order_id>/update-status/', OrderStatusUpdateView.as_view(), name='order-status-update'),
+
 
 ]

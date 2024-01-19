@@ -27,6 +27,7 @@ from django.contrib.auth.decorators import user_passes_test
 from django.views.decorators.http import require_POST
 from profiles.models import Profile 
 from django.template.loader import render_to_string
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 # Set up the logger
 logger = logging.getLogger(__name__)
@@ -377,3 +378,37 @@ def send_payment_confirmation_email(customer_email, order_key, amount_received):
 
     # Send the email
     msg.send(fail_silently=False)
+
+
+class OrderListView(LoginRequiredMixin, View):
+    login_url = '/login/'  # Adjust the login URL as needed
+
+    def get(self, request):
+        print("Role:", request.user.profile.role)  # Debug print
+           
+        if request.user.profile.role == 'manager':
+            orders = Order.objects.all().order_by('-created')
+            print("Orders:", orders)  # Debug print
+            return render(request, 'orders/order_list.html', {'orders': orders})
+        else:
+            return HttpResponseRedirect(reverse('home'))  # Redirect to home or another page for non-managers
+
+class OrderStatusUpdateView(LoginRequiredMixin, View):
+    login_url = '/login/'  # Adjust the login URL as needed
+
+    def post(self, request, order_id):
+        if request.user.profile.role == 'manager':
+            order = get_object_or_404(Order, id=order_id)
+            new_status = request.POST.get('new_status', '')
+            new_delivery_option = request.POST.get('new_delivery_option', '')
+
+            if new_status and new_status in dict(Order.STATUS_CHOICES).keys():
+                order.status = new_status
+
+            if new_delivery_option and new_delivery_option in dict(Order.DELIVERY_OPTIONS).keys():
+                order.delivery_option = new_delivery_option
+
+            order.save()
+            return HttpResponseRedirect(reverse('orders:order-list'))
+        else:
+            return HttpResponseRedirect(reverse('home'))
