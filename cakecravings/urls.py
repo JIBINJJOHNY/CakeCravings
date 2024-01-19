@@ -15,18 +15,18 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path,include
+from django.urls import path, include
 from .views import handler404, handler500
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('accounts/',include('allauth.urls')),
+    path('accounts/', include('allauth.urls')),
     path('', include('home.urls')),
     path('products/', include('products.urls')),
-    path('reviews/', include('reviews.urls',namespace='reviews')), 
-    path('cart/', include('cart.urls')), 
+    path('reviews/', include('reviews.urls', namespace='reviews')),
+    path('cart/', include('cart.urls')),
     path('orders/', include('orders.urls', namespace='orders')),
-    path('wishlist/', include('wishlist.urls',namespace='wishlist')),
+    path('wishlist/', include('wishlist.urls', namespace='wishlist')),
     path('profiles/', include('profiles.urls')),
 ]
 handler404 = 'cakecravings.views.handler404'

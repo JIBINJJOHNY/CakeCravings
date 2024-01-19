@@ -43,12 +43,12 @@ ul li {
 a {
     text-decoration: none;
     cursor: pointer;
-    color: #b4867b;
+    color: #b76955;
 
 }
 
 a:hover {
-    color: rgb(243, 235, 235);
+    color: rgb(196 138 138);
 }
 
 
@@ -544,7 +544,7 @@ h6 span button:hover {
 }
 
 .btn-secondary {
-    background-color: #4f314f;
+    background-color: #864c86;
     border-color: #ffffff;
     color: #ffffff;
 }

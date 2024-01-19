@@ -1,4 +1,3 @@
-# urls.py in the wishlist app
 from django.urls import path
 from .views import view_wishlist, plus_wishlist, minus_wishlist, wishlist_delete
 

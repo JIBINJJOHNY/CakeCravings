@@ -7,6 +7,7 @@ from .contexts import cart_contents
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 
+
 def view_cart(request):
     delivery_option = request.GET.get('delivery_option', 'online')
     context = cart_contents(request)
@@ -14,6 +15,7 @@ def view_cart(request):
     request.session['delivery_option'] = delivery_option
 
     return render(request, 'cart/cart.html', context)
+
 
 def add_to_cart(request, item_id):
     """ Add a quantity of the specified product to the shopping cart """
@@ -83,11 +85,13 @@ def add_to_cart(request, item_id):
 
     return JsonResponse(response_data)
 
+
 def get_cart_count(request):
     context = cart_contents(request)
     cart_count = context.get('cart_count', 0)
     print(f"Cart Count (get_cart_count): {cart_count}")
     return JsonResponse({'success': True, 'cart_count': cart_count})
+
 
 def adjust_cart(request, item_id):
     """Adjust the quantity of the specified product to the specified amount"""
@@ -120,6 +124,7 @@ def adjust_cart(request, item_id):
     print(f"Delivery Option (adjust_cart): {delivery_option}")
     return redirect(f'{reverse("view_cart")}?delivery_option={delivery_option}')
 
+
 def remove_from_cart(request, item_id):
     """Remove the item from the shopping cart"""
 
@@ -129,7 +134,7 @@ def remove_from_cart(request, item_id):
         if 'product_size' in request.POST:
             size = request.POST['product_size']
 
-       # Check if the order is placed or not
+        # Check if the order is placed or not
         if request.user.is_authenticated and hasattr(request.user, 'orders') and request.user.orders.filter(status='Placed').exists():
             # Order is placed, don't remove from the cart
             messages.error(request, "Cannot remove items from the cart after the order is placed.")
@@ -154,7 +159,7 @@ def remove_from_cart(request, item_id):
     except Exception as e:
         messages.error(request, f'Error removing item: {e}')
         return HttpResponse(status=500)
-    
+
 
 @require_POST
 def update_delivery_option(request):
@@ -179,5 +184,3 @@ def update_delivery_option(request):
         # Log the error for debugging
         print(f"Error in update_delivery_option view: {str(e)}")
         return JsonResponse({'success': False, 'error': 'An error occurred'})
-
-    

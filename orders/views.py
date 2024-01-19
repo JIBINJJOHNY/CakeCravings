@@ -2,7 +2,6 @@ import json
 import stripe
 import uuid
 import logging
-
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.mail import EmailMultiAlternatives
@@ -14,20 +13,19 @@ from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import Paginator
 from django.utils.decorators import method_decorator
+from django.utils.html import strip_tags
+from django.contrib.auth.decorators import user_passes_test
+from django.views.decorators.http import require_POST
+from django.template.loader import render_to_string
+from django.contrib.auth.mixins import LoginRequiredMixin
 from cart.contexts import cart_contents
 from orders.models import Order, OrderItem
 from products.models import Product
 from profiles.models import Profile
 from reviews.models import Review
 from decimal import Decimal
-from django.utils.html import strip_tags
-import logging
-from .forms import OrderForm 
-from django.contrib.auth.decorators import user_passes_test
-from django.views.decorators.http import require_POST
-from profiles.models import Profile 
-from django.template.loader import render_to_string
-from django.contrib.auth.mixins import LoginRequiredMixin
+from .forms import OrderForm
+
 
 # Set up the logger
 logger = logging.getLogger(__name__)
@@ -233,6 +231,7 @@ class OrderConfirmation(View):
     def get(self, request, *args, **kwargs):
         return render(request, 'orders/order_confirmation.html')
 
+
 class OrdersView(View):
     """View for user orders page."""
     def get(self, request, *args, **kwargs):
@@ -251,6 +250,7 @@ class OrdersView(View):
                 request, 'account/login.html',
             )
 
+
 @method_decorator(login_required, name='dispatch')
 class OrderDetailsView(View):
     """View for displaying order details."""
@@ -262,13 +262,14 @@ class OrderDetailsView(View):
             context = {
                 'order': order,
                 'order_items': order.order_item.all(),
-                
+
             }
             return render(request, 'orders/order_details.html', context)
         except Order.DoesNotExist:
             print("DEBUG: Order not found")
             # Handle the case where the order is not found (redirect or show an error page)
             return render(request, 'orders/order_error.html')
+
 
 def get_or_create_order(request):
     """
@@ -286,11 +287,12 @@ def get_or_create_order(request):
         new_order = Order.objects.create(user=user, billing_status=True, total_paid=0)
         return new_order
 
+
 @csrf_exempt
 def stripe_webhook(request):
     payload = request.body
     event = None
-    
+
     try:
         event = stripe.Event.construct_from(
             json.loads(payload), stripe.api_key
@@ -309,9 +311,12 @@ def stripe_webhook(request):
     else:
         logger.warning(f"Unhandled event type: {event.type}")
         return HttpResponse(status=200)
+
+
 class ErrorView(View):
     def get(self, request, *args, **kwargs):
         return render(request, 'orders/order_error.html')
+
 
 def payment_confirmation(client_secret):
     try:
@@ -335,7 +340,7 @@ def payment_confirmation(client_secret):
 
 def send_payment_confirmation_email(customer_email, order_key, amount_received):
     BASE_URL = settings.BASE_URL
-    
+
     # Ensure amount_received is a float
     amount_received = float(amount_received)
 
@@ -385,13 +390,14 @@ class OrderListView(LoginRequiredMixin, View):
 
     def get(self, request):
         print("Role:", request.user.profile.role)  # Debug print
-           
+
         if request.user.profile.role == 'manager':
             orders = Order.objects.all().order_by('-created')
             print("Orders:", orders)  # Debug print
             return render(request, 'orders/order_list.html', {'orders': orders})
         else:
             return HttpResponseRedirect(reverse('home'))  # Redirect to home or another page for non-managers
+
 
 class OrderStatusUpdateView(LoginRequiredMixin, View):
     login_url = '/login/'  # Adjust the login URL as needed

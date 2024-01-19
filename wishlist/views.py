@@ -12,7 +12,6 @@ from django.urls import reverse
 from django.contrib import messages
 
 
-
 def view_wishlist(request):
     user = request.user
     if user.is_authenticated:
@@ -26,6 +25,7 @@ def view_wishlist(request):
     }
 
     return render(request, 'wishlist/wishlist.html', context)
+
 
 @login_required
 def plus_wishlist(request):

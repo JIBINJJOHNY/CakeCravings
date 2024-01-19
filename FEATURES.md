@@ -25,9 +25,12 @@
 | Products add | No         | No         | Yes     | Yes   |
 | Products Update | No         | No         | Yes     | Yes   |
 | Products delete | No         | No         | Yes     | Yes   |
-| Adding Tag | No         | No         | Yes     | Yes   |
+| Adding Tag | No         | No         | Yes     | No   |
 | Tags | No         | No         | Yes     | Yes   |
+| Remove Tag | No         | No         | Yes     | No   |
 | Add tag | No         | No         | Yes     | Yes   |
+| Add Discount | No         | No         | Yes     | No   |
+| Remove Discount | No         | No         | Yes     | No   |
 | Edit tag | No         | No         | Yes     | Yes   |
 | Delete tag | No         | No         | Yes     | Yes   |
 
@@ -50,6 +53,9 @@
     - Gallery,if click gallery link it will redirect to gallery section in home page.
     - Contact,if click contact link it will redirect to contact section in home page.
     - Product list link it is only use for manager and admin customers have no access this link ,if click products list link it will redirect to product list page managers or admin can add update and delete products and add and change and delete tags also there.
+        * manager role profile can add and remove tags
+        * manager role  profile can add and remove discounts.
+    - Order list link it will redirect to orderlist page there role manager can update delivery status.
     - Search bar ,if write the product name or category name can easily search using search bar.
     - user icon, if click that icon it is a dropdown menu it contains
         + Profile,if click profile it will redirect to profile page in profile page we can add user details .

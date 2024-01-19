@@ -11,13 +11,14 @@ from django.db.models import Avg
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.views.generic import ListView
-from .forms import ProductForm,ProductImageForm,AddTagForm,AddDiscountForm 
+from django.http import HttpResponseBadRequest
+from django.views import View
+from .forms import ProductForm, ProductImageForm, AddTagForm, AddDiscountForm
 from reviews.forms import ReviewForm
 from reviews.models import Review
-from .models import Product, Category,Tag,Discount
+from .models import Product, Category, Tag, Discount
 from wishlist.models import Wishlist
-from django.views import View
-from django.http import HttpResponseBadRequest
+
 
 def is_manager(user):
     return user.is_authenticated and user.profile.role == 'manager'
@@ -101,6 +102,7 @@ def all_products(request, category_slug=None):
         'all_products': products,  # Use the paginated products for rendering
     }
     return render(request, 'products/products.html', context)
+
 
 def product_detail(request, product_id):
     print(f"Product ID: {product_id}")
@@ -225,6 +227,7 @@ def delete_product(request, product_id):
     messages.success(request, 'Product deleted!')
     return redirect(reverse('product_list'))
 
+
 @user_passes_test(is_manager)
 def add_tag(request):
     if request.method == 'POST':
@@ -252,6 +255,7 @@ def add_tag(request):
     tags = Tag.get_active_tags()
     return render(request, 'products/tag.html', {'tags': tags, 'form': form})
 
+
 @user_passes_test(is_manager)
 def remove_tag(request, tag_id):
     tag = get_object_or_404(Tag, id=tag_id)
@@ -261,6 +265,7 @@ def remove_tag(request, tag_id):
     # Redirect to the referring page or the default 'product_list'
     referring_page = request.META.get('HTTP_REFERER', None)
     return redirect(referring_page) if referring_page else redirect('product_list')
+
 
 @user_passes_test(is_manager)
 def add_discount(request):
@@ -275,6 +280,7 @@ def add_discount(request):
 
     discounts = Discount.objects.all()  # Retrieve all existing discounts
     return render(request, 'products/discount.html', {'form': AddDiscountForm(), 'discounts': discounts})
+
 
 @user_passes_test(is_manager)
 def remove_discount(request, discount_id):
