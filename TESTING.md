@@ -396,6 +396,7 @@ class OrderItemModelTest(TestCase):
 
 1. Navbar dropdown menu not working all pages 
 2. product page card if click wishlist button it will redirect to product detail page.but product is correctly add to wishlist page.
+3. Sometimes, an AJAX request error occurs during the payment process. However, upon refreshing the page and attempting the payment again, the process works seamlessly.
 
 ### CSS Validation:
 
