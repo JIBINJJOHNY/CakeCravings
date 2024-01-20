@@ -28,7 +28,7 @@ class OrderAdmin(admin.ModelAdmin):
         'address1',
         'address2',
         'country',
-        'county_region_state',
+        'state',
         'city',
         'zip_code',
         'order_key',
@@ -54,4 +54,3 @@ class OrderItemAdmin(admin.ModelAdmin):
         'product__name',    #search by product name
         'quantity',
     )
-

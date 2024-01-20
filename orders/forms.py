@@ -11,7 +11,7 @@ class OrderForm(forms.ModelForm):
             'address1',
             'address2',
             'city',
-            'county_region_state',
+            'state',
             'country',
             'zip_code',
             'total_paid',
@@ -26,7 +26,7 @@ class OrderForm(forms.ModelForm):
             'address1': forms.TextInput(attrs={'class': 'form-control'}),
             'address2': forms.TextInput(attrs={'class': 'form-control'}),
             'city': forms.TextInput(attrs={'class': 'form-control'}),
-            'county_region_state': forms.Select(attrs={'class': 'form-control'}),
+            'state': forms.Select(attrs={'class': 'form-control'}),
             'country': forms.HiddenInput(),  # Hide the 'country' field
             'zip_code': forms.TextInput(attrs={'class': 'form-control'}),
             'total_paid': forms.TextInput(attrs={'class': 'form-control'}),
@@ -38,8 +38,8 @@ class OrderForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(OrderForm, self).__init__(*args, **kwargs)
 
-        # Set choices for county_region_state
-        self.fields['county_region_state'].choices = Order.GERMAN_STATES_CHOICES
+        # Set choices for state
+        self.fields['state'].choices = Order.GERMAN_STATES_CHOICES
 
         # Set a default value for 'country' to 'Germany' and hide it
         self.fields['country'].initial = 'Germany'
@@ -87,4 +87,3 @@ class OrderItemForm(forms.ModelForm):
             'quantity': forms.TextInput(attrs={'class': 'form-control'}),
             'size': forms.Select(attrs={'class': 'form-control'}),
         }
-

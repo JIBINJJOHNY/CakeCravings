@@ -39,7 +39,9 @@ class AddOrder(View):
                 cart = cart_contents(request)
                 total = cart['grand_total']
                 delivery_option = request.POST.get('delivery_option', 'online')  # Get the delivery option
-                print(f"Delivery Option (AddOrder - Received from Cart): {delivery_option}")  # Debug statement
+                
+                # Debug statement
+                print(f"Delivery Option (AddOrder - Received from Cart): {delivery_option}")
 
                 # Create PaymentIntent
                 try:
@@ -55,7 +57,7 @@ class AddOrder(View):
                 # Retrieve delivery_option from metadata
                 print(request.POST)
                 delivery_option = request.POST.get('delivery_option', 'online')
-                print(f"Delivery Option (AddOrder - After PaymentIntent): {delivery_option}")  # Debug statement
+                print(f"Delivery Option (AddOrder - After PaymentIntent): {delivery_option}")
 
                 user = request.user
                 full_name = request.POST.get('full_name')
@@ -64,7 +66,11 @@ class AddOrder(View):
                 address1 = request.POST.get('address1')
                 address2 = request.POST.get('address2')
                 country = request.POST.get('country')
-                county_region_state = request.POST.get('county_region_state')
+                
+                # Debug statement
+                state = request.POST.get('state')
+                print(f"State (AddOrder): {state}")
+
                 city = request.POST.get('city')
                 zip_code = request.POST.get('zip_code')
                 order_key = request.POST.get('order_key')
@@ -97,7 +103,7 @@ class AddOrder(View):
                         address1=address1,
                         address2=address2,
                         country=country,
-                        county_region_state=county_region_state,
+                        state=state,
                         city=city,
                         zip_code=zip_code,
                         order_key=order_key,
@@ -154,7 +160,7 @@ def basket_view(request):
 
         # Fetch other cart details from cart_contents
         cart = cart_contents(request)
-        print(f"Cart Contents: {cart}")
+  
 
         # Update the cart with the latest delivery option
         cart['delivery_option'] = delivery_option
@@ -180,7 +186,6 @@ def basket_view(request):
 
         # Apply any discount logic here
         discount_amount = cart.get('discount', 0)
-        print(f"Discount Amount: {discount_amount}")
         total_final -= discount_amount
 
         total_sum = "{:.2f}".format(total_final)
@@ -202,7 +207,7 @@ def basket_view(request):
             'address1': latest_order.address1,
             'address2': latest_order.address2,
             'country': latest_order.country,
-            'county_region_state': latest_order.county_region_state,
+            'state': latest_order.state,
             'city': latest_order.city,
             'zip_code': latest_order.zip_code,
         }

@@ -56,10 +56,11 @@ class Order(models.Model):
     address1 = models.CharField(max_length=250)
     address2 = models.CharField(max_length=250, blank=True)
     city = models.CharField(max_length=100)
-    county_region_state = models.CharField(
+    state = models.CharField(
         max_length=100,
         choices=GERMAN_STATES_CHOICES,
         blank=True, 
+        null=True,
     )
     country = models.CharField(max_length=100)
     zip_code = models.CharField(max_length=50)

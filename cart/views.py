@@ -54,7 +54,6 @@ def add_to_cart(request, item_id):
 
     # Print the delivery_option value
     delivery_option = request.GET.get('delivery_option', 'online')
-    print(f"Delivery Option (add_to_cart): {delivery_option}")
 
     # Calculate the updated cart count, including products with sizes
     cart_count = sum(
@@ -72,8 +71,6 @@ def add_to_cart(request, item_id):
         )
     )
 
-    print(f"Cart Count: {cart_count}")
-
     # Include messages in the JsonResponse data
     messages_list = [{'message': str(message), 'tag': message.tags} for message in messages.get_messages(request)]
     response_data = {
@@ -89,7 +86,6 @@ def add_to_cart(request, item_id):
 def get_cart_count(request):
     context = cart_contents(request)
     cart_count = context.get('cart_count', 0)
-    print(f"Cart Count (get_cart_count): {cart_count}")
     return JsonResponse({'success': True, 'cart_count': cart_count})
 
 
@@ -121,7 +117,7 @@ def adjust_cart(request, item_id):
     request.session['cart'] = cart
     # Print the delivery_option value
     delivery_option = request.GET.get('delivery_option', 'online')
-    print(f"Delivery Option (adjust_cart): {delivery_option}")
+
     return redirect(f'{reverse("view_cart")}?delivery_option={delivery_option}')
 
 
@@ -168,8 +164,6 @@ def update_delivery_option(request):
 
         # Update the delivery option in the session or database
         request.session['delivery_option'] = delivery_option
-
-        # ... (Your existing logic for calculating delivery cost and total)
 
         # Update the response with the new delivery cost and total
         response_data = {

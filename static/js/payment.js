@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', function () {
         let customerAddress = document.getElementById("customer-address").value;
         let customerAddress2 = document.getElementById("customer-address-2").value;
         let customerCountry = document.getElementById("customer-country").value;
-        let customerRegion = document.getElementById("customer-region").value;
+        let customerRegion = document.getElementById("id_state").value;
         let customerCity = document.getElementById("customer-city").value;
         let postCode = document.getElementById("post-code").value;
         // Warning message for the user to prevent refreshing the page,
@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded', function () {
         formData.append('address1', customerAddress);
         formData.append('address2', customerAddress2);
         formData.append('country', customerCountry);
-        formData.append('county_region_state', customerRegion);
+        formData.append('state', customerRegion);
         formData.append('city', customerCity);
         formData.append('zip_code', postCode);
         formData.append('order_key', clientsecret);
@@ -85,6 +85,8 @@ document.addEventListener('DOMContentLoaded', function () {
             contentType: false,
             success: function (json) {
                 console.log("AJAX Request Successful", json);
+                
+
 
                 stripe.confirmCardPayment(clientsecret, {
                     payment_method: {
