@@ -628,7 +628,7 @@ U
 - [Ricotta Cookies](https://www.upstateramblings.com/ricotta-cookies/)
 - [Banana Cupcake](https://tornadoughalli.com/banana-cupcakes/)
 - [Choclate Cupcake](https://www.pinterest.de/pin/44402746315543652/)
-- [Choclate Cake](https://cookidoo.de/recipes/recipe/de-DE/r144267)
+- [Choclate Cake](https://in.pinterest.com/pin/76842737379307960/)
 - [Funfetti Cookies](https://www.rachelcooks.com/patriotic-funfetti-cookies/)
 
 
